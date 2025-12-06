@@ -1,0 +1,31 @@
+/* BioZen Brand Colors - Prirodni, zdravstveni stil */
+:root {
+  /* Primary Colors - Prirodna zelena (kao na sajtu) */
+  --brand-primary: #416539;
+  --brand-primary-dark: #2d4528;
+  --brand-primary-light: #5a8a4f;
+  
+  /* Secondary Colors - Topla zelena (prirodnost) */
+  --brand-secondary: #6b8e4f;
+  --brand-secondary-dark: #5a7a42;
+  --brand-secondary-light: #7fa35a;
+  
+  /* Accent Colors - Prirodni tonovi */
+  --brand-accent: #8b956d;
+  --brand-success: #416539;
+  --brand-error: #c94a4a;
+  --brand-warning: #d4a574;
+  
+  /* Neutral Colors - Prirodni, topli tonovi */
+  --brand-bg: #f5f5f0;
+  --brand-bg-light: #ffffff;
+  --brand-text: #2d2d2d;
+  --brand-text-light: #6b6b6b;
+  --brand-border: #d4d4c4;
+  
+  /* Gradients - Prirodni zeleni gradijenti */
+  --brand-gradient: linear-gradient(135deg, #416539 0%, #6b8e4f 100%);
+  --brand-gradient-light: linear-gradient(135deg, #5a8a4f 0%, #7fa35a 100%);
+  --brand-gradient-soft: linear-gradient(135deg, rgba(65, 101, 57, 0.1) 0%, rgba(107, 142, 79, 0.1) 100%);
+}
+

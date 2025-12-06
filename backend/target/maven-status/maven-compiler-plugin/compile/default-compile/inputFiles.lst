@@ -1,0 +1,16 @@
+/Users/andrejdzakovic/Dropbox/BioZen/biozenapp/backend/src/main/java/com/example/app/MiniAppApplication.java
+/Users/andrejdzakovic/Dropbox/BioZen/biozenapp/backend/src/main/java/com/example/app/auth/AuthController.java
+/Users/andrejdzakovic/Dropbox/BioZen/biozenapp/backend/src/main/java/com/example/app/config/CorsConfig.java
+/Users/andrejdzakovic/Dropbox/BioZen/biozenapp/backend/src/main/java/com/example/app/config/JwtAuthFilter.java
+/Users/andrejdzakovic/Dropbox/BioZen/biozenapp/backend/src/main/java/com/example/app/config/JwtService.java
+/Users/andrejdzakovic/Dropbox/BioZen/biozenapp/backend/src/main/java/com/example/app/config/SecurityBeans.java
+/Users/andrejdzakovic/Dropbox/BioZen/biozenapp/backend/src/main/java/com/example/app/config/SecurityConfig.java
+/Users/andrejdzakovic/Dropbox/BioZen/biozenapp/backend/src/main/java/com/example/app/measurement/Measurement.java
+/Users/andrejdzakovic/Dropbox/BioZen/biozenapp/backend/src/main/java/com/example/app/measurement/MeasurementController.java
+/Users/andrejdzakovic/Dropbox/BioZen/biozenapp/backend/src/main/java/com/example/app/measurement/MeasurementRepository.java
+/Users/andrejdzakovic/Dropbox/BioZen/biozenapp/backend/src/main/java/com/example/app/todo/Todo.java
+/Users/andrejdzakovic/Dropbox/BioZen/biozenapp/backend/src/main/java/com/example/app/todo/TodoController.java
+/Users/andrejdzakovic/Dropbox/BioZen/biozenapp/backend/src/main/java/com/example/app/todo/TodoRepository.java
+/Users/andrejdzakovic/Dropbox/BioZen/biozenapp/backend/src/main/java/com/example/app/user/MeController.java
+/Users/andrejdzakovic/Dropbox/BioZen/biozenapp/backend/src/main/java/com/example/app/user/User.java
+/Users/andrejdzakovic/Dropbox/BioZen/biozenapp/backend/src/main/java/com/example/app/user/UserRepository.java
