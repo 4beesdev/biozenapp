@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: biozen-backend
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      APP_JWT_SECRET: ${JWT_SECRET}
+      APP_JWT_TTLMILLIS: 604800000
+    ports:
+      - "8080:8080"
+    networks:
+      - biozen-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: biozen-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - biozen-network
+    restart: unless-stopped
+
+networks:
+  biozen-network:
+    driver: bridge
+
