@@ -12,9 +12,8 @@ services:
     instance_count: 1
     instance_size_slug: basic-xxs
     envs:
-      # Digital Ocean automatski setuje varijable za bazu sa prefiksom imena baze
-      # (npr. dev-db-229452.DATABASE_URL, dev-db-229452.HOSTNAME, itd.)
-      # DatabaseConfig.java će automatski pronaći te varijable
+      # Database connection - Setuj DATABASE_URL u App-Level Environment Variables
+      # Format: postgresql://username:password@host:port/database?sslmode=require
       # JWT - OBAVEZNO setovati u App-Level Environment Variables!
       - key: APP_JWT_SECRET
         scope: RUN_TIME
