@@ -29,18 +29,18 @@ Ako automatska detekcija ne radi, možeš ručno kreirati aplikaciju:
    - Izaberi branch: `main`
 
 2. **Konfiguriši Backend servis:**
-   - Klikni "Edit" na komponenti
-   - **Source Directory**: `backend`
+   - Klikni "Edit" na komponenti (ili "Add Component" → "Service" ako kreiraš novu)
+   - **Source Directory**: ⬇️ **UPIŠI: `backend`** ⬇️
    - **Build Type**: Docker
-   - **Dockerfile Path**: `Dockerfile`
+   - **Dockerfile Path**: `Dockerfile` (ili ostavi prazno - Dockerfile je u backend/ direktorijumu)
    - **HTTP Port**: `8080`
    - **Routes**: `/api`
 
 3. **Konfiguriši Frontend servis:**
    - Klikni "Add Component" → "Service"
-   - **Source Directory**: `frontend`
+   - **Source Directory**: ⬇️ **UPIŠI: `frontend`** ⬇️
    - **Build Type**: Docker
-   - **Dockerfile Path**: `Dockerfile`
+   - **Dockerfile Path**: `Dockerfile` (ili ostavi prazno - Dockerfile je u frontend/ direktorijumu)
    - **HTTP Port**: `80`
    - **Routes**: `/`
 
