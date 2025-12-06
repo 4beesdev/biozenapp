@@ -12,15 +12,19 @@ services:
     instance_count: 1
     instance_size_slug: basic-xxs
     envs:
+      # Digital Ocean daje DATABASE_URL u formatu: postgresql://user:pass@host:port/dbname
+      # Spring Boot očekuje: jdbc:postgresql://host:port/dbname
+      # Koristimo pojedinačne varijable koje Digital Ocean automatski setuje
       - key: SPRING_DATASOURCE_URL
         scope: RUN_TIME
-        value: ${db.DATABASE_URL}
+        value: jdbc:postgresql://${db.HOSTNAME}:${db.PORT}/${db.DATABASE}
       - key: SPRING_DATASOURCE_USERNAME
         scope: RUN_TIME
         value: ${db.USERNAME}
       - key: SPRING_DATASOURCE_PASSWORD
         scope: RUN_TIME
         value: ${db.PASSWORD}
+      # JWT - OBAVEZNO setovati u App-Level Environment Variables!
       - key: APP_JWT_SECRET
         scope: RUN_TIME
         type: SECRET
@@ -38,6 +42,7 @@ services:
       deploy_on_push: true
     source_dir: frontend
     dockerfile_path: Dockerfile
+    build_command: ""  # Eksplicitno koristi Dockerfile, ne buildpack
     http_port: 80
     instance_count: 1
     instance_size_slug: basic-xxs
@@ -56,4 +61,3 @@ databases:
     cluster_name: biozen-db
     db_name: biozenapp
     db_user: biozen
-
