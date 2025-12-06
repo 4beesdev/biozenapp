@@ -1,0 +1,42 @@
+version: '3.8'
+
+# Production docker-compose za Droplet
+# Koristi managed database (ne lokalnu)
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: biozen-backend
+    environment:
+      # Koristi environment variables iz .env fajla
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      APP_JWT_SECRET: ${JWT_SECRET}
+      APP_JWT_TTLMILLIS: ${APP_JWT_TTLMILLIS:-604800000}
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    networks:
+      - biozen-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: biozen-frontend
+    environment:
+      REACT_APP_API_URL: ${REACT_APP_API_URL:-http://localhost:8080}
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - biozen-network
+
+networks:
+  biozen-network:
+    driver: bridge
+
