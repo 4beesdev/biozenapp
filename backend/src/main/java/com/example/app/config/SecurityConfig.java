@@ -34,6 +34,7 @@ public class SecurityConfig {
         );
         http.httpBasic(basic -> basic.disable());
         http.formLogin(form -> form.disable());
+        // CORS filter mora biti prvi
         http.addFilterBefore(corsFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
