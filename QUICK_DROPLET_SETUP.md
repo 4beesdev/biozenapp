@@ -32,9 +32,9 @@ nano /opt/biozenapp/.env
 Dodaj svoje vrednosti:
 
 ```env
-SPRING_DATASOURCE_URL=jdbc:postgresql://app-dd78834a-f1da-4757-9a71-793e8b2ab270-do-user-4315104-0.g.db.ondigitalocean.com:25060/defaultdb?sslmode=require
-SPRING_DATASOURCE_USERNAME=db
-SPRING_DATASOURCE_PASSWORD=AVNS_leKihZpiozTScIlVqkT
+SPRING_DATASOURCE_URL=jdbc:postgresql://host:port/database?sslmode=require
+SPRING_DATASOURCE_USERNAME=username
+SPRING_DATASOURCE_PASSWORD=password
 JWT_SECRET=$(openssl rand -base64 32)
 REACT_APP_API_URL=http://Tvoja_IP_Adresa:8080
 ```
