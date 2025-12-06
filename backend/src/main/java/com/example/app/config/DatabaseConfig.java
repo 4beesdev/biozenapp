@@ -20,41 +20,25 @@ public class DatabaseConfig {
         Map<String, String> env = System.getenv();
         
         // Ispiši sve environment variables za debug
-        System.out.println("=== All Environment Variables ===");
-        for (String key : env.keySet()) {
-            String value = env.get(key);
-            // Ispiši samo one koje su relevantne za bazu ili koje počinju sa prefiksom baze
-            if (key.contains("DATABASE") || key.contains("DB") || key.contains("POSTGRES") || 
-                key.startsWith("dev-db-") || key.contains("HOSTNAME") || key.contains("USERNAME") || 
-                key.contains("PASSWORD") || key.contains("PORT")) {
-                System.out.println("  " + key + " = " + (value != null && value.length() > 100 ? value.substring(0, 100) + "..." : value));
-            }
-        }
-        System.out.println("===================================");
+        System.out.println("=== Searching for Database Variables ===");
         
         // Traži varijable sa prefiksom baze (npr. dev-db-229452.HOSTNAME)
         String dbPrefix = null;
         for (String key : env.keySet()) {
-            if (key.contains(".HOSTNAME") || key.contains(".DATABASE") || key.contains(".USERNAME")) {
+            String value = env.get(key);
+            // Preskoči placeholder stringove
+            if (value != null && value.startsWith("${")) {
+                continue;
+            }
+            
+            // Traži HOSTNAME, DATABASE, USERNAME sa prefiksom baze
+            if ((key.contains(".HOSTNAME") || key.contains(".DATABASE") || key.contains(".USERNAME")) 
+                && !key.equals("HOSTNAME") && !key.equals("DATABASE") && !key.equals("USERNAME")) {
                 int dotIndex = key.lastIndexOf('.');
                 if (dotIndex > 0) {
                     dbPrefix = key.substring(0, dotIndex);
                     System.out.println("Found database prefix: " + dbPrefix);
                     break;
-                }
-            }
-        }
-        
-        // Ako nema prefiksa, pokušaj da pronađeš po imenu baze iz app.yaml (dev-db-229452)
-        if (dbPrefix == null) {
-            for (String key : env.keySet()) {
-                if (key.startsWith("dev-db-") && key.contains("DATABASE_URL")) {
-                    int dotIndex = key.lastIndexOf('.');
-                    if (dotIndex > 0) {
-                        dbPrefix = key.substring(0, dotIndex);
-                        System.out.println("Found database prefix from DATABASE_URL: " + dbPrefix);
-                        break;
-                    }
                 }
             }
         }
@@ -68,26 +52,40 @@ public class DatabaseConfig {
         
         // Ako imamo prefiks, traži varijable sa tim prefiksom
         if (dbPrefix != null) {
-            hostname = env.get(dbPrefix + ".HOSTNAME");
-            port = env.get(dbPrefix + ".PORT");
-            database = env.get(dbPrefix + ".DATABASE");
-            username = env.get(dbPrefix + ".USERNAME");
-            password = env.get(dbPrefix + ".PASSWORD");
-            databaseUrl = env.get(dbPrefix + ".DATABASE_URL");
-            
             System.out.println("Looking for variables with prefix: " + dbPrefix);
-            System.out.println("  HOSTNAME: " + (hostname != null ? hostname : "null"));
-            System.out.println("  PORT: " + (port != null ? port : "null"));
-            System.out.println("  DATABASE: " + (database != null ? database : "null"));
-            System.out.println("  USERNAME: " + (username != null ? username : "null"));
-            System.out.println("  PASSWORD: " + (password != null ? "[HIDDEN]" : "null"));
-            System.out.println("  DATABASE_URL: " + (databaseUrl != null && !databaseUrl.startsWith("${") ? (databaseUrl.length() > 50 ? databaseUrl.substring(0, 50) + "..." : databaseUrl) : "null or placeholder"));
+            for (String key : env.keySet()) {
+                String value = env.get(key);
+                // Preskoči placeholder stringove
+                if (value != null && value.startsWith("${")) {
+                    continue;
+                }
+                
+                if (key.equals(dbPrefix + ".HOSTNAME") || key.equals(dbPrefix + ".HOST")) {
+                    hostname = value;
+                    System.out.println("  Found HOSTNAME: " + hostname);
+                } else if (key.equals(dbPrefix + ".PORT")) {
+                    port = value;
+                    System.out.println("  Found PORT: " + port);
+                } else if (key.equals(dbPrefix + ".DATABASE") || key.equals(dbPrefix + ".DB_NAME")) {
+                    database = value;
+                    System.out.println("  Found DATABASE: " + database);
+                } else if (key.equals(dbPrefix + ".USERNAME") || key.equals(dbPrefix + ".USER")) {
+                    username = value;
+                    System.out.println("  Found USERNAME: " + username);
+                } else if (key.equals(dbPrefix + ".PASSWORD")) {
+                    password = value;
+                    System.out.println("  Found PASSWORD: [HIDDEN]");
+                } else if (key.equals(dbPrefix + ".DATABASE_URL")) {
+                    databaseUrl = value;
+                    System.out.println("  Found DATABASE_URL: " + (databaseUrl.length() > 50 ? databaseUrl.substring(0, 50) + "..." : databaseUrl));
+                }
+            }
         }
         
         // Ako imamo sve pojedinačne varijable, konstruiši JDBC URL
         if (hostname != null && port != null && database != null && username != null && password != null) {
             String jdbcUrl = String.format("jdbc:postgresql://%s:%s/%s", hostname, port, database);
-            System.out.println("Constructed JDBC URL from individual variables:");
+            System.out.println("✓ Constructed JDBC URL from individual variables:");
             System.out.println("  JDBC URL: " + jdbcUrl);
             System.out.println("  Username: " + username);
             
@@ -120,7 +118,7 @@ public class DatabaseConfig {
                 
                 String jdbcUrl = String.format("jdbc:postgresql://%s:%d/%s", host, dbPort, path);
                 
-                System.out.println("Parsed DATABASE_URL successfully:");
+                System.out.println("✓ Parsed DATABASE_URL successfully:");
                 System.out.println("  JDBC URL: " + jdbcUrl);
                 System.out.println("  Username: " + dbUsername);
                 
@@ -131,13 +129,21 @@ public class DatabaseConfig {
                     .driverClassName("org.postgresql.Driver")
                     .build();
             } catch (Exception e) {
-                System.err.println("Error parsing DATABASE_URL: " + e.getMessage());
+                System.err.println("✗ Error parsing DATABASE_URL: " + e.getMessage());
                 e.printStackTrace();
             }
         }
         
         // Fallback - koristi application.properties
-        System.out.println("No valid database configuration found, using application.properties");
+        System.out.println("✗ No valid database configuration found, using application.properties");
+        System.out.println("All environment variables containing 'db', 'database', or 'postgres':");
+        for (String key : env.keySet()) {
+            String lowerKey = key.toLowerCase();
+            if (lowerKey.contains("db") || lowerKey.contains("database") || lowerKey.contains("postgres")) {
+                String value = env.get(key);
+                System.out.println("  " + key + " = " + (value != null && value.length() > 100 ? value.substring(0, 100) + "..." : value));
+            }
+        }
         return builder.build();
     }
 }

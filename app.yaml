@@ -12,19 +12,9 @@ services:
     instance_count: 1
     instance_size_slug: basic-xxs
     envs:
-      # Digital Ocean automatski setuje ${db.DATABASE_URL} u formatu: postgresql://user:pass@host:port/dbname
-      # Spring Boot očekuje: jdbc:postgresql://host:port/dbname
-      # Koristimo direktno DATABASE_URL i parsiraćemo ga u application.properties
-      - key: DATABASE_URL
-        scope: RUN_TIME
-        value: ${db.DATABASE_URL}
-      # Takođe setujemo pojedinačne varijable za direktan pristup
-      - key: SPRING_DATASOURCE_USERNAME
-        scope: RUN_TIME
-        value: ${db.USERNAME}
-      - key: SPRING_DATASOURCE_PASSWORD
-        scope: RUN_TIME
-        value: ${db.PASSWORD}
+      # Digital Ocean automatski setuje varijable za bazu sa prefiksom imena baze
+      # (npr. dev-db-229452.DATABASE_URL, dev-db-229452.HOSTNAME, itd.)
+      # DatabaseConfig.java će automatski pronaći te varijable
       # JWT - OBAVEZNO setovati u App-Level Environment Variables!
       - key: APP_JWT_SECRET
         scope: RUN_TIME
