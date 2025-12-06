@@ -19,10 +19,79 @@ public class DatabaseConfig {
         
         Map<String, String> env = System.getenv();
         
-        // Ispiši sve environment variables za debug
         System.out.println("=== Searching for Database Variables ===");
         
-        // Traži varijable sa prefiksom baze (npr. dev-db-229452.HOSTNAME)
+        // PRVO: Proveri standardne environment variables koje korisnik može ručno setovati
+        String databaseUrl = env.get("DATABASE_URL");
+        String springDatasourceUrl = env.get("SPRING_DATASOURCE_URL");
+        String springDatasourceUsername = env.get("SPRING_DATASOURCE_USERNAME");
+        String springDatasourcePassword = env.get("SPRING_DATASOURCE_PASSWORD");
+        
+        // Preskoči placeholder stringove
+        if (databaseUrl != null && databaseUrl.startsWith("${")) {
+            databaseUrl = null;
+        }
+        if (springDatasourceUrl != null && springDatasourceUrl.startsWith("${")) {
+            springDatasourceUrl = null;
+        }
+        
+        System.out.println("Standard variables:");
+        System.out.println("  DATABASE_URL: " + (databaseUrl != null && !databaseUrl.startsWith("${") ? (databaseUrl.length() > 50 ? databaseUrl.substring(0, 50) + "..." : databaseUrl) : "null or placeholder"));
+        System.out.println("  SPRING_DATASOURCE_URL: " + (springDatasourceUrl != null ? springDatasourceUrl : "null"));
+        System.out.println("  SPRING_DATASOURCE_USERNAME: " + (springDatasourceUsername != null ? springDatasourceUsername : "null"));
+        System.out.println("  SPRING_DATASOURCE_PASSWORD: " + (springDatasourcePassword != null ? "[HIDDEN]" : "null"));
+        
+        // Ako postoji SPRING_DATASOURCE_URL (već u JDBC formatu), koristi ga direktno
+        if (springDatasourceUrl != null && !springDatasourceUrl.isEmpty()) {
+            System.out.println("✓ Using SPRING_DATASOURCE_URL directly");
+            return builder
+                .url(springDatasourceUrl)
+                .username(springDatasourceUsername != null ? springDatasourceUsername : "biozen")
+                .password(springDatasourcePassword != null ? springDatasourcePassword : "")
+                .driverClassName("org.postgresql.Driver")
+                .build();
+        }
+        
+        // Ako postoji DATABASE_URL (ne placeholder), parsiraj ga
+        if (databaseUrl != null && !databaseUrl.isEmpty() && !databaseUrl.startsWith("${")) {
+            try {
+                // Format: postgresql://user:pass@host:port/dbname
+                // Konvertuj u: jdbc:postgresql://host:port/dbname
+                URI dbUri = new URI(databaseUrl.replace("postgresql://", "http://"));
+                
+                String dbUsername = null;
+                String dbPassword = null;
+                if (dbUri.getUserInfo() != null) {
+                    String[] userInfo = dbUri.getUserInfo().split(":");
+                    dbUsername = userInfo[0];
+                    if (userInfo.length > 1) {
+                        dbPassword = userInfo[1];
+                    }
+                }
+                
+                String host = dbUri.getHost();
+                int dbPort = dbUri.getPort() == -1 ? 5432 : dbUri.getPort();
+                String path = dbUri.getPath().replaceFirst("/", "");
+                
+                String jdbcUrl = String.format("jdbc:postgresql://%s:%d/%s", host, dbPort, path);
+                
+                System.out.println("✓ Parsed DATABASE_URL successfully:");
+                System.out.println("  JDBC URL: " + jdbcUrl);
+                System.out.println("  Username: " + dbUsername);
+                
+                return builder
+                    .url(jdbcUrl)
+                    .username(dbUsername)
+                    .password(dbPassword)
+                    .driverClassName("org.postgresql.Driver")
+                    .build();
+            } catch (Exception e) {
+                System.err.println("✗ Error parsing DATABASE_URL: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+        
+        // DRUGO: Traži varijable sa prefiksom baze (Digital Ocean automatski format)
         String dbPrefix = null;
         for (String key : env.keySet()) {
             String value = env.get(key);
@@ -48,7 +117,6 @@ public class DatabaseConfig {
         String database = null;
         String username = null;
         String password = null;
-        String databaseUrl = null;
         
         // Ako imamo prefiks, traži varijable sa tim prefiksom
         if (dbPrefix != null) {
@@ -95,43 +163,6 @@ public class DatabaseConfig {
                 .password(password)
                 .driverClassName("org.postgresql.Driver")
                 .build();
-        }
-        
-        // Ako postoji DATABASE_URL (ne placeholder), parsiraj ga
-        if (databaseUrl != null && !databaseUrl.isEmpty() && !databaseUrl.startsWith("${")) {
-            try {
-                URI dbUri = new URI(databaseUrl.replace("postgresql://", "http://"));
-                
-                String dbUsername = null;
-                String dbPassword = null;
-                if (dbUri.getUserInfo() != null) {
-                    String[] userInfo = dbUri.getUserInfo().split(":");
-                    dbUsername = userInfo[0];
-                    if (userInfo.length > 1) {
-                        dbPassword = userInfo[1];
-                    }
-                }
-                
-                String host = dbUri.getHost();
-                int dbPort = dbUri.getPort() == -1 ? 5432 : dbUri.getPort();
-                String path = dbUri.getPath().replaceFirst("/", "");
-                
-                String jdbcUrl = String.format("jdbc:postgresql://%s:%d/%s", host, dbPort, path);
-                
-                System.out.println("✓ Parsed DATABASE_URL successfully:");
-                System.out.println("  JDBC URL: " + jdbcUrl);
-                System.out.println("  Username: " + dbUsername);
-                
-                return builder
-                    .url(jdbcUrl)
-                    .username(dbUsername)
-                    .password(dbPassword)
-                    .driverClassName("org.postgresql.Driver")
-                    .build();
-            } catch (Exception e) {
-                System.err.println("✗ Error parsing DATABASE_URL: " + e.getMessage());
-                e.printStackTrace();
-            }
         }
         
         // Fallback - koristi application.properties
