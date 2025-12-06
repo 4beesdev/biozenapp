@@ -1,11 +1,12 @@
 package com.example.app.config;
 
-
+// CORS je sada konfigurisan samo u SecurityConfig.java
+// Ova klasa je onemogućena da izbegnemo konflikte
+/*
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
 
 @Configuration
 public class CorsConfig {
@@ -24,3 +25,4 @@ public class CorsConfig {
         };
     }
 }
+*/
