@@ -1,6 +1,7 @@
 /Users/andrejdzakovic/Dropbox/BioZen/biozenapp/backend/src/main/java/com/example/app/MiniAppApplication.java
 /Users/andrejdzakovic/Dropbox/BioZen/biozenapp/backend/src/main/java/com/example/app/auth/AuthController.java
 /Users/andrejdzakovic/Dropbox/BioZen/biozenapp/backend/src/main/java/com/example/app/config/CorsConfig.java
+/Users/andrejdzakovic/Dropbox/BioZen/biozenapp/backend/src/main/java/com/example/app/config/DatabaseConfig.java
 /Users/andrejdzakovic/Dropbox/BioZen/biozenapp/backend/src/main/java/com/example/app/config/JwtAuthFilter.java
 /Users/andrejdzakovic/Dropbox/BioZen/biozenapp/backend/src/main/java/com/example/app/config/JwtService.java
 /Users/andrejdzakovic/Dropbox/BioZen/biozenapp/backend/src/main/java/com/example/app/config/SecurityBeans.java
