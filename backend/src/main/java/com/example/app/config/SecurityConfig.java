@@ -1,6 +1,7 @@
 package com.example.app.config;
 
 import com.example.app.config.JwtAuthFilter;
+import com.example.app.config.SimpleCorsFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,9 +19,11 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtFilter;
+    private final SimpleCorsFilter simpleCorsFilter;
 
-    public SecurityConfig(JwtAuthFilter jwtFilter) {
+    public SecurityConfig(JwtAuthFilter jwtFilter, SimpleCorsFilter simpleCorsFilter) {
         this.jwtFilter = jwtFilter;
+        this.simpleCorsFilter = simpleCorsFilter;
     }
 
     @Bean
@@ -34,7 +37,8 @@ public class SecurityConfig {
         );
         http.httpBasic(basic -> basic.disable());
         http.formLogin(form -> form.disable());
-        // CORS filter mora biti prvi
+        // CORS filter mora biti prvi - SimpleCorsFilter ima HIGHEST_PRECEDENCE
+        http.addFilterBefore(simpleCorsFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(corsFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
