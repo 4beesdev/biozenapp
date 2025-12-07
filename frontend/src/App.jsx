@@ -10,7 +10,7 @@ export default function App() {
   const [message, setMessage] = useState("");
   const [me, setMe] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [activeTab, setActiveTab] = useState("merenja"); // merenja | podaci | saveti | shop
+  const [activeTab, setActiveTab] = useState(null); // null = home, "merenja" | "podaci" | "saveti" | "shop"
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
@@ -509,7 +509,15 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
         paddingBottom: 20,
         borderBottom: "2px solid var(--brand-border)",
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div 
+          style={{ 
+            display: "flex", 
+            alignItems: "center", 
+            gap: 12,
+            cursor: activeTab !== null ? "pointer" : "default",
+          }}
+          onClick={() => activeTab !== null && setActiveTab(null)}
+        >
           <img 
             src="/logo.svg" 
             alt="BioZen Logo" 
@@ -560,6 +568,23 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
           borderRadius: 12,
           border: "1px solid var(--brand-border)",
         }}>
+          <button
+            onClick={() => setActiveTab(null)}
+            style={{
+              flex: 1,
+              padding: 14,
+              background: activeTab === null ? "var(--brand-gradient)" : "transparent",
+              color: activeTab === null ? "white" : "var(--brand-text)",
+              border: 0,
+              borderRadius: 6,
+              fontWeight: 600,
+              cursor: "pointer",
+              fontSize: 15,
+              transition: "all 0.2s",
+            }}
+          >
+            Home
+          </button>
           <button
             onClick={() => setActiveTab("merenja")}
             style={{
@@ -631,8 +656,158 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
         </div>
       )}
 
-      {/* Mobile: Ikonice */}
-      {isMobile && (
+      {/* Mobile: Home Screen sa ikonama */}
+      {isMobile && activeTab === null && (
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "60vh",
+          padding: "40px 20px",
+        }}>
+          <h2 style={{
+            margin: "0 0 40px 0",
+            fontSize: 24,
+            fontWeight: 600,
+            color: "var(--brand-primary)",
+            textAlign: "center",
+          }}>
+            Dobrodošli
+          </h2>
+          <div style={{ 
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: 20,
+            width: "100%",
+            maxWidth: 400,
+          }}>
+            <button
+              onClick={() => setActiveTab("merenja")}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "30px 20px",
+                background: "var(--brand-bg-light)",
+                color: "var(--brand-text)",
+                border: "1px solid var(--brand-border)",
+                borderRadius: 16,
+                fontWeight: 600,
+                cursor: "pointer",
+                fontSize: 14,
+                transition: "all 0.3s ease",
+                boxShadow: "0 2px 8px rgba(65, 101, 57, 0.1)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-4px)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(65, 101, 57, 0.2)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 2px 8px rgba(65, 101, 57, 0.1)";
+              }}
+            >
+              <span style={{ fontSize: 48, marginBottom: 12 }}>📊</span>
+              <span>Moja merenja</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("podaci")}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "30px 20px",
+                background: "var(--brand-bg-light)",
+                color: "var(--brand-text)",
+                border: "1px solid var(--brand-border)",
+                borderRadius: 16,
+                fontWeight: 600,
+                cursor: "pointer",
+                fontSize: 14,
+                transition: "all 0.3s ease",
+                boxShadow: "0 2px 8px rgba(65, 101, 57, 0.1)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-4px)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(65, 101, 57, 0.2)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 2px 8px rgba(65, 101, 57, 0.1)";
+              }}
+            >
+              <span style={{ fontSize: 48, marginBottom: 12 }}>👤</span>
+              <span>Moji podaci</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("saveti")}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "30px 20px",
+                background: "var(--brand-bg-light)",
+                color: "var(--brand-text)",
+                border: "1px solid var(--brand-border)",
+                borderRadius: 16,
+                fontWeight: 600,
+                cursor: "pointer",
+                fontSize: 14,
+                transition: "all 0.3s ease",
+                boxShadow: "0 2px 8px rgba(65, 101, 57, 0.1)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-4px)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(65, 101, 57, 0.2)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 2px 8px rgba(65, 101, 57, 0.1)";
+              }}
+            >
+              <span style={{ fontSize: 48, marginBottom: 12 }}>💡</span>
+              <span>Saveti</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("shop")}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "30px 20px",
+                background: "var(--brand-bg-light)",
+                color: "var(--brand-text)",
+                border: "1px solid var(--brand-border)",
+                borderRadius: 16,
+                fontWeight: 600,
+                cursor: "pointer",
+                fontSize: 14,
+                transition: "all 0.3s ease",
+                boxShadow: "0 2px 8px rgba(65, 101, 57, 0.1)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-4px)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(65, 101, 57, 0.2)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 2px 8px rgba(65, 101, 57, 0.1)";
+              }}
+            >
+              <span style={{ fontSize: 48, marginBottom: 12 }}>🛒</span>
+              <span>BioZen Shop</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile: Ikonice u header-u kada je tab otvoren (back button) */}
+      {isMobile && activeTab !== null && (
         <div style={{ 
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
@@ -730,7 +905,157 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
         </div>
       )}
 
-      {message && (
+      {/* Desktop: Home Screen */}
+      {!isMobile && activeTab === null && (
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "50vh",
+          padding: "60px 20px",
+        }}>
+          <h2 style={{
+            margin: "0 0 50px 0",
+            fontSize: 32,
+            fontWeight: 600,
+            color: "var(--brand-primary)",
+            textAlign: "center",
+          }}>
+            Dobrodošli u BioZen Tracker
+          </h2>
+          <div style={{ 
+            display: "grid",
+            gridTemplateColumns: "repeat(4, 1fr)",
+            gap: 24,
+            width: "100%",
+            maxWidth: 900,
+          }}>
+            <button
+              onClick={() => setActiveTab("merenja")}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "40px 24px",
+                background: "var(--brand-bg-light)",
+                color: "var(--brand-text)",
+                border: "1px solid var(--brand-border)",
+                borderRadius: 16,
+                fontWeight: 600,
+                cursor: "pointer",
+                fontSize: 15,
+                transition: "all 0.3s ease",
+                boxShadow: "0 2px 8px rgba(65, 101, 57, 0.1)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-4px)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(65, 101, 57, 0.2)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 2px 8px rgba(65, 101, 57, 0.1)";
+              }}
+            >
+              <span style={{ fontSize: 56, marginBottom: 16 }}>📊</span>
+              <span>Moja merenja</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("podaci")}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "40px 24px",
+                background: "var(--brand-bg-light)",
+                color: "var(--brand-text)",
+                border: "1px solid var(--brand-border)",
+                borderRadius: 16,
+                fontWeight: 600,
+                cursor: "pointer",
+                fontSize: 15,
+                transition: "all 0.3s ease",
+                boxShadow: "0 2px 8px rgba(65, 101, 57, 0.1)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-4px)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(65, 101, 57, 0.2)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 2px 8px rgba(65, 101, 57, 0.1)";
+              }}
+            >
+              <span style={{ fontSize: 56, marginBottom: 16 }}>👤</span>
+              <span>Moji podaci</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("saveti")}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "40px 24px",
+                background: "var(--brand-bg-light)",
+                color: "var(--brand-text)",
+                border: "1px solid var(--brand-border)",
+                borderRadius: 16,
+                fontWeight: 600,
+                cursor: "pointer",
+                fontSize: 15,
+                transition: "all 0.3s ease",
+                boxShadow: "0 2px 8px rgba(65, 101, 57, 0.1)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-4px)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(65, 101, 57, 0.2)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 2px 8px rgba(65, 101, 57, 0.1)";
+              }}
+            >
+              <span style={{ fontSize: 56, marginBottom: 16 }}>💡</span>
+              <span>Saveti</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("shop")}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "40px 24px",
+                background: "var(--brand-bg-light)",
+                color: "var(--brand-text)",
+                border: "1px solid var(--brand-border)",
+                borderRadius: 16,
+                fontWeight: 600,
+                cursor: "pointer",
+                fontSize: 15,
+                transition: "all 0.3s ease",
+                boxShadow: "0 2px 8px rgba(65, 101, 57, 0.1)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-4px)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(65, 101, 57, 0.2)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 2px 8px rgba(65, 101, 57, 0.1)";
+              }}
+            >
+              <span style={{ fontSize: 56, marginBottom: 16 }}>🛒</span>
+              <span>BioZen Shop</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {message && activeTab !== null && (
         <div
           style={{
             padding: 14,
