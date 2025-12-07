@@ -1663,80 +1663,194 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
           bottom: 0,
           left: 0,
           right: 0,
-          padding: isMobile ? "16px" : "20px",
+          padding: isMobile ? "20px 16px 16px 16px" : "24px 20px 20px 20px",
           background: "var(--brand-bg-light)",
           borderTop: "2px solid var(--brand-border)",
-          boxShadow: "0 -2px 8px rgba(65, 101, 57, 0.1)",
+          boxShadow: "0 -4px 12px rgba(65, 101, 57, 0.15)",
           zIndex: 1000,
+          borderRadius: "16px 16px 0 0",
         }}>
+          {/* Close button */}
+          <button
+            onClick={() => setShowInstallButton(false)}
+            style={{
+              position: "absolute",
+              top: 12,
+              right: 12,
+              background: "transparent",
+              border: 0,
+              fontSize: 20,
+              cursor: "pointer",
+              color: "var(--brand-text-light)",
+              padding: "4px 8px",
+              borderRadius: 4,
+              transition: "all 0.2s",
+              lineHeight: 1,
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.color = "var(--brand-text)";
+              e.target.style.background = "var(--brand-bg)";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.color = "var(--brand-text-light)";
+              e.target.style.background = "transparent";
+            }}
+            aria-label="Zatvori"
+          >
+            ×
+          </button>
+
           {isIOS ? (
             <div style={{
               textAlign: "center",
+              paddingRight: 32,
             }}>
-              <p style={{
-                margin: "0 0 12px 0",
-                color: "var(--brand-text)",
-                fontSize: 14,
-                fontWeight: 500,
-              }}>
-                Instaliraj BioZen app na home screen
-              </p>
               <div style={{
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 gap: 8,
-                color: "var(--brand-text-light)",
-                fontSize: 13,
+                marginBottom: 12,
               }}>
-                <span>1. Klikni</span>
-                <span style={{
-                  background: "var(--brand-bg)",
-                  padding: "4px 8px",
-                  borderRadius: 4,
+                <span style={{ fontSize: 24 }}>📱</span>
+                <h3 style={{
+                  margin: 0,
+                  color: "var(--brand-primary)",
+                  fontSize: 16,
                   fontWeight: 600,
-                }}>Share</span>
-                <span>2. Izaberi</span>
-                <span style={{
-                  background: "var(--brand-bg)",
-                  padding: "4px 8px",
-                  borderRadius: 4,
-                  fontWeight: 600,
-                }}>Add to Home Screen</span>
+                }}>
+                  Instaliraj BioZen app
+                </h3>
+              </div>
+              <p style={{
+                margin: "0 0 16px 0",
+                color: "var(--brand-text)",
+                fontSize: 14,
+                lineHeight: 1.5,
+              }}>
+                Dodaj aplikaciju na home screen za brži pristup
+              </p>
+              <div style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 8,
+                alignItems: "center",
+                background: "var(--brand-bg)",
+                padding: 12,
+                borderRadius: 8,
+                border: "1px solid var(--brand-border)",
+              }}>
+                <div style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  color: "var(--brand-text)",
+                  fontSize: 13,
+                }}>
+                  <span style={{
+                    background: "var(--brand-gradient)",
+                    color: "white",
+                    width: 24,
+                    height: 24,
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontWeight: 700,
+                    fontSize: 12,
+                  }}>1</span>
+                  <span>Klikni na</span>
+                  <span style={{
+                    background: "var(--brand-primary)",
+                    color: "white",
+                    padding: "4px 10px",
+                    borderRadius: 6,
+                    fontWeight: 600,
+                    fontSize: 12,
+                  }}>Share</span>
+                  <span style={{ fontSize: 18 }}>📤</span>
+                </div>
+                <div style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  color: "var(--brand-text)",
+                  fontSize: 13,
+                }}>
+                  <span style={{
+                    background: "var(--brand-gradient)",
+                    color: "white",
+                    width: 24,
+                    height: 24,
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontWeight: 700,
+                    fontSize: 12,
+                  }}>2</span>
+                  <span>Izaberi</span>
+                  <span style={{
+                    background: "var(--brand-primary)",
+                    color: "white",
+                    padding: "4px 10px",
+                    borderRadius: 6,
+                    fontWeight: 600,
+                    fontSize: 12,
+                  }}>Add to Home Screen</span>
+                  <span style={{ fontSize: 18 }}>➕</span>
+                </div>
               </div>
             </div>
           ) : (
-            <button
-              onClick={handleInstallClick}
-              style={{
-                width: "100%",
-                padding: isMobile ? "14px 20px" : "16px 24px",
-                background: "var(--brand-gradient)",
-                color: "white",
-                border: 0,
-                borderRadius: 8,
-                fontWeight: 600,
-                cursor: "pointer",
-                fontSize: isMobile ? 15 : 16,
-                transition: "all 0.3s ease",
-                boxShadow: "0 3px 8px rgba(65, 101, 57, 0.25)",
+            <div style={{ paddingRight: 32 }}>
+              <div style={{
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center",
                 gap: 8,
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.transform = "translateY(-2px)";
-                e.target.style.boxShadow = "0 5px 12px rgba(65, 101, 57, 0.35)";
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.transform = "translateY(0)";
-                e.target.style.boxShadow = "0 3px 8px rgba(65, 101, 57, 0.25)";
-              }}
-            >
-              <span>📱</span>
-              <span>Instaliraj BioZen app</span>
-            </button>
+                marginBottom: 12,
+              }}>
+                <span style={{ fontSize: 24 }}>📱</span>
+                <h3 style={{
+                  margin: 0,
+                  color: "var(--brand-primary)",
+                  fontSize: 16,
+                  fontWeight: 600,
+                }}>
+                  Instaliraj BioZen app
+                </h3>
+              </div>
+              <button
+                onClick={handleInstallClick}
+                style={{
+                  width: "100%",
+                  padding: isMobile ? "14px 20px" : "16px 24px",
+                  background: "var(--brand-gradient)",
+                  color: "white",
+                  border: 0,
+                  borderRadius: 8,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  fontSize: isMobile ? 15 : 16,
+                  transition: "all 0.3s ease",
+                  boxShadow: "0 3px 8px rgba(65, 101, 57, 0.25)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 8,
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.transform = "translateY(-2px)";
+                  e.target.style.boxShadow = "0 5px 12px rgba(65, 101, 57, 0.35)";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = "translateY(0)";
+                  e.target.style.boxShadow = "0 3px 8px rgba(65, 101, 57, 0.25)";
+                }}
+              >
+                <span>Instaliraj</span>
+              </button>
+            </div>
           )}
         </div>
       )}
