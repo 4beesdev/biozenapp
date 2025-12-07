@@ -10,7 +10,7 @@ export default function App() {
   const [message, setMessage] = useState("");
   const [me, setMe] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [activeTab, setActiveTab] = useState("podaci"); // podaci | merenja
+  const [activeTab, setActiveTab] = useState("podaci"); // podaci | merenja | saveti | shop
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
@@ -505,8 +505,8 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
       </div>
 
       <div style={{ 
-        display: "flex", 
-        flexDirection: isMobile ? "column" : "row",
+        display: "grid",
+        gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)",
         gap: isMobile ? 8 : 12, 
         marginBottom: 24,
         background: "var(--brand-bg-light)",
@@ -517,7 +517,6 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
         <button
           onClick={() => setActiveTab("podaci")}
           style={{
-            flex: 1,
             padding: isMobile ? 12 : 14,
             background: activeTab === "podaci" ? "var(--brand-gradient)" : "transparent",
             color: activeTab === "podaci" ? "white" : "var(--brand-text)",
@@ -525,7 +524,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
             borderRadius: 6,
             fontWeight: 600,
             cursor: "pointer",
-            fontSize: isMobile ? 14 : 15,
+            fontSize: isMobile ? 13 : 15,
             transition: "all 0.2s",
           }}
         >
@@ -534,7 +533,6 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
         <button
           onClick={() => setActiveTab("merenja")}
           style={{
-            flex: 1,
             padding: isMobile ? 12 : 14,
             background: activeTab === "merenja" ? "var(--brand-gradient)" : "transparent",
             color: activeTab === "merenja" ? "white" : "var(--brand-text)",
@@ -542,11 +540,43 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
             borderRadius: 6,
             fontWeight: 600,
             cursor: "pointer",
-            fontSize: isMobile ? 14 : 15,
+            fontSize: isMobile ? 13 : 15,
             transition: "all 0.2s",
           }}
         >
           Moja merenja
+        </button>
+        <button
+          onClick={() => setActiveTab("saveti")}
+          style={{
+            padding: isMobile ? 12 : 14,
+            background: activeTab === "saveti" ? "var(--brand-gradient)" : "transparent",
+            color: activeTab === "saveti" ? "white" : "var(--brand-text)",
+            border: 0,
+            borderRadius: 6,
+            fontWeight: 600,
+            cursor: "pointer",
+            fontSize: isMobile ? 13 : 15,
+            transition: "all 0.2s",
+          }}
+        >
+          Saveti
+        </button>
+        <button
+          onClick={() => setActiveTab("shop")}
+          style={{
+            padding: isMobile ? 12 : 14,
+            background: activeTab === "shop" ? "var(--brand-gradient)" : "transparent",
+            color: activeTab === "shop" ? "white" : "var(--brand-text)",
+            border: 0,
+            borderRadius: 6,
+            fontWeight: 600,
+            cursor: "pointer",
+            fontSize: isMobile ? 13 : 15,
+            transition: "all 0.2s",
+          }}
+        >
+          BioZen Shop
         </button>
       </div>
 
@@ -1321,6 +1351,142 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {activeTab === "saveti" && (
+        <div
+          style={{
+            border: "1px solid var(--brand-border)",
+            borderRadius: 10,
+            padding: isMobile ? 20 : 35,
+            background: "var(--brand-bg-light)",
+            boxShadow: "0 2px 8px rgba(65, 101, 57, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04)",
+          }}
+        >
+          <h2 style={{ 
+            marginTop: 0,
+            marginBottom: 32,
+            fontSize: isMobile ? 20 : 24,
+            fontWeight: 600,
+            color: "var(--brand-primary)",
+            letterSpacing: "-0.3px",
+          }}>Saveti za skidanje kilograma</h2>
+          
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+            gap: isMobile ? 24 : 32,
+          }}>
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+              <div
+                key={num}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  textAlign: "center",
+                  padding: isMobile ? 20 : 24,
+                  background: "var(--brand-bg)",
+                  borderRadius: 12,
+                  border: "1px solid var(--brand-border)",
+                  transition: "all 0.3s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-4px)";
+                  e.currentTarget.style.boxShadow = "0 4px 12px rgba(65, 101, 57, 0.15)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "none";
+                }}
+              >
+                <div style={{
+                  width: isMobile ? 64 : 80,
+                  height: isMobile ? 64 : 80,
+                  background: "var(--brand-gradient)",
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: 16,
+                  fontSize: isMobile ? 32 : 40,
+                  color: "white",
+                  fontWeight: 700,
+                }}>
+                  {num}
+                </div>
+                <p style={{
+                  margin: 0,
+                  color: "var(--brand-text)",
+                  fontSize: isMobile ? 14 : 15,
+                  fontWeight: 500,
+                  lineHeight: 1.5,
+                }}>
+                  Opis saveta {num} - ovde će biti tekst kada dodate ikonice
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {activeTab === "shop" && (
+        <div
+          style={{
+            border: "1px solid var(--brand-border)",
+            borderRadius: 10,
+            padding: isMobile ? 20 : 35,
+            background: "var(--brand-bg-light)",
+            boxShadow: "0 2px 8px rgba(65, 101, 57, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04)",
+            textAlign: "center",
+          }}
+        >
+          <h2 style={{ 
+            marginTop: 0,
+            marginBottom: 16,
+            fontSize: isMobile ? 20 : 24,
+            fontWeight: 600,
+            color: "var(--brand-primary)",
+            letterSpacing: "-0.3px",
+          }}>BioZen Shop</h2>
+          
+          <p style={{
+            marginBottom: 32,
+            color: "var(--brand-text-light)",
+            fontSize: isMobile ? 15 : 16,
+            lineHeight: 1.6,
+          }}>
+            Otkrijte našu ponudu proizvoda za zdrav način života i mršavljenje
+          </p>
+
+          <a
+            href="https://cajzamrsavljenje.rs/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-block",
+              padding: isMobile ? "14px 28px" : "16px 32px",
+              background: "var(--brand-gradient)",
+              color: "white",
+              textDecoration: "none",
+              borderRadius: 8,
+              fontWeight: 600,
+              fontSize: isMobile ? 15 : 16,
+              transition: "all 0.3s ease",
+              boxShadow: "0 3px 8px rgba(65, 101, 57, 0.25)",
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-2px)";
+              e.target.style.boxShadow = "0 5px 12px rgba(65, 101, 57, 0.35)";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(0)";
+              e.target.style.boxShadow = "0 3px 8px rgba(65, 101, 57, 0.25)";
+            }}
+          >
+            Posetite naš shop →
+          </a>
         </div>
       )}
     </div>
