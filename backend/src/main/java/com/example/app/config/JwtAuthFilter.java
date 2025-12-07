@@ -30,14 +30,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         // CORS headers - dodaj uvek (PRVO, pre bilo čega)
         String origin = request.getHeader("Origin");
-        if (origin != null) {
+        if (origin != null && !origin.isEmpty()) {
             response.setHeader("Access-Control-Allow-Origin", origin);
+            response.setHeader("Access-Control-Allow-Credentials", "true");
         } else {
             response.setHeader("Access-Control-Allow-Origin", "*");
+            // Ne može credentials sa wildcard
         }
         response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, X-Requested-With");
-        response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Max-Age", "3600");
 
         // Handle preflight OPTIONS request
