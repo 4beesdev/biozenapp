@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from "recharts";
 import html2canvas from "html2canvas";
 import "./brand.css";
 
@@ -1538,6 +1538,21 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                     <Legend 
                       wrapperStyle={{ color: 'var(--brand-text)' }}
                     />
+                    {me?.kilaza && parseFloat(me.kilaza) > 0 && (
+                      <ReferenceLine 
+                        y={parseFloat(me.kilaza)} 
+                        stroke="#8b5cf6" 
+                        strokeWidth={2}
+                        strokeDasharray="5 5"
+                        label={{ 
+                          value: `Trenutna kilaža: ${parseFloat(me.kilaza).toFixed(1)} kg`, 
+                          position: "topRight",
+                          fill: '#8b5cf6',
+                          fontSize: 12,
+                          fontWeight: 600,
+                        }}
+                      />
+                    )}
                     <Line 
                       type="monotone" 
                       dataKey="kilaza" 
