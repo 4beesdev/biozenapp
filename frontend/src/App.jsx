@@ -1544,13 +1544,6 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                         stroke="#8b5cf6" 
                         strokeWidth={2}
                         strokeDasharray="5 5"
-                        label={{ 
-                          value: `Trenutna kilaža: ${parseFloat(me.kilaza).toFixed(1)} kg`, 
-                          position: "topRight",
-                          fill: '#8b5cf6',
-                          fontSize: 12,
-                          fontWeight: 600,
-                        }}
                       />
                     )}
                     <Line 
