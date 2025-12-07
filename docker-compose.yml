@@ -44,7 +44,7 @@ services:
       dockerfile: Dockerfile
     container_name: biozen-frontend
     ports:
-      - "80:80"
+      - "8081:80"  # Promenjeno sa 80:80 na 8081:80 da nginx može da sluša na portu 80
     depends_on:
       - backend
     networks:
