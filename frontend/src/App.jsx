@@ -301,6 +301,8 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
   const [measurementMessage, setMeasurementMessage] = useState("");
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallButton, setShowInstallButton] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
   const chartRef = useRef(null);
   const isMobile = isMobileProp !== undefined ? isMobileProp : window.innerWidth <= 768;
 
@@ -325,12 +327,29 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
 
   // PWA Install prompt
   useEffect(() => {
+    // Proveri da li je iOS
+    const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    setIsIOS(iOS);
+    
+    // Proveri da li je već instalirano (standalone mode)
+    const standalone = window.matchMedia('(display-mode: standalone)').matches || 
+                       (window.navigator.standalone) || 
+                       document.referrer.includes('android-app://');
+    setIsStandalone(standalone);
+    
+    // Za Chrome/Edge/Android - koristi beforeinstallprompt
     const handler = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
       setShowInstallButton(true);
     };
     window.addEventListener('beforeinstallprompt', handler);
+    
+    // Za Safari/iOS - prikaži dugme ako nije instalirano
+    if (iOS && !standalone) {
+      setShowInstallButton(true);
+    }
+    
     return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
 
@@ -1638,7 +1657,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
       )}
 
       {/* PWA Install Button */}
-      {showInstallButton && isMobile && (
+      {showInstallButton && isMobile && !isStandalone && (
         <div style={{
           position: "fixed",
           bottom: 0,
@@ -1650,37 +1669,75 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
           boxShadow: "0 -2px 8px rgba(65, 101, 57, 0.1)",
           zIndex: 1000,
         }}>
-          <button
-            onClick={handleInstallClick}
-            style={{
-              width: "100%",
-              padding: isMobile ? "14px 20px" : "16px 24px",
-              background: "var(--brand-gradient)",
-              color: "white",
-              border: 0,
-              borderRadius: 8,
-              fontWeight: 600,
-              cursor: "pointer",
-              fontSize: isMobile ? 15 : 16,
-              transition: "all 0.3s ease",
-              boxShadow: "0 3px 8px rgba(65, 101, 57, 0.25)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 8,
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.transform = "translateY(-2px)";
-              e.target.style.boxShadow = "0 5px 12px rgba(65, 101, 57, 0.35)";
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.transform = "translateY(0)";
-              e.target.style.boxShadow = "0 3px 8px rgba(65, 101, 57, 0.25)";
-            }}
-          >
-            <span>📱</span>
-            <span>Instaliraj BioZen app</span>
-          </button>
+          {isIOS ? (
+            <div style={{
+              textAlign: "center",
+            }}>
+              <p style={{
+                margin: "0 0 12px 0",
+                color: "var(--brand-text)",
+                fontSize: 14,
+                fontWeight: 500,
+              }}>
+                Instaliraj BioZen app na home screen
+              </p>
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+                color: "var(--brand-text-light)",
+                fontSize: 13,
+              }}>
+                <span>1. Klikni</span>
+                <span style={{
+                  background: "var(--brand-bg)",
+                  padding: "4px 8px",
+                  borderRadius: 4,
+                  fontWeight: 600,
+                }}>Share</span>
+                <span>2. Izaberi</span>
+                <span style={{
+                  background: "var(--brand-bg)",
+                  padding: "4px 8px",
+                  borderRadius: 4,
+                  fontWeight: 600,
+                }}>Add to Home Screen</span>
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={handleInstallClick}
+              style={{
+                width: "100%",
+                padding: isMobile ? "14px 20px" : "16px 24px",
+                background: "var(--brand-gradient)",
+                color: "white",
+                border: 0,
+                borderRadius: 8,
+                fontWeight: 600,
+                cursor: "pointer",
+                fontSize: isMobile ? 15 : 16,
+                transition: "all 0.3s ease",
+                boxShadow: "0 3px 8px rgba(65, 101, 57, 0.25)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = "translateY(-2px)";
+                e.target.style.boxShadow = "0 5px 12px rgba(65, 101, 57, 0.35)";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = "translateY(0)";
+                e.target.style.boxShadow = "0 3px 8px rgba(65, 101, 57, 0.25)";
+              }}
+            >
+              <span>📱</span>
+              <span>Instaliraj BioZen app</span>
+            </button>
+          )}
         </div>
       )}
     </div>
