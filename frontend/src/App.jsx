@@ -10,7 +10,7 @@ export default function App() {
   const [message, setMessage] = useState("");
   const [me, setMe] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [activeTab, setActiveTab] = useState("podaci"); // podaci | merenja | saveti | shop
+  const [activeTab, setActiveTab] = useState("merenja"); // merenja | podaci | saveti | shop
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
@@ -504,81 +504,186 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
         </button>
       </div>
 
-      <div style={{ 
-        display: "grid",
-        gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)",
-        gap: isMobile ? 8 : 12, 
-        marginBottom: 24,
-        background: "var(--brand-bg-light)",
-        padding: 4,
-        borderRadius: 12,
-        border: "1px solid var(--brand-border)",
-      }}>
-        <button
-          onClick={() => setActiveTab("podaci")}
-          style={{
-            padding: isMobile ? 12 : 14,
-            background: activeTab === "podaci" ? "var(--brand-gradient)" : "transparent",
-            color: activeTab === "podaci" ? "white" : "var(--brand-text)",
-            border: 0,
-            borderRadius: 6,
-            fontWeight: 600,
-            cursor: "pointer",
-            fontSize: isMobile ? 13 : 15,
-            transition: "all 0.2s",
-          }}
-        >
-          Moji podaci
-        </button>
-        <button
-          onClick={() => setActiveTab("merenja")}
-          style={{
-            padding: isMobile ? 12 : 14,
-            background: activeTab === "merenja" ? "var(--brand-gradient)" : "transparent",
-            color: activeTab === "merenja" ? "white" : "var(--brand-text)",
-            border: 0,
-            borderRadius: 6,
-            fontWeight: 600,
-            cursor: "pointer",
-            fontSize: isMobile ? 13 : 15,
-            transition: "all 0.2s",
-          }}
-        >
-          Moja merenja
-        </button>
-        <button
-          onClick={() => setActiveTab("saveti")}
-          style={{
-            padding: isMobile ? 12 : 14,
-            background: activeTab === "saveti" ? "var(--brand-gradient)" : "transparent",
-            color: activeTab === "saveti" ? "white" : "var(--brand-text)",
-            border: 0,
-            borderRadius: 6,
-            fontWeight: 600,
-            cursor: "pointer",
-            fontSize: isMobile ? 13 : 15,
-            transition: "all 0.2s",
-          }}
-        >
-          Saveti
-        </button>
-        <button
-          onClick={() => setActiveTab("shop")}
-          style={{
-            padding: isMobile ? 12 : 14,
-            background: activeTab === "shop" ? "var(--brand-gradient)" : "transparent",
-            color: activeTab === "shop" ? "white" : "var(--brand-text)",
-            border: 0,
-            borderRadius: 6,
-            fontWeight: 600,
-            cursor: "pointer",
-            fontSize: isMobile ? 13 : 15,
-            transition: "all 0.2s",
-          }}
-        >
-          BioZen Shop
-        </button>
-      </div>
+      {/* Desktop: Tabovi */}
+      {!isMobile && (
+        <div style={{ 
+          display: "flex",
+          gap: 12, 
+          marginBottom: 24,
+          background: "var(--brand-bg-light)",
+          padding: 4,
+          borderRadius: 12,
+          border: "1px solid var(--brand-border)",
+        }}>
+          <button
+            onClick={() => setActiveTab("merenja")}
+            style={{
+              flex: 1,
+              padding: 14,
+              background: activeTab === "merenja" ? "var(--brand-gradient)" : "transparent",
+              color: activeTab === "merenja" ? "white" : "var(--brand-text)",
+              border: 0,
+              borderRadius: 6,
+              fontWeight: 600,
+              cursor: "pointer",
+              fontSize: 15,
+              transition: "all 0.2s",
+            }}
+          >
+            Moja merenja
+          </button>
+          <button
+            onClick={() => setActiveTab("podaci")}
+            style={{
+              flex: 1,
+              padding: 14,
+              background: activeTab === "podaci" ? "var(--brand-gradient)" : "transparent",
+              color: activeTab === "podaci" ? "white" : "var(--brand-text)",
+              border: 0,
+              borderRadius: 6,
+              fontWeight: 600,
+              cursor: "pointer",
+              fontSize: 15,
+              transition: "all 0.2s",
+            }}
+          >
+            Moji podaci
+          </button>
+          <button
+            onClick={() => setActiveTab("saveti")}
+            style={{
+              flex: 1,
+              padding: 14,
+              background: activeTab === "saveti" ? "var(--brand-gradient)" : "transparent",
+              color: activeTab === "saveti" ? "white" : "var(--brand-text)",
+              border: 0,
+              borderRadius: 6,
+              fontWeight: 600,
+              cursor: "pointer",
+              fontSize: 15,
+              transition: "all 0.2s",
+            }}
+          >
+            Saveti
+          </button>
+          <button
+            onClick={() => setActiveTab("shop")}
+            style={{
+              flex: 1,
+              padding: 14,
+              background: activeTab === "shop" ? "var(--brand-gradient)" : "transparent",
+              color: activeTab === "shop" ? "white" : "var(--brand-text)",
+              border: 0,
+              borderRadius: 6,
+              fontWeight: 600,
+              cursor: "pointer",
+              fontSize: 15,
+              transition: "all 0.2s",
+            }}
+          >
+            BioZen Shop
+          </button>
+        </div>
+      )}
+
+      {/* Mobile: Ikonice */}
+      {isMobile && (
+        <div style={{ 
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 16, 
+          marginBottom: 24,
+        }}>
+          <button
+            onClick={() => setActiveTab("merenja")}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "20px 12px",
+              background: activeTab === "merenja" ? "var(--brand-gradient)" : "var(--brand-bg-light)",
+              color: activeTab === "merenja" ? "white" : "var(--brand-text)",
+              border: activeTab === "merenja" ? "none" : "1px solid var(--brand-border)",
+              borderRadius: 12,
+              fontWeight: 600,
+              cursor: "pointer",
+              fontSize: 14,
+              transition: "all 0.2s",
+              boxShadow: activeTab === "merenja" ? "0 3px 8px rgba(65, 101, 57, 0.25)" : "none",
+            }}
+          >
+            <span style={{ fontSize: 32, marginBottom: 8 }}>📊</span>
+            <span>Moja merenja</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("podaci")}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "20px 12px",
+              background: activeTab === "podaci" ? "var(--brand-gradient)" : "var(--brand-bg-light)",
+              color: activeTab === "podaci" ? "white" : "var(--brand-text)",
+              border: activeTab === "podaci" ? "none" : "1px solid var(--brand-border)",
+              borderRadius: 12,
+              fontWeight: 600,
+              cursor: "pointer",
+              fontSize: 14,
+              transition: "all 0.2s",
+              boxShadow: activeTab === "podaci" ? "0 3px 8px rgba(65, 101, 57, 0.25)" : "none",
+            }}
+          >
+            <span style={{ fontSize: 32, marginBottom: 8 }}>👤</span>
+            <span>Moji podaci</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("saveti")}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "20px 12px",
+              background: activeTab === "saveti" ? "var(--brand-gradient)" : "var(--brand-bg-light)",
+              color: activeTab === "saveti" ? "white" : "var(--brand-text)",
+              border: activeTab === "saveti" ? "none" : "1px solid var(--brand-border)",
+              borderRadius: 12,
+              fontWeight: 600,
+              cursor: "pointer",
+              fontSize: 14,
+              transition: "all 0.2s",
+              boxShadow: activeTab === "saveti" ? "0 3px 8px rgba(65, 101, 57, 0.25)" : "none",
+            }}
+          >
+            <span style={{ fontSize: 32, marginBottom: 8 }}>💡</span>
+            <span>Saveti</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("shop")}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "20px 12px",
+              background: activeTab === "shop" ? "var(--brand-gradient)" : "var(--brand-bg-light)",
+              color: activeTab === "shop" ? "white" : "var(--brand-text)",
+              border: activeTab === "shop" ? "none" : "1px solid var(--brand-border)",
+              borderRadius: 12,
+              fontWeight: 600,
+              cursor: "pointer",
+              fontSize: 14,
+              transition: "all 0.2s",
+              boxShadow: activeTab === "shop" ? "0 3px 8px rgba(65, 101, 57, 0.25)" : "none",
+            }}
+          >
+            <span style={{ fontSize: 32, marginBottom: 8 }}>🛒</span>
+            <span>BioZen Shop</span>
+          </button>
+        </div>
+      )}
 
       {message && (
         <div
@@ -594,246 +699,6 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
           }}
         >
           {message}
-        </div>
-      )}
-
-      {activeTab === "podaci" && (
-        <div
-          style={{
-            border: "1px solid var(--brand-border)",
-            borderRadius: 10,
-            padding: 35,
-            background: "var(--brand-bg-light)",
-            boxShadow: "0 2px 8px rgba(65, 101, 57, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04)",
-          }}
-        >
-          <h2 style={{ 
-            marginTop: 0,
-            marginBottom: 24,
-            color: "var(--brand-text)",
-              fontSize: 24,
-              fontWeight: 600,
-              color: "var(--brand-primary)",
-              letterSpacing: "-0.3px",
-            }}>Moji podaci</h2>
-          <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: 20 }}>
-              <label style={{ 
-                display: "block", 
-                marginBottom: 8, 
-                fontWeight: 600,
-                color: "var(--brand-text)",
-                fontSize: 14,
-              }}>
-                Ime
-              </label>
-              <input
-                type="text"
-                value={formData.ime}
-                onChange={(e) => setFormData({ ...formData, ime: e.target.value })}
-                style={{ 
-                  width: "100%", 
-                  padding: 12, 
-              borderRadius: 6,
-              border: "1px solid var(--brand-border)",
-              boxSizing: "border-box",
-              fontSize: 15,
-              transition: "all 0.2s",
-              background: "var(--brand-bg-light)",
-                }}
-                onFocus={(e) => e.target.style.borderColor = "var(--brand-primary)"}
-                onBlur={(e) => e.target.style.borderColor = "var(--brand-border)"}
-                placeholder="Unesite ime"
-              />
-            </div>
-
-            <div style={{ marginBottom: 20 }}>
-              <label style={{ 
-                display: "block", 
-                marginBottom: 8, 
-                fontWeight: 600,
-                color: "var(--brand-text)",
-                fontSize: 14,
-              }}>
-                Prezime
-              </label>
-              <input
-                type="text"
-                value={formData.prezime}
-                onChange={(e) => setFormData({ ...formData, prezime: e.target.value })}
-                style={{ 
-                  width: "100%", 
-                  padding: 12, 
-              borderRadius: 6,
-              border: "1px solid var(--brand-border)",
-              boxSizing: "border-box",
-              fontSize: 15,
-              transition: "all 0.2s",
-              background: "var(--brand-bg-light)",
-                }}
-                onFocus={(e) => e.target.style.borderColor = "var(--brand-primary)"}
-                onBlur={(e) => e.target.style.borderColor = "var(--brand-border)"}
-                placeholder="Unesite prezime"
-              />
-            </div>
-
-            <div style={{ marginBottom: 20 }}>
-              <label style={{ 
-                display: "block", 
-                marginBottom: 8, 
-                fontWeight: 600,
-                color: "var(--brand-text)",
-                fontSize: 14,
-              }}>
-                Pol
-              </label>
-              <select
-                value={formData.pol}
-                onChange={(e) => setFormData({ ...formData, pol: e.target.value })}
-                style={{ 
-                  width: "100%", 
-                  padding: 12, 
-              borderRadius: 6,
-              border: "1px solid var(--brand-border)",
-              boxSizing: "border-box",
-              fontSize: 15,
-              transition: "all 0.2s",
-              background: "var(--brand-bg-light)",
-                  background: "var(--brand-bg-light)",
-                }}
-                onFocus={(e) => e.target.style.borderColor = "var(--brand-primary)"}
-                onBlur={(e) => e.target.style.borderColor = "var(--brand-border)"}
-              >
-                <option value="">Izaberite pol</option>
-                <option value="M">Muški</option>
-                <option value="Ž">Ženski</option>
-                <option value="Drugo">Drugo</option>
-              </select>
-            </div>
-
-            <div style={{ marginBottom: 20 }}>
-              <label style={{ 
-                display: "block", 
-                marginBottom: 8, 
-                fontWeight: 600,
-                color: "var(--brand-text)",
-                fontSize: 14,
-              }}>
-                Starost
-              </label>
-              <input
-                type="number"
-                value={formData.starost}
-                onChange={(e) => setFormData({ ...formData, starost: e.target.value })}
-                style={{ 
-                  width: "100%", 
-                  padding: 12, 
-              borderRadius: 6,
-              border: "1px solid var(--brand-border)",
-              boxSizing: "border-box",
-              fontSize: 15,
-              transition: "all 0.2s",
-              background: "var(--brand-bg-light)",
-                }}
-                onFocus={(e) => e.target.style.borderColor = "var(--brand-primary)"}
-                onBlur={(e) => e.target.style.borderColor = "var(--brand-border)"}
-                placeholder="Unesite starost"
-                min="1"
-                max="150"
-              />
-            </div>
-
-            <div style={{ marginBottom: 20 }}>
-              <label style={{ 
-                display: "block", 
-                marginBottom: 8, 
-                fontWeight: 600,
-                color: "var(--brand-text)",
-                fontSize: 14,
-              }}>
-                Kilaža (kg)
-              </label>
-              <input
-                type="number"
-                step="0.1"
-                value={formData.kilaza}
-                onChange={(e) => setFormData({ ...formData, kilaza: e.target.value })}
-                style={{ 
-                  width: "100%", 
-                  padding: 12, 
-              borderRadius: 6,
-              border: "1px solid var(--brand-border)",
-              boxSizing: "border-box",
-              fontSize: 15,
-              transition: "all 0.2s",
-              background: "var(--brand-bg-light)",
-                }}
-                onFocus={(e) => e.target.style.borderColor = "var(--brand-primary)"}
-                onBlur={(e) => e.target.style.borderColor = "var(--brand-border)"}
-                placeholder="Unesite trenutnu kilažu"
-                min="0"
-              />
-            </div>
-
-            <div style={{ marginBottom: 24 }}>
-              <label style={{ 
-                display: "block", 
-                marginBottom: 8, 
-                fontWeight: 600,
-                color: "var(--brand-text)",
-                fontSize: 14,
-              }}>
-                Željena kilaža (kg)
-              </label>
-              <input
-                type="number"
-                step="0.1"
-                value={formData.zeljenaKilaza}
-                onChange={(e) => setFormData({ ...formData, zeljenaKilaza: e.target.value })}
-                style={{ 
-                  width: "100%", 
-                  padding: 12, 
-              borderRadius: 6,
-              border: "1px solid var(--brand-border)",
-              boxSizing: "border-box",
-              fontSize: 15,
-              transition: "all 0.2s",
-              background: "var(--brand-bg-light)",
-                }}
-                onFocus={(e) => e.target.style.borderColor = "var(--brand-primary)"}
-                onBlur={(e) => e.target.style.borderColor = "var(--brand-border)"}
-                placeholder="Unesite željenu kilažu"
-                min="0"
-              />
-            </div>
-
-            <button
-              type="submit"
-              style={{
-                width: "100%",
-                padding: 14,
-                background: "var(--brand-gradient)",
-                color: "white",
-                border: 0,
-                borderRadius: 8,
-                fontWeight: 600,
-                cursor: "pointer",
-                fontSize: 16,
-                transition: "transform 0.2s, box-shadow 0.2s",
-                boxShadow: "0 4px 6px -1px rgba(16, 185, 129, 0.3)",
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.transform = "translateY(-2px)";
-                e.target.style.boxShadow = "0 5px 12px rgba(65, 101, 57, 0.35)";
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.transform = "translateY(0)";
-                e.target.style.boxShadow = "0 3px 8px rgba(65, 101, 57, 0.25)";
-              }}
-            >
-              Sačuvaj podatke
-            </button>
-          </form>
         </div>
       )}
 
@@ -1354,6 +1219,246 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
         </div>
       )}
 
+      {activeTab === "podaci" && (
+        <div
+          style={{
+            border: "1px solid var(--brand-border)",
+            borderRadius: 10,
+            padding: 35,
+            background: "var(--brand-bg-light)",
+            boxShadow: "0 2px 8px rgba(65, 101, 57, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04)",
+          }}
+        >
+          <h2 style={{ 
+            marginTop: 0,
+            marginBottom: 24,
+            color: "var(--brand-text)",
+              fontSize: 24,
+              fontWeight: 600,
+              color: "var(--brand-primary)",
+              letterSpacing: "-0.3px",
+            }}>Moji podaci</h2>
+          <form onSubmit={handleSubmit}>
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ 
+                display: "block", 
+                marginBottom: 8, 
+                fontWeight: 600,
+                color: "var(--brand-text)",
+                fontSize: 14,
+              }}>
+                Ime
+              </label>
+              <input
+                type="text"
+                value={formData.ime}
+                onChange={(e) => setFormData({ ...formData, ime: e.target.value })}
+                style={{ 
+                  width: "100%", 
+                  padding: 12, 
+              borderRadius: 6,
+              border: "1px solid var(--brand-border)",
+              boxSizing: "border-box",
+              fontSize: 15,
+              transition: "all 0.2s",
+              background: "var(--brand-bg-light)",
+                }}
+                onFocus={(e) => e.target.style.borderColor = "var(--brand-primary)"}
+                onBlur={(e) => e.target.style.borderColor = "var(--brand-border)"}
+                placeholder="Unesite ime"
+              />
+            </div>
+
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ 
+                display: "block", 
+                marginBottom: 8, 
+                fontWeight: 600,
+                color: "var(--brand-text)",
+                fontSize: 14,
+              }}>
+                Prezime
+              </label>
+              <input
+                type="text"
+                value={formData.prezime}
+                onChange={(e) => setFormData({ ...formData, prezime: e.target.value })}
+                style={{ 
+                  width: "100%", 
+                  padding: 12, 
+              borderRadius: 6,
+              border: "1px solid var(--brand-border)",
+              boxSizing: "border-box",
+              fontSize: 15,
+              transition: "all 0.2s",
+              background: "var(--brand-bg-light)",
+                }}
+                onFocus={(e) => e.target.style.borderColor = "var(--brand-primary)"}
+                onBlur={(e) => e.target.style.borderColor = "var(--brand-border)"}
+                placeholder="Unesite prezime"
+              />
+            </div>
+
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ 
+                display: "block", 
+                marginBottom: 8, 
+                fontWeight: 600,
+                color: "var(--brand-text)",
+                fontSize: 14,
+              }}>
+                Pol
+              </label>
+              <select
+                value={formData.pol}
+                onChange={(e) => setFormData({ ...formData, pol: e.target.value })}
+                style={{ 
+                  width: "100%", 
+                  padding: 12, 
+              borderRadius: 6,
+              border: "1px solid var(--brand-border)",
+              boxSizing: "border-box",
+              fontSize: 15,
+              transition: "all 0.2s",
+              background: "var(--brand-bg-light)",
+                  background: "var(--brand-bg-light)",
+                }}
+                onFocus={(e) => e.target.style.borderColor = "var(--brand-primary)"}
+                onBlur={(e) => e.target.style.borderColor = "var(--brand-border)"}
+              >
+                <option value="">Izaberite pol</option>
+                <option value="M">Muški</option>
+                <option value="Ž">Ženski</option>
+                <option value="Drugo">Drugo</option>
+              </select>
+            </div>
+
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ 
+                display: "block", 
+                marginBottom: 8, 
+                fontWeight: 600,
+                color: "var(--brand-text)",
+                fontSize: 14,
+              }}>
+                Starost
+              </label>
+              <input
+                type="number"
+                value={formData.starost}
+                onChange={(e) => setFormData({ ...formData, starost: e.target.value })}
+                style={{ 
+                  width: "100%", 
+                  padding: 12, 
+              borderRadius: 6,
+              border: "1px solid var(--brand-border)",
+              boxSizing: "border-box",
+              fontSize: 15,
+              transition: "all 0.2s",
+              background: "var(--brand-bg-light)",
+                }}
+                onFocus={(e) => e.target.style.borderColor = "var(--brand-primary)"}
+                onBlur={(e) => e.target.style.borderColor = "var(--brand-border)"}
+                placeholder="Unesite starost"
+                min="1"
+                max="150"
+              />
+            </div>
+
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ 
+                display: "block", 
+                marginBottom: 8, 
+                fontWeight: 600,
+                color: "var(--brand-text)",
+                fontSize: 14,
+              }}>
+                Kilaža (kg)
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                value={formData.kilaza}
+                onChange={(e) => setFormData({ ...formData, kilaza: e.target.value })}
+                style={{ 
+                  width: "100%", 
+                  padding: 12, 
+              borderRadius: 6,
+              border: "1px solid var(--brand-border)",
+              boxSizing: "border-box",
+              fontSize: 15,
+              transition: "all 0.2s",
+              background: "var(--brand-bg-light)",
+                }}
+                onFocus={(e) => e.target.style.borderColor = "var(--brand-primary)"}
+                onBlur={(e) => e.target.style.borderColor = "var(--brand-border)"}
+                placeholder="Unesite trenutnu kilažu"
+                min="0"
+              />
+            </div>
+
+            <div style={{ marginBottom: 24 }}>
+              <label style={{ 
+                display: "block", 
+                marginBottom: 8, 
+                fontWeight: 600,
+                color: "var(--brand-text)",
+                fontSize: 14,
+              }}>
+                Željena kilaža (kg)
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                value={formData.zeljenaKilaza}
+                onChange={(e) => setFormData({ ...formData, zeljenaKilaza: e.target.value })}
+                style={{ 
+                  width: "100%", 
+                  padding: 12, 
+              borderRadius: 6,
+              border: "1px solid var(--brand-border)",
+              boxSizing: "border-box",
+              fontSize: 15,
+              transition: "all 0.2s",
+              background: "var(--brand-bg-light)",
+                }}
+                onFocus={(e) => e.target.style.borderColor = "var(--brand-primary)"}
+                onBlur={(e) => e.target.style.borderColor = "var(--brand-border)"}
+                placeholder="Unesite željenu kilažu"
+                min="0"
+              />
+            </div>
+
+            <button
+              type="submit"
+              style={{
+                width: "100%",
+                padding: 14,
+                background: "var(--brand-gradient)",
+                color: "white",
+                border: 0,
+                borderRadius: 8,
+                fontWeight: 600,
+                cursor: "pointer",
+                fontSize: 16,
+                transition: "transform 0.2s, box-shadow 0.2s",
+                boxShadow: "0 4px 6px -1px rgba(16, 185, 129, 0.3)",
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = "translateY(-2px)";
+                e.target.style.boxShadow = "0 5px 12px rgba(65, 101, 57, 0.35)";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = "translateY(0)";
+                e.target.style.boxShadow = "0 3px 8px rgba(65, 101, 57, 0.25)";
+              }}
+            >
+              Sačuvaj podatke
+            </button>
+          </form>
+        </div>
+      )}
+
       {activeTab === "saveti" && (
         <div
           style={{
@@ -1378,9 +1483,19 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
             gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
             gap: isMobile ? 24 : 32,
           }}>
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+            {[
+              { icon: "🍎", title: "Balansirana ishrana", desc: "Jedite raznovrsnu, prirodnu hranu sa dovoljno voća, povrća i proteina" },
+              { icon: "💧", title: "Dovoljno tečnosti", desc: "Pijte najmanje 2-3 litra tečnosti dnevno. BioZen čaj je odličan izbor za hidrataciju i podršku metabolizmu" },
+              { icon: "🏃", title: "Redovna aktivnost", desc: "Barem 30 minuta umerene fizičke aktivnosti dnevno ubrzava metabolizam" },
+              { icon: "😴", title: "Kvalitetan san", desc: "7-8 sati sna dnevno je ključno za zdrav metabolizam i kontrolu apetita" },
+              { icon: "🧘", title: "Smanjenje stresa", desc: "Stres povećava kortizol koji otežava mršavljenje - vežbajte relaksaciju" },
+              { icon: "📊", title: "Praćenje napretka", desc: "Redovno merenje kilaže i beleženje pomaze da vidite napredak i ostanete motivisani" },
+              { icon: "⏰", title: "Redovnost i konzistentnost", desc: "Važnije je održavati zdrave navike dugoročno nego brzo gubiti kilograme" },
+              { icon: "👥", title: "Podrška okoline", desc: "Okružite se ljudima koji vas podržavaju u vašem cilju mršavljenja" },
+              { icon: "🎯", title: "Realni ciljevi", desc: "Postavite postepene, ostvarive ciljeve umesto nerealnih očekivanja" },
+            ].map((savet, index) => (
               <div
-                key={num}
+                key={index}
                 style={{
                   display: "flex",
                   flexDirection: "column",
@@ -1410,20 +1525,26 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                   alignItems: "center",
                   justifyContent: "center",
                   marginBottom: 16,
-                  fontSize: isMobile ? 32 : 40,
-                  color: "white",
-                  fontWeight: 700,
+                  fontSize: isMobile ? 36 : 44,
                 }}>
-                  {num}
+                  {savet.icon}
                 </div>
+                <h3 style={{
+                  margin: "0 0 8px 0",
+                  color: "var(--brand-primary)",
+                  fontSize: isMobile ? 16 : 18,
+                  fontWeight: 600,
+                }}>
+                  {savet.title}
+                </h3>
                 <p style={{
                   margin: 0,
                   color: "var(--brand-text)",
-                  fontSize: isMobile ? 14 : 15,
-                  fontWeight: 500,
-                  lineHeight: 1.5,
+                  fontSize: isMobile ? 13 : 14,
+                  fontWeight: 400,
+                  lineHeight: 1.6,
                 }}>
-                  Opis saveta {num} - ovde će biti tekst kada dodate ikonice
+                  {savet.desc}
                 </p>
               </div>
             ))}
