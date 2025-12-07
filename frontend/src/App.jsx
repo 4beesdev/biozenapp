@@ -299,6 +299,8 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
     komentar: "",
   });
   const [measurementMessage, setMeasurementMessage] = useState("");
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstallButton, setShowInstallButton] = useState(false);
   const chartRef = useRef(null);
   const isMobile = isMobileProp !== undefined ? isMobileProp : window.innerWidth <= 768;
 
@@ -320,6 +322,29 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
       loadMeasurements();
     }
   }, [activeTab, me]);
+
+  // PWA Install prompt
+  useEffect(() => {
+    const handler = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallButton(true);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  async function handleInstallClick() {
+    if (!deferredPrompt) return;
+    
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    
+    if (outcome === 'accepted') {
+      setShowInstallButton(false);
+    }
+    setDeferredPrompt(null);
+  }
 
   async function loadMeasurements() {
     const token = localStorage.getItem("token");
@@ -453,6 +478,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
         width: "100%",
         margin: "0 auto",
         padding: isMobile ? "15px 10px" : "30px 20px",
+        paddingBottom: isMobile && showInstallButton ? "100px" : (isMobile ? "20px" : "30px"),
         minHeight: "100vh",
       }}
     >
@@ -1608,6 +1634,53 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
           >
             Posetite naš shop →
           </a>
+        </div>
+      )}
+
+      {/* PWA Install Button */}
+      {showInstallButton && isMobile && (
+        <div style={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          padding: isMobile ? "16px" : "20px",
+          background: "var(--brand-bg-light)",
+          borderTop: "2px solid var(--brand-border)",
+          boxShadow: "0 -2px 8px rgba(65, 101, 57, 0.1)",
+          zIndex: 1000,
+        }}>
+          <button
+            onClick={handleInstallClick}
+            style={{
+              width: "100%",
+              padding: isMobile ? "14px 20px" : "16px 24px",
+              background: "var(--brand-gradient)",
+              color: "white",
+              border: 0,
+              borderRadius: 8,
+              fontWeight: 600,
+              cursor: "pointer",
+              fontSize: isMobile ? 15 : 16,
+              transition: "all 0.3s ease",
+              boxShadow: "0 3px 8px rgba(65, 101, 57, 0.25)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-2px)";
+              e.target.style.boxShadow = "0 5px 12px rgba(65, 101, 57, 0.35)";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(0)";
+              e.target.style.boxShadow = "0 3px 8px rgba(65, 101, 57, 0.25)";
+            }}
+          >
+            <span>📱</span>
+            <span>Instaliraj BioZen app</span>
+          </button>
         </div>
       )}
     </div>
