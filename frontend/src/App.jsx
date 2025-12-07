@@ -513,7 +513,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
           style={{ 
             display: "flex", 
             alignItems: "center", 
-            gap: 12,
+            gap: isMobile ? 10 : 12,
             cursor: activeTab !== null ? "pointer" : "default",
           }}
           onClick={() => activeTab !== null && setActiveTab(null)}
@@ -522,7 +522,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
             src="/logo.svg" 
             alt="BioZen Logo" 
             style={{ 
-              height: 40,
+              height: isMobile ? 56 : 40,
               display: "block",
             }}
             onError={(e) => {
@@ -531,7 +531,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
           />
           <h1 style={{ 
             margin: 0,
-            fontSize: 30,
+            fontSize: isMobile ? 22 : 30,
             fontWeight: 700,
             color: "var(--brand-primary)",
             letterSpacing: "-0.5px",
