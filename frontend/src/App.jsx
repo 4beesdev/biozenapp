@@ -4,9 +4,11 @@ import html2canvas from "html2canvas";
 import "./brand.css";
 
 export default function App() {
-  const [mode, setMode] = useState("login"); // login | register
+  const [mode, setMode] = useState("login"); // login | register | forgot-password | reset-password
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [resetToken, setResetToken] = useState("");
   const [message, setMessage] = useState("");
   const [me, setMe] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -26,6 +28,14 @@ export default function App() {
     const token = localStorage.getItem("token");
     if (token) {
       loadUserData();
+    }
+    
+    // Proveri da li postoji reset token u URL-u
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenParam = urlParams.get("token");
+    if (tokenParam) {
+      setResetToken(tokenParam);
+      setMode("reset-password");
     }
   }, []);
 
@@ -54,6 +64,15 @@ export default function App() {
 
   async function authSubmit(e) {
     e.preventDefault();
+    if (mode === "forgot-password") {
+      await handleForgotPassword();
+      return;
+    }
+    if (mode === "reset-password") {
+      await handleResetPassword();
+      return;
+    }
+    
     const url = mode === "register" ? "/api/auth/register" : "/api/auth/login";
     setMessage("");
     try {
@@ -70,6 +89,56 @@ export default function App() {
         await loadUserData();
       }
       setMessage(mode === "register" ? "Registracija uspešna" : "Login uspešan");
+    } catch (err) {
+      setMessage(err.message);
+    }
+  }
+
+  async function handleForgotPassword() {
+    setMessage("");
+    if (!email) {
+      setMessage("Unesite email adresu");
+      return;
+    }
+    try {
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Greška");
+      setMessage(data.message || "Ako email postoji, poslat će se link za reset lozinke");
+    } catch (err) {
+      setMessage(err.message);
+    }
+  }
+
+  async function handleResetPassword() {
+    setMessage("");
+    if (!newPassword || newPassword.length < 6) {
+      setMessage("Lozinka mora imati najmanje 6 karaktera");
+      return;
+    }
+    if (!resetToken) {
+      setMessage("Neispravan token");
+      return;
+    }
+    try {
+      const res = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: resetToken, newPassword }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Greška");
+      setMessage(data.message || "Lozinka je uspešno resetovana. Možete se ulogovati.");
+      setTimeout(() => {
+        setMode("login");
+        setResetToken("");
+        setNewPassword("");
+        window.history.replaceState({}, "", "/");
+      }, 2000);
     } catch (err) {
       setMessage(err.message);
     }
@@ -165,7 +234,10 @@ export default function App() {
           fontWeight: 600,
           letterSpacing: "-0.3px"
         }}>
-          {mode === "login" ? "BioZen Tracker" : "Kreirajte nalog"}
+          {mode === "login" ? "BioZen Tracker" : 
+           mode === "register" ? "Kreirajte nalog" :
+           mode === "forgot-password" ? "Zaboravili ste lozinku?" :
+           "Resetuj lozinku"}
         </h2>
         <p style={{ 
           margin: 0,
@@ -173,49 +245,78 @@ export default function App() {
           fontSize: 15,
           lineHeight: "1.6"
         }}>
-          {mode === "login" ? "Ulogujte se u svoj nalog" : "Započnite svoj zdravstveni put"}
+          {mode === "login" ? "Ulogujte se u svoj nalog" : 
+           mode === "register" ? "Započnite svoj zdravstveni put" :
+           mode === "forgot-password" ? "Unesite email adresu i poslaćemo vam link za reset lozinke" :
+           "Unesite novu lozinku"}
         </p>
       </div>
 
       <form onSubmit={authSubmit}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={{ 
-            width: "100%", 
-            padding: 12, 
-            marginBottom: 16, 
-            boxSizing: "border-box",
-            border: "1px solid var(--brand-border)",
-            borderRadius: 8,
-            fontSize: 14,
-            transition: "border-color 0.2s",
-          }}
-          onFocus={(e) => e.target.style.borderColor = "var(--brand-primary)"}
-          onBlur={(e) => e.target.style.borderColor = "var(--brand-border)"}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Lozinka"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={{ 
-            width: "100%", 
-            padding: 12, 
-            marginBottom: 20, 
-            boxSizing: "border-box",
-            border: "1px solid var(--brand-border)",
-            borderRadius: 8,
-            fontSize: 14,
-            transition: "border-color 0.2s",
-          }}
-          onFocus={(e) => e.target.style.borderColor = "var(--brand-primary)"}
-          onBlur={(e) => e.target.style.borderColor = "var(--brand-border)"}
-          required
-        />
+        {(mode === "login" || mode === "register" || mode === "forgot-password") && (
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{ 
+              width: "100%", 
+              padding: 12, 
+              marginBottom: 16, 
+              boxSizing: "border-box",
+              border: "1px solid var(--brand-border)",
+              borderRadius: 8,
+              fontSize: 14,
+              transition: "border-color 0.2s",
+            }}
+            onFocus={(e) => e.target.style.borderColor = "var(--brand-primary)"}
+            onBlur={(e) => e.target.style.borderColor = "var(--brand-border)"}
+            required
+          />
+        )}
+        {(mode === "login" || mode === "register") && (
+          <input
+            type="password"
+            placeholder="Lozinka"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={{ 
+              width: "100%", 
+              padding: 12, 
+              marginBottom: 20, 
+              boxSizing: "border-box",
+              border: "1px solid var(--brand-border)",
+              borderRadius: 8,
+              fontSize: 14,
+              transition: "border-color 0.2s",
+            }}
+            onFocus={(e) => e.target.style.borderColor = "var(--brand-primary)"}
+            onBlur={(e) => e.target.style.borderColor = "var(--brand-border)"}
+            required
+          />
+        )}
+        {mode === "reset-password" && (
+          <input
+            type="password"
+            placeholder="Nova lozinka (min. 6 karaktera)"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            style={{ 
+              width: "100%", 
+              padding: 12, 
+              marginBottom: 20, 
+              boxSizing: "border-box",
+              border: "1px solid var(--brand-border)",
+              borderRadius: 8,
+              fontSize: 14,
+              transition: "border-color 0.2s",
+            }}
+            onFocus={(e) => e.target.style.borderColor = "var(--brand-primary)"}
+            onBlur={(e) => e.target.style.borderColor = "var(--brand-border)"}
+            required
+            minLength={6}
+          />
+        )}
         <button
           type="submit"
           style={{
@@ -240,28 +341,89 @@ export default function App() {
             e.target.style.boxShadow = "0 4px 6px -1px rgba(16, 185, 129, 0.3)";
           }}
         >
-          {mode === "login" ? "Uloguj se" : "Registruj se"}
+          {mode === "login" ? "Uloguj se" : 
+           mode === "register" ? "Registruj se" :
+           mode === "forgot-password" ? "Pošalji link" :
+           "Resetuj lozinku"}
         </button>
       </form>
 
-      <button
-        onClick={() => setMode(mode === "login" ? "register" : "login")}
-        style={{
-          marginTop: 16,
-          width: "100%",
-          background: "transparent",
-          border: 0,
-          color: "var(--brand-secondary)",
-          cursor: "pointer",
-          fontWeight: 500,
-          fontSize: 14,
-          padding: 8,
-        }}
-      >
-        {mode === "login"
-          ? "Nemaš nalog? Registruj se"
-          : "Imaš nalog? Uloguj se"}
-      </button>
+      <div style={{ marginTop: 16 }}>
+        {mode === "login" && (
+          <>
+            <button
+              onClick={() => setMode("forgot-password")}
+              style={{
+                width: "100%",
+                background: "transparent",
+                border: 0,
+                color: "var(--brand-secondary)",
+                cursor: "pointer",
+                fontWeight: 500,
+                fontSize: 14,
+                padding: 8,
+                marginBottom: 8,
+              }}
+            >
+              Zaboravili ste lozinku?
+            </button>
+            <button
+              onClick={() => setMode("register")}
+              style={{
+                width: "100%",
+                background: "transparent",
+                border: 0,
+                color: "var(--brand-secondary)",
+                cursor: "pointer",
+                fontWeight: 500,
+                fontSize: 14,
+                padding: 8,
+              }}
+            >
+              Nemaš nalog? Registruj se
+            </button>
+          </>
+        )}
+        {mode === "register" && (
+          <button
+            onClick={() => setMode("login")}
+            style={{
+              width: "100%",
+              background: "transparent",
+              border: 0,
+              color: "var(--brand-secondary)",
+              cursor: "pointer",
+              fontWeight: 500,
+              fontSize: 14,
+              padding: 8,
+            }}
+          >
+            Imaš nalog? Uloguj se
+          </button>
+        )}
+        {(mode === "forgot-password" || mode === "reset-password") && (
+          <button
+            onClick={() => {
+              setMode("login");
+              setResetToken("");
+              setNewPassword("");
+              window.history.replaceState({}, "", "/");
+            }}
+            style={{
+              width: "100%",
+              background: "transparent",
+              border: 0,
+              color: "var(--brand-secondary)",
+              cursor: "pointer",
+              fontWeight: 500,
+              fontSize: 14,
+              padding: 8,
+            }}
+          >
+            Nazad na login
+          </button>
+        )}
+      </div>
 
       {message && (
         <div style={{ 

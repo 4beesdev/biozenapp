@@ -29,6 +29,10 @@ public class User {
     private Double kilaza; // trenutna kilaža
     private Double zeljenaKilaza; // željena kilaža
 
+    // Password reset fields
+    private String passwordResetToken;
+    private Instant passwordResetTokenExpiry;
+
     public Long getId() { return id; }
     public String getEmail() { return email; }
     public String getPasswordHash() { return passwordHash; }
@@ -49,4 +53,8 @@ public class User {
     public void setStarost(Integer starost) { this.starost = starost; }
     public void setKilaza(Double kilaza) { this.kilaza = kilaza; }
     public void setZeljenaKilaza(Double zeljenaKilaza) { this.zeljenaKilaza = zeljenaKilaza; }
+    public String getPasswordResetToken() { return passwordResetToken; }
+    public void setPasswordResetToken(String passwordResetToken) { this.passwordResetToken = passwordResetToken; }
+    public Instant getPasswordResetTokenExpiry() { return passwordResetTokenExpiry; }
+    public void setPasswordResetTokenExpiry(Instant passwordResetTokenExpiry) { this.passwordResetTokenExpiry = passwordResetTokenExpiry; }
 }
