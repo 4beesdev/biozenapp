@@ -11,13 +11,20 @@ public class EmailService {
     private final JavaMailSender mailSender;
     private final String fromEmail;
 
-    public EmailService(JavaMailSender mailSender,
-                       @Value("${app.mail.from}") String fromEmail) {
+    public EmailService(@org.springframework.beans.factory.annotation.Autowired(required = false) JavaMailSender mailSender,
+                       @Value("${app.mail.from:no-reply@biozen.rs}") String fromEmail) {
         this.mailSender = mailSender;
         this.fromEmail = fromEmail;
     }
 
     public boolean sendPasswordResetEmail(String toEmail, String resetToken, String resetUrl) {
+        if (mailSender == null) {
+            System.err.println("WARNING: JavaMailSender is not available. Email cannot be sent.");
+            System.err.println("Reset token for " + toEmail + ": " + resetToken);
+            System.err.println("Reset URL: " + resetUrl);
+            return false;
+        }
+        
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(fromEmail);
@@ -34,6 +41,7 @@ public class EmailService {
                 "BioZen Tracker tim"
             );
             mailSender.send(message);
+            System.out.println("Email sent successfully to: " + toEmail);
             return true;
         } catch (Exception e) {
             // Log error but don't throw - we don't want to expose email errors to users
