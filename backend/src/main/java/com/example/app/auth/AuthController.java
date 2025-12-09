@@ -140,16 +140,23 @@ public class AuthController {
                 System.out.println("Sending email to: " + user.getEmail());
                 System.out.println("Reset URL: " + resetUrl);
                 
-                boolean emailSent = emailService.sendPasswordResetEmail(user.getEmail(), resetToken, resetUrl);
-                System.out.println("Email sent: " + emailSent);
-                
-                if (emailSent) {
-                    // Email je uspešno poslat
-                    System.out.println("SUCCESS: Email sent successfully");
-                    return ResponseEntity.ok(Map.of("message", "Link za reset lozinke je poslat na vašu email adresu. Proverite inbox i spam folder."));
-                } else {
-                    // Email nije poslat (greška u slanju)
-                    System.out.println("ERROR: Email sending failed");
+                try {
+                    boolean emailSent = emailService.sendPasswordResetEmail(user.getEmail(), resetToken, resetUrl);
+                    System.out.println("Email sent: " + emailSent);
+                    
+                    if (emailSent) {
+                        // Email je uspešno poslat
+                        System.out.println("SUCCESS: Email sent successfully");
+                        return ResponseEntity.ok(Map.of("message", "Link za reset lozinke je poslat na vašu email adresu. Proverite inbox i spam folder."));
+                    } else {
+                        // Email nije poslat (greška u slanju)
+                        System.out.println("ERROR: Email sending failed");
+                        return ResponseEntity.status(500).body(Map.of("message", "Greška pri slanju emaila. Molimo pokušajte ponovo kasnije."));
+                    }
+                } catch (Exception emailException) {
+                    // Ako email servis baca exception, loguj ali ne prekidaj proces
+                    System.err.println("ERROR in email service: " + emailException.getMessage());
+                    emailException.printStackTrace();
                     return ResponseEntity.status(500).body(Map.of("message", "Greška pri slanju emaila. Molimo pokušajte ponovo kasnije."));
                 }
             } catch (Exception e) {
