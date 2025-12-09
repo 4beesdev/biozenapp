@@ -71,24 +71,13 @@ Kreiraj novi Nginx config fajl:
 sudo nano /etc/nginx/sites-available/dev.biozen.rs
 ```
 
-Dodaj sledeću konfiguraciju:
+Dodaj sledeću konfiguraciju (PRIVREMENO SAMO HTTP - bez SSL):
 
 ```nginx
-# HTTP - redirect na HTTPS
+# HTTP - proxy na dev frontend (privremeno bez SSL)
 server {
     listen 80;
     server_name dev.biozen.rs;
-    return 301 https://$server_name$request_uri;
-}
-
-# HTTPS - proxy na dev frontend
-server {
-    listen 443 ssl http2;
-    server_name dev.biozen.rs;
-
-    # SSL sertifikati (koristi iste kao za app.biozen.rs ili kreiraj nove)
-    ssl_certificate /etc/ssl/certs/dev.biozen.rs.pem;
-    ssl_certificate_key /etc/ssl/private/dev.biozen.rs.key;
 
     # Gzip compression
     gzip on;
@@ -124,6 +113,8 @@ server {
     }
 }
 ```
+
+**NAPOMENA:** Ovo je privremena konfiguracija bez SSL. Kada kreiraš SSL sertifikate (korak 7), zameni ovu konfiguraciju sa HTTPS verzijom koja je ispod.
 
 Aktiviraj config:
 
