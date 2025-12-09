@@ -20,14 +20,26 @@ self.addEventListener('install', (event) => {
 
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
+  const request = event.request;
+  
+  // Preskoči ne-HTTP/HTTPS zahteve (chrome-extension, data:, blob:, itd.)
+  if (!request.url.startsWith('http://') && !request.url.startsWith('https://')) {
+    return;
+  }
+  
+  // Preskoči API zahteve - ne cache-ujemo API odgovore
+  if (request.url.includes('/api/')) {
+    return;
+  }
+  
   event.respondWith(
-    caches.match(event.request)
+    caches.match(request)
       .then((response) => {
         // Cache hit - return response
         if (response) {
           return response;
         }
-        return fetch(event.request).then(
+        return fetch(request).then(
           (response) => {
             // Check if valid response
             if (!response || response.status !== 200 || response.type !== 'basic') {
@@ -37,11 +49,19 @@ self.addEventListener('fetch', (event) => {
             const responseToCache = response.clone();
             caches.open(CACHE_NAME)
               .then((cache) => {
-                cache.put(event.request, responseToCache);
+                cache.put(request, responseToCache);
+              })
+              .catch((err) => {
+                // Ignoriši greške pri cache-ovanju
+                console.log('Cache put failed:', err);
               });
             return response;
           }
-        );
+        ).catch((err) => {
+          // Ako fetch ne uspe, vrati grešku
+          console.log('Fetch failed:', err);
+          throw err;
+        });
       })
   );
 });
