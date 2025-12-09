@@ -53,6 +53,16 @@ docker compose -f docker-compose.dev.yml ps
 docker compose -f docker-compose.dev.yml logs -f
 ```
 
+**Napomena:** Ako dobiješ grešku da baza ne postoji, PostgreSQL kontejner automatski kreira bazu `biozenapp_dev` pri prvom pokretanju. Ako i dalje imaš problem, proveri logove:
+
+```bash
+# Proveri PostgreSQL logove
+docker compose -f docker-compose.dev.yml logs postgres-dev
+
+# Ako treba, konektuj se na PostgreSQL i kreiraj bazu ručno
+docker compose -f docker-compose.dev.yml exec postgres-dev psql -U biozen -c "CREATE DATABASE biozenapp_dev;"
+```
+
 ## 5. Konfiguriši Nginx za dev.biozen.rs
 
 Kreiraj novi Nginx config fajl:
