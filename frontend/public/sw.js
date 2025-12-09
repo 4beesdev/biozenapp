@@ -1,5 +1,5 @@
 // Service Worker za BioZen PWA
-const CACHE_NAME = 'biozen-v1';
+const CACHE_NAME = 'biozen-v2';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -7,16 +7,6 @@ const urlsToCache = [
   '/manifest.json'
 ];
 
-// Install event - cache assets
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
-      })
-  );
-});
 
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
@@ -78,7 +68,25 @@ self.addEventListener('activate', (event) => {
           }
         })
       );
+    }).then(() => {
+      // Odmah aktiviraj novi service worker
+      return self.clients.claim();
     })
+  );
+});
+
+// Install event - odmah aktiviraj novi service worker
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then((cache) => {
+        console.log('Opened cache');
+        return cache.addAll(urlsToCache);
+      })
+      .then(() => {
+        // Odmah aktiviraj novi service worker bez čekanja
+        return self.skipWaiting();
+      })
   );
 });
 
