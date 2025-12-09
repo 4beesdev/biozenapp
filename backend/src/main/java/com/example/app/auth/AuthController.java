@@ -117,9 +117,14 @@ public class AuthController {
         }
 
         Optional<User> userOpt = users.findByEmail(req.email);
+        System.out.println("=== FORGOT PASSWORD REQUEST ===");
+        System.out.println("Email: " + req.email);
+        System.out.println("User found: " + userOpt.isPresent());
+        
         // Ne otkrivamo da li email postoji ili ne (security best practice)
         if (userOpt.isPresent()) {
             User user = userOpt.get();
+            System.out.println("User ID: " + user.getId());
             
             // Generiši reset token
             String resetToken = UUID.randomUUID().toString();
@@ -128,26 +133,34 @@ public class AuthController {
             
             try {
                 users.save(user);
+                System.out.println("Reset token saved to database");
                 
                 // Pošalji email
                 String resetUrl = frontendUrl + "/reset-password?token=" + resetToken;
+                System.out.println("Sending email to: " + user.getEmail());
+                System.out.println("Reset URL: " + resetUrl);
+                
                 boolean emailSent = emailService.sendPasswordResetEmail(user.getEmail(), resetToken, resetUrl);
+                System.out.println("Email sent: " + emailSent);
                 
                 if (emailSent) {
                     // Email je uspešno poslat
+                    System.out.println("SUCCESS: Email sent successfully");
                     return ResponseEntity.ok(Map.of("message", "Link za reset lozinke je poslat na vašu email adresu. Proverite inbox i spam folder."));
                 } else {
                     // Email nije poslat (greška u slanju)
+                    System.out.println("ERROR: Email sending failed");
                     return ResponseEntity.status(500).body(Map.of("message", "Greška pri slanju emaila. Molimo pokušajte ponovo kasnije."));
                 }
             } catch (Exception e) {
-                System.err.println("Error processing password reset: " + e.getMessage());
+                System.err.println("ERROR processing password reset: " + e.getMessage());
                 e.printStackTrace();
                 return ResponseEntity.status(500).body(Map.of("message", "Greška pri obradi zahteva. Molimo pokušajte ponovo."));
             }
         }
         
         // Ako email ne postoji, vraćamo generičku poruku (security best practice)
+        System.out.println("User not found - returning generic message");
         return ResponseEntity.ok(Map.of("message", "Ako email postoji, poslat će se link za reset lozinke na vašu email adresu."));
     }
 
