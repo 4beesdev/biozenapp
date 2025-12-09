@@ -131,16 +131,24 @@ public class AuthController {
                 
                 // Pošalji email
                 String resetUrl = frontendUrl + "/reset-password?token=" + resetToken;
-                emailService.sendPasswordResetEmail(user.getEmail(), resetToken, resetUrl);
+                boolean emailSent = emailService.sendPasswordResetEmail(user.getEmail(), resetToken, resetUrl);
+                
+                if (emailSent) {
+                    // Email je uspešno poslat
+                    return ResponseEntity.ok(Map.of("message", "Link za reset lozinke je poslat na vašu email adresu. Proverite inbox i spam folder."));
+                } else {
+                    // Email nije poslat (greška u slanju)
+                    return ResponseEntity.status(500).body(Map.of("message", "Greška pri slanju emaila. Molimo pokušajte ponovo kasnije."));
+                }
             } catch (Exception e) {
                 System.err.println("Error processing password reset: " + e.getMessage());
                 e.printStackTrace();
-                // Ne otkrivamo grešku korisniku
+                return ResponseEntity.status(500).body(Map.of("message", "Greška pri obradi zahteva. Molimo pokušajte ponovo."));
             }
         }
         
-        // Uvek vraćamo isti odgovor (security best practice)
-        return ResponseEntity.ok(Map.of("message", "Ako email postoji, poslat će se link za reset lozinke"));
+        // Ako email ne postoji, vraćamo generičku poruku (security best practice)
+        return ResponseEntity.ok(Map.of("message", "Ako email postoji, poslat će se link za reset lozinke na vašu email adresu."));
     }
 
     @PostMapping("/reset-password")

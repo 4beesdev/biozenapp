@@ -17,7 +17,7 @@ public class EmailService {
         this.fromEmail = fromEmail;
     }
 
-    public void sendPasswordResetEmail(String toEmail, String resetToken, String resetUrl) {
+    public boolean sendPasswordResetEmail(String toEmail, String resetToken, String resetUrl) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(fromEmail);
@@ -34,10 +34,12 @@ public class EmailService {
                 "BioZen Tracker tim"
             );
             mailSender.send(message);
+            return true;
         } catch (Exception e) {
             // Log error but don't throw - we don't want to expose email errors to users
             System.err.println("Error sending password reset email: " + e.getMessage());
             e.printStackTrace();
+            return false;
         }
     }
 }
