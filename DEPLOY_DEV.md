@@ -29,13 +29,15 @@ POSTGRES_PASSWORD=change-this-password
 JWT_SECRET=change-this-secret-key-change-this-please-32chars-min
 ```
 
-## 3. Ažuriraj docker-compose.dev.yml
+## 3. Docker Compose za dev
 
-Koristi `docker-compose.dev.yml` koji je već pripremljen sa:
+Fajl `docker-compose.dev.yml` je već kreiran i push-ovan na dev granu. Ne treba ništa da menjaš - samo ga koristi.
+
+Fajl je konfigurisan sa:
 - Backend na portu 8082
 - Frontend na portu 8083
 - PostgreSQL na portu 5433
-- Odvojeni network i volume za dev
+- Odvojeni network i volume za dev (ne meša se sa produkcijom)
 
 ## 4. Build i pokretanje dev verzije
 
