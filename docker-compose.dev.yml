@@ -31,6 +31,8 @@ services:
       APP_JWT_TTLMILLIS: ${APP_JWT_TTLMILLIS:-604800000}
     ports:
       - "8082:8080"
+    extra_hosts:
+      - "mail.biozen.rs:116.202.246.212"
     depends_on:
       postgres-dev:
         condition: service_healthy
