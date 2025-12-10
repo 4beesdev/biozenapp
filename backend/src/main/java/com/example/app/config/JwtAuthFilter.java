@@ -56,25 +56,40 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 Claims c = jwt.parse(token).getBody();
                 // Subject is now user ID (not email) for security
                 String userId = c.getSubject();
+                System.out.println("=== JwtAuthFilter ===");
+                System.out.println("User ID from token: " + userId);
                 
                 // Extract role from token claims and add as authority
                 List<SimpleGrantedAuthority> authorities = new ArrayList<>();
                 String role = (String) c.get("role");
+                System.out.println("Role from token: " + role);
                 if (role != null && !role.isEmpty()) {
                     // Spring Security expects role with "ROLE_" prefix for hasRole() to work
-                    authorities.add(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()));
+                    String authority = "ROLE_" + role.toUpperCase();
+                    authorities.add(new SimpleGrantedAuthority(authority));
+                    System.out.println("Added authority: " + authority);
                 } else {
                     // Default to USER role if not specified
                     authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+                    System.out.println("No role in token, defaulting to ROLE_USER");
                 }
                 
                 // Store user ID as principal, with role as authority
                 UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(userId, null, authorities);
                 SecurityContextHolder.getContext().setAuthentication(auth);
-            } catch (Exception ignored) {
+                System.out.println("Authentication set successfully");
+            } catch (Exception e) {
+                // Log the exception to see what's wrong
+                System.err.println("=== JWT AUTH ERROR ===");
+                System.err.println("Error parsing token: " + e.getClass().getSimpleName());
+                System.err.println("Error message: " + e.getMessage());
+                e.printStackTrace();
                 // nevalidan/istekao token -> nastavi kao neregistrovan
             }
+        } else {
+            System.out.println("=== JwtAuthFilter ===");
+            System.out.println("No Authorization header or not Bearer token");
         }
 
         chain.doFilter(request, response);
