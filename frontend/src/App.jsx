@@ -2414,10 +2414,13 @@ function AdminPanel({ me, onLogout, isMobile }) {
   });
 
   useEffect(() => {
+    console.log("AdminPanel useEffect triggered, activeSection:", activeSection);
     if (activeSection === "dashboard" || activeSection === "users") {
+      console.log("Loading users and stats...");
       loadUserStats();
       loadUsers();
     } else if (activeSection === "blogs") {
+      console.log("Loading blogs...");
       loadBlogs();
     }
   }, [activeSection, currentPage, searchTerm]);
@@ -2440,28 +2443,37 @@ function AdminPanel({ me, onLogout, isMobile }) {
   }
 
   async function loadUsers() {
+    console.log("loadUsers() called");
     const token = localStorage.getItem("token");
-    if (!token) return;
+    console.log("Token exists:", !!token);
+    if (!token) {
+      console.error("No token found!");
+      return;
+    }
 
     setLoading(true);
     try {
       const url = `/api/admin/users?page=${currentPage}&size=20${searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : ""}`;
       console.log("Loading users from:", url);
+      console.log("Authorization header:", `Bearer ${token.substring(0, 20)}...`);
       const res = await fetch(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      console.log("Response status:", res.status);
+      console.log("Response headers:", res.headers);
       const data = await res.json();
       console.log("Users response:", data);
-      console.log("Response status:", res.status);
       if (res.ok) {
         console.log("Setting users:", data.users);
+        console.log("Users count:", data.users?.length || 0);
         setUsers(data.users || []);
         setTotalPages(data.totalPages || 0);
       } else {
-        console.error("Error loading users:", data);
+        console.error("Error loading users - Status:", res.status, "Data:", data);
       }
     } catch (e) {
-      console.error("Greška pri učitavanju korisnika:", e);
+      console.error("Exception in loadUsers:", e);
+      console.error("Error stack:", e.stack);
     } finally {
       setLoading(false);
     }
