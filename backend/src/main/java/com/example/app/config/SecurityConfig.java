@@ -12,6 +12,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.List;
 
@@ -38,6 +39,43 @@ public class SecurityConfig {
         );
         http.httpBasic(basic -> basic.disable());
         http.formLogin(form -> form.disable());
+        
+        // Add CORS headers to error responses (403, 401, etc.)
+        http.exceptionHandling(exceptions -> exceptions
+            .accessDeniedHandler((request, response, accessDeniedException) -> {
+                // Add CORS headers before sending error response
+                String origin = request.getHeader("Origin");
+                if (origin != null && !origin.isEmpty()) {
+                    response.setHeader("Access-Control-Allow-Origin", origin);
+                    response.setHeader("Access-Control-Allow-Credentials", "true");
+                } else {
+                    response.setHeader("Access-Control-Allow-Origin", "*");
+                }
+                response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
+                response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, X-Requested-With, Accept, Origin");
+                response.setHeader("Access-Control-Expose-Headers", "Authorization");
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"message\":\"Nedovoljno dozvola\",\"error\":\"Forbidden\"}");
+            })
+            .authenticationEntryPoint((request, response, authException) -> {
+                // Add CORS headers before sending error response
+                String origin = request.getHeader("Origin");
+                if (origin != null && !origin.isEmpty()) {
+                    response.setHeader("Access-Control-Allow-Origin", origin);
+                    response.setHeader("Access-Control-Allow-Credentials", "true");
+                } else {
+                    response.setHeader("Access-Control-Allow-Origin", "*");
+                }
+                response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
+                response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, X-Requested-With, Accept, Origin");
+                response.setHeader("Access-Control-Expose-Headers", "Authorization");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"message\":\"Niste autentifikovani\",\"error\":\"Unauthorized\"}");
+            })
+        );
+        
         // CORS filter mora biti prvi - SimpleCorsFilter ima HIGHEST_PRECEDENCE
         http.addFilterBefore(simpleCorsFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(corsFilter(), UsernamePasswordAuthenticationFilter.class);
