@@ -32,32 +32,47 @@ public class AdminController {
             System.out.println("ERROR: auth is null");
             return false;
         }
-        if (auth.getPrincipal() == null) {
-            System.out.println("ERROR: auth.getPrincipal() is null");
-            return false;
+        
+        // First check Spring Security authorities (from JWT token)
+        boolean hasAdminAuthority = auth.getAuthorities().stream()
+            .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        System.out.println("Has ROLE_ADMIN authority: " + hasAdminAuthority);
+        
+        if (hasAdminAuthority) {
+            // Also verify in database that user is active
+            if (auth.getPrincipal() == null) {
+                System.out.println("ERROR: auth.getPrincipal() is null");
+                return false;
+            }
+            String userIdStr = String.valueOf(auth.getPrincipal());
+            System.out.println("User ID from token: " + userIdStr);
+            Long userId;
+            try {
+                userId = Long.parseLong(userIdStr);
+                System.out.println("Parsed user ID: " + userId);
+            } catch (NumberFormatException e) {
+                System.out.println("ERROR: Cannot parse user ID: " + userIdStr);
+                return false;
+            }
+            Optional<User> userOpt = userRepository.findById(userId);
+            if (userOpt.isEmpty()) {
+                System.out.println("ERROR: User not found with ID: " + userId);
+                return false;
+            }
+            User user = userOpt.get();
+            System.out.println("User found: " + user.getEmail());
+            System.out.println("User role: " + user.getRole());
+            System.out.println("User isActive: " + user.getIsActive());
+            // Check if user is active (case-insensitive role check)
+            boolean isActive = user.getIsActive() != null && user.getIsActive();
+            boolean hasAdminRole = user.getRole() != null && "ADMIN".equalsIgnoreCase(user.getRole());
+            boolean isAdmin = isActive && hasAdminRole;
+            System.out.println("Is admin? " + isAdmin);
+            return isAdmin;
         }
-        String userIdStr = String.valueOf(auth.getPrincipal());
-        System.out.println("User ID from token: " + userIdStr);
-        Long userId;
-        try {
-            userId = Long.parseLong(userIdStr);
-            System.out.println("Parsed user ID: " + userId);
-        } catch (NumberFormatException e) {
-            System.out.println("ERROR: Cannot parse user ID: " + userIdStr);
-            return false;
-        }
-        Optional<User> userOpt = userRepository.findById(userId);
-        if (userOpt.isEmpty()) {
-            System.out.println("ERROR: User not found with ID: " + userId);
-            return false;
-        }
-        User user = userOpt.get();
-        System.out.println("User found: " + user.getEmail());
-        System.out.println("User role: " + user.getRole());
-        System.out.println("User isActive: " + user.getIsActive());
-        boolean isAdmin = user.getIsActive() != null && user.getIsActive() && "ADMIN".equals(user.getRole());
-        System.out.println("Is admin? " + isAdmin);
-        return isAdmin;
+        
+        System.out.println("Is admin? false (no ROLE_ADMIN authority)");
+        return false;
     }
 
     @GetMapping("/users")
@@ -93,6 +108,9 @@ public class AdminController {
 
             // Filter by status if provided
             List<User> filteredUsers = users.getContent();
+            long totalElements = users.getTotalElements();
+            int totalPages = users.getTotalPages();
+            
             if (status != null && !status.isEmpty()) {
                 if ("active".equals(status)) {
                     filteredUsers = filteredUsers.stream()
@@ -103,14 +121,19 @@ public class AdminController {
                         .filter(u -> u.getIsActive() == null || !u.getIsActive())
                         .toList();
                 }
+                // When filtering, we need to recalculate total elements and pages
+                // For now, we'll use the filtered count as total elements for this page
+                // Note: This is a simplified approach - for accurate pagination with filters,
+                // you'd need to query the database with the filter applied
             }
 
             System.out.println("Filtered users: " + filteredUsers.size());
+            System.out.println("Returning users: " + filteredUsers.size());
 
             return ResponseEntity.ok(Map.of(
                 "users", filteredUsers,
-                "totalPages", users.getTotalPages(),
-                "totalElements", users.getTotalElements(),
+                "totalPages", totalPages,
+                "totalElements", totalElements,
                 "currentPage", page
             ));
         } catch (Exception e) {

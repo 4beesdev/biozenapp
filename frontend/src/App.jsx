@@ -2418,6 +2418,7 @@ function AdminPanel({ me, onLogout, isMobile }) {
   const [selectedUser, setSelectedUser] = useState(null);
   const [showBlogForm, setShowBlogForm] = useState(false);
   const [editingBlog, setEditingBlog] = useState(null);
+  const [error, setError] = useState(null);
   const [blogForm, setBlogForm] = useState({
     title: "",
     content: "",
@@ -2427,19 +2428,14 @@ function AdminPanel({ me, onLogout, isMobile }) {
   });
 
   useEffect(() => {
-    console.log("=== AdminPanel useEffect triggered ===");
-    console.log("activeSection:", activeSection);
-    console.log("currentPage:", currentPage);
-    console.log("searchTerm:", searchTerm);
+    console.log("AdminPanel useEffect triggered, activeSection:", activeSection);
     if (activeSection === "dashboard" || activeSection === "users") {
-      console.log("✓ Loading users and stats...");
+      console.log("Loading users and stats...");
       loadUserStats();
       loadUsers();
     } else if (activeSection === "blogs") {
-      console.log("✓ Loading blogs...");
+      console.log("Loading blogs...");
       loadBlogs();
-    } else {
-      console.log("✗ No action for activeSection:", activeSection);
     }
   }, [activeSection, currentPage, searchTerm]);
 
@@ -2466,10 +2462,12 @@ function AdminPanel({ me, onLogout, isMobile }) {
     console.log("Token exists:", !!token);
     if (!token) {
       console.error("No token found!");
+      setError("Niste autentifikovani. Molimo ulogujte se ponovo.");
       return;
     }
 
     setLoading(true);
+    setError(null);
     try {
       const url = `/api/admin/users?page=${currentPage}&size=20${searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : ""}`;
       console.log("Loading users from:", url);
@@ -2478,7 +2476,6 @@ function AdminPanel({ me, onLogout, isMobile }) {
         headers: { Authorization: `Bearer ${token}` },
       });
       console.log("Response status:", res.status);
-      console.log("Response headers:", res.headers);
       const data = await res.json();
       console.log("Users response:", data);
       if (res.ok) {
@@ -2486,12 +2483,21 @@ function AdminPanel({ me, onLogout, isMobile }) {
         console.log("Users count:", data.users?.length || 0);
         setUsers(data.users || []);
         setTotalPages(data.totalPages || 0);
+        setError(null);
       } else {
         console.error("Error loading users - Status:", res.status, "Data:", data);
+        const errorMessage = data.message || `Greška pri učitavanju korisnika (${res.status})`;
+        setError(errorMessage);
+        if (res.status === 403) {
+          setError("Nemate dozvolu za pristup ovoj sekciji. Potrebna je ADMIN uloga.");
+        } else if (res.status === 401) {
+          setError("Sesija je istekla. Molimo ulogujte se ponovo.");
+        }
       }
     } catch (e) {
       console.error("Exception in loadUsers:", e);
       console.error("Error stack:", e.stack);
+      setError("Greška pri povezivanju sa serverom. Proverite internet konekciju.");
     } finally {
       setLoading(false);
     }
@@ -2728,6 +2734,19 @@ function AdminPanel({ me, onLogout, isMobile }) {
                 }}
               />
             </div>
+            {error && (
+              <div style={{
+                padding: "12px 16px",
+                background: "rgba(239, 68, 68, 0.1)",
+                border: "1px solid var(--brand-error)",
+                borderRadius: 8,
+                color: "var(--brand-error)",
+                marginBottom: 20,
+                fontSize: 14,
+              }}>
+                {error}
+              </div>
+            )}
             {loading ? (
               <div style={{ textAlign: "center", padding: 40, color: "var(--brand-text-light)" }}>Učitavanje...</div>
             ) : (
