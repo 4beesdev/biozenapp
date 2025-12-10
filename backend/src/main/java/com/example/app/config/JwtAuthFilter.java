@@ -6,11 +6,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -54,9 +56,21 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 Claims c = jwt.parse(token).getBody();
                 // Subject is now user ID (not email) for security
                 String userId = c.getSubject();
-                // Store user ID as principal, and email/role in claims for easy access
+                
+                // Extract role from token claims and add as authority
+                List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+                String role = (String) c.get("role");
+                if (role != null && !role.isEmpty()) {
+                    // Spring Security expects role with "ROLE_" prefix for hasRole() to work
+                    authorities.add(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()));
+                } else {
+                    // Default to USER role if not specified
+                    authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+                }
+                
+                // Store user ID as principal, with role as authority
                 UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(userId, null, List.of());
+                        new UsernamePasswordAuthenticationToken(userId, null, authorities);
                 SecurityContextHolder.getContext().setAuthentication(auth);
             } catch (Exception ignored) {
                 // nevalidan/istekao token -> nastavi kao neregistrovan
