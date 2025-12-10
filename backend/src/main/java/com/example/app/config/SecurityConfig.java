@@ -33,6 +33,8 @@ public class SecurityConfig {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()   // register/login javne
+                .requestMatchers("/api/blog/**").permitAll()   // blog javni (published blogovi)
+                .requestMatchers("/api/admin/upload/files/**").permitAll()  // uploaded files javni
                 .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/api/**").permitAll()  // OPTIONS zahtevi bez autentifikacije
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")  // Admin endpoints require ADMIN role
                 .anyRequest().authenticated()                  // ostalo traži token

@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from "recharts";
 import html2canvas from "html2canvas";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import "./brand.css";
 
 export default function App() {
@@ -12,7 +14,7 @@ export default function App() {
   const [message, setMessage] = useState("");
   const [me, setMe] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [activeTab, setActiveTab] = useState(null); // null = home, "merenja" | "podaci" | "saveti" | "shop"
+  const [activeTab, setActiveTab] = useState(null); // null = home, "merenja" | "podaci" | "saveti" | "blogovi" | "shop"
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
@@ -492,6 +494,9 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
   const [showInstallButton, setShowInstallButton] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
+  const [blogs, setBlogs] = useState([]);
+  const [selectedBlog, setSelectedBlog] = useState(null);
+  const [loadingBlogs, setLoadingBlogs] = useState(false);
   const chartRef = useRef(null);
   const isMobile = isMobileProp !== undefined ? isMobileProp : window.innerWidth <= 768;
 
@@ -543,7 +548,25 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
     if (activeTab === "merenja" && me) {
       loadMeasurements();
     }
+    if (activeTab === "blogovi") {
+      loadPublishedBlogs();
+    }
   }, [activeTab, me]);
+
+  async function loadPublishedBlogs() {
+    setLoadingBlogs(true);
+    try {
+      const res = await fetch("/api/blog?page=0&size=20");
+      const data = await res.json();
+      if (res.ok && data.posts) {
+        setBlogs(data.posts);
+      }
+    } catch (e) {
+      console.error("Greška pri učitavanju blogova:", e);
+    } finally {
+      setLoadingBlogs(false);
+    }
+  }
 
   // PWA Install prompt
   useEffect(() => {
@@ -857,6 +880,23 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
             Saveti
           </button>
           <button
+            onClick={() => setActiveTab("blogovi")}
+            style={{
+              flex: 1,
+              padding: 14,
+              background: activeTab === "blogovi" ? "var(--brand-gradient)" : "transparent",
+              color: activeTab === "blogovi" ? "white" : "var(--brand-text)",
+              border: 0,
+              borderRadius: 6,
+              fontWeight: 600,
+              cursor: "pointer",
+              fontSize: 15,
+              transition: "all 0.2s",
+            }}
+          >
+            Blogovi
+          </button>
+          <button
             onClick={() => setActiveTab("shop")}
             style={{
               flex: 1,
@@ -1099,6 +1139,28 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
           >
             <span style={{ fontSize: 32, marginBottom: 8 }}>💡</span>
             <span>Saveti</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("blogovi")}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "20px 12px",
+              background: activeTab === "blogovi" ? "var(--brand-gradient)" : "var(--brand-bg-light)",
+              color: activeTab === "blogovi" ? "white" : "var(--brand-text)",
+              border: activeTab === "blogovi" ? "none" : "1px solid var(--brand-border)",
+              borderRadius: 12,
+              fontWeight: 600,
+              cursor: "pointer",
+              fontSize: 14,
+              transition: "all 0.2s",
+              boxShadow: activeTab === "blogovi" ? "0 3px 8px rgba(65, 101, 57, 0.25)" : "none",
+            }}
+          >
+            <span style={{ fontSize: 32, marginBottom: 8 }}>📝</span>
+            <span>Blogovi</span>
           </button>
           <button
             onClick={() => setActiveTab("shop")}
@@ -2144,6 +2206,192 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
         </div>
       )}
 
+      {activeTab === "blogovi" && (
+        <div
+          style={{
+            border: "1px solid var(--brand-border)",
+            borderRadius: 10,
+            padding: isMobile ? 20 : 35,
+            background: "var(--brand-bg-light)",
+            boxShadow: "0 2px 8px rgba(65, 101, 57, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04)",
+          }}
+        >
+          <h2 style={{ 
+            marginTop: 0,
+            marginBottom: 24,
+            fontSize: isMobile ? 20 : 24,
+            fontWeight: 600,
+            color: "var(--brand-primary)",
+            letterSpacing: "-0.3px",
+          }}>Blogovi</h2>
+          
+          {loadingBlogs ? (
+            <div style={{ textAlign: "center", padding: 40, color: "var(--brand-text-light)" }}>
+              Učitavanje...
+            </div>
+          ) : selectedBlog ? (
+            <div>
+              <button
+                onClick={() => setSelectedBlog(null)}
+                style={{
+                  marginBottom: 20,
+                  padding: "10px 20px",
+                  background: "var(--brand-border)",
+                  color: "var(--brand-text)",
+                  border: 0,
+                  borderRadius: 8,
+                  cursor: "pointer",
+                  fontWeight: 600,
+                }}
+              >
+                ← Nazad na blogove
+              </button>
+              <article style={{
+                background: "#fff",
+                borderRadius: 12,
+                padding: isMobile ? 20 : 30,
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              }}>
+                {selectedBlog.featuredImage && (
+                  <img
+                    src={selectedBlog.featuredImage}
+                    alt={selectedBlog.title}
+                    style={{
+                      width: "100%",
+                      maxHeight: 400,
+                      objectFit: "cover",
+                      borderRadius: 8,
+                      marginBottom: 24,
+                    }}
+                  />
+                )}
+                <h1 style={{
+                  margin: "0 0 16px 0",
+                  fontSize: isMobile ? 24 : 32,
+                  fontWeight: 700,
+                  color: "var(--brand-text)",
+                  lineHeight: 1.3,
+                }}>
+                  {selectedBlog.title}
+                </h1>
+                {selectedBlog.excerpt && (
+                  <p style={{
+                    margin: "0 0 24px 0",
+                    fontSize: 18,
+                    color: "var(--brand-text-light)",
+                    fontStyle: "italic",
+                    lineHeight: 1.6,
+                  }}>
+                    {selectedBlog.excerpt}
+                  </p>
+                )}
+                <div
+                  dangerouslySetInnerHTML={{ __html: selectedBlog.content }}
+                  style={{
+                    fontSize: 16,
+                    lineHeight: 1.8,
+                    color: "var(--brand-text)",
+                  }}
+                />
+                {selectedBlog.publishedAt && (
+                  <div style={{
+                    marginTop: 32,
+                    paddingTop: 20,
+                    borderTop: "1px solid var(--brand-border)",
+                    fontSize: 14,
+                    color: "var(--brand-text-light)",
+                  }}>
+                    Objavljeno: {new Date(selectedBlog.publishedAt).toLocaleDateString('sr-RS', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric'
+                    })}
+                  </div>
+                )}
+              </article>
+            </div>
+          ) : blogs.length === 0 ? (
+            <div style={{ textAlign: "center", padding: 40, color: "var(--brand-text-light)" }}>
+              Trenutno nema objavljenih blogova
+            </div>
+          ) : (
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)",
+              gap: 24,
+            }}>
+              {blogs.map((blog) => (
+                <div
+                  key={blog.id}
+                  onClick={() => setSelectedBlog(blog)}
+                  style={{
+                    background: "#fff",
+                    borderRadius: 12,
+                    overflow: "hidden",
+                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                    cursor: "pointer",
+                    transition: "all 0.3s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "translateY(-4px)";
+                    e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = "0 2px 4px rgba(0,0,0,0.1)";
+                  }}
+                >
+                  {blog.featuredImage && (
+                    <img
+                      src={blog.featuredImage}
+                      alt={blog.title}
+                      style={{
+                        width: "100%",
+                        height: 200,
+                        objectFit: "cover",
+                      }}
+                    />
+                  )}
+                  <div style={{ padding: 20 }}>
+                    <h3 style={{
+                      margin: "0 0 12px 0",
+                      fontSize: isMobile ? 18 : 20,
+                      fontWeight: 600,
+                      color: "var(--brand-text)",
+                      lineHeight: 1.3,
+                    }}>
+                      {blog.title}
+                    </h3>
+                    {blog.excerpt && (
+                      <p style={{
+                        margin: "0 0 16px 0",
+                        fontSize: 14,
+                        color: "var(--brand-text-light)",
+                        lineHeight: 1.6,
+                      }}>
+                        {blog.excerpt}
+                      </p>
+                    )}
+                    {blog.publishedAt && (
+                      <div style={{
+                        fontSize: 12,
+                        color: "var(--brand-text-light)",
+                      }}>
+                        {new Date(blog.publishedAt).toLocaleDateString('sr-RS', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric'
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {activeTab === "shop" && (
         <div
           style={{
@@ -2426,6 +2674,7 @@ function AdminPanel({ me, onLogout, isMobile }) {
     featuredImage: "",
     status: "DRAFT"
   });
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   useEffect(() => {
     console.log("AdminPanel useEffect triggered, activeSection:", activeSection);
@@ -2524,9 +2773,56 @@ function AdminPanel({ me, onLogout, isMobile }) {
     }
   }
 
+  async function handleImageUpload(file) {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    setUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/admin/upload/image", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (res.ok && data.url) {
+        setBlogForm({ ...blogForm, featuredImage: data.url });
+        return data.url;
+      } else {
+        console.error("Error uploading image:", data.message);
+        return null;
+      }
+    } catch (e) {
+      console.error("Greška pri upload-u slike:", e);
+      return null;
+    } finally {
+      setUploadingImage(false);
+    }
+  }
+
   async function handleSaveBlog() {
     const token = localStorage.getItem("token");
     if (!token) return;
+
+    // Validate required fields
+    if (!blogForm.title || !blogForm.title.trim()) {
+      alert("Naslov je obavezan");
+      return;
+    }
+    if (!blogForm.content || !blogForm.content.trim()) {
+      alert("Sadržaj je obavezan");
+      return;
+    }
+    if (!blogForm.featuredImage || !blogForm.featuredImage.trim()) {
+      alert("Cover slika je obavezna");
+      return;
+    }
 
     try {
       const url = editingBlog ? `/api/admin/blog/${editingBlog.id}` : "/api/admin/blog";
@@ -2546,9 +2842,13 @@ function AdminPanel({ me, onLogout, isMobile }) {
         setEditingBlog(null);
         setBlogForm({ title: "", content: "", excerpt: "", featuredImage: "", status: "DRAFT" });
         loadBlogs();
+      } else {
+        const data = await res.json();
+        alert(data.message || "Greška pri čuvanju bloga");
       }
     } catch (e) {
       console.error("Greška pri čuvanju bloga:", e);
+      alert("Greška pri čuvanju bloga");
     }
   }
 
@@ -3027,32 +3327,90 @@ function AdminPanel({ me, onLogout, isMobile }) {
                     resize: "vertical",
                   }}
                 />
-                <textarea
-                  placeholder="Sadržaj (HTML)"
-                  value={blogForm.content}
-                  onChange={(e) => setBlogForm({ ...blogForm, content: e.target.value })}
-                  rows={10}
-                  style={{
-                    padding: 12,
-                    border: "1px solid var(--brand-border)",
-                    borderRadius: 8,
-                    fontSize: 14,
-                    resize: "vertical",
-                    fontFamily: "monospace",
-                  }}
-                />
-                <input
-                  type="text"
-                  placeholder="URL slike (opciono)"
-                  value={blogForm.featuredImage}
-                  onChange={(e) => setBlogForm({ ...blogForm, featuredImage: e.target.value })}
-                  style={{
-                    padding: 12,
-                    border: "1px solid var(--brand-border)",
-                    borderRadius: 8,
-                    fontSize: 14,
-                  }}
-                />
+                <div>
+                  <label style={{ display: "block", marginBottom: 8, color: "var(--brand-text)", fontWeight: 600 }}>
+                    Sadržaj
+                  </label>
+                  <ReactQuill
+                    theme="snow"
+                    value={blogForm.content}
+                    onChange={(content) => setBlogForm({ ...blogForm, content })}
+                    modules={{
+                      toolbar: [
+                        [{ 'header': [1, 2, 3, false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'size': ['small', false, 'large', 'huge'] }],
+                        [{ 'font': [] }],
+                        [{ 'color': [] }, { 'background': [] }],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'align': [] }],
+                        ['clean']
+                      ],
+                    }}
+                    style={{
+                      background: "#fff",
+                      minHeight: 300,
+                      marginBottom: 15,
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", marginBottom: 8, color: "var(--brand-text)", fontWeight: 600 }}>
+                    Cover slika (obavezno)
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        handleImageUpload(file);
+                      }
+                    }}
+                    style={{
+                      padding: 12,
+                      border: "1px solid var(--brand-border)",
+                      borderRadius: 8,
+                      fontSize: 14,
+                      width: "100%",
+                    }}
+                  />
+                  {uploadingImage && (
+                    <div style={{ marginTop: 8, color: "var(--brand-text-light)", fontSize: 14 }}>
+                      Upload-ovanje slike...
+                    </div>
+                  )}
+                  {blogForm.featuredImage && (
+                    <div style={{ marginTop: 12 }}>
+                      <img
+                        src={blogForm.featuredImage}
+                        alt="Cover"
+                        style={{
+                          maxWidth: "100%",
+                          maxHeight: 200,
+                          borderRadius: 8,
+                          border: "1px solid var(--brand-border)",
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setBlogForm({ ...blogForm, featuredImage: "" })}
+                        style={{
+                          marginTop: 8,
+                          padding: "6px 12px",
+                          background: "var(--brand-error)",
+                          color: "#fff",
+                          border: 0,
+                          borderRadius: 6,
+                          cursor: "pointer",
+                          fontSize: 12,
+                        }}
+                      >
+                        Ukloni sliku
+                      </button>
+                    </div>
+                  )}
+                </div>
                 <select
                   value={blogForm.status}
                   onChange={(e) => setBlogForm({ ...blogForm, status: e.target.value })}
