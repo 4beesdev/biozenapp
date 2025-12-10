@@ -24,8 +24,12 @@ public class BlogPostController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         try {
+            System.out.println("=== GET /api/blog ===");
+            System.out.println("Page: " + page + ", Size: " + size);
             Pageable pageable = PageRequest.of(page, size);
             Page<BlogPost> posts = blogPostRepository.findByStatusOrderByPublishedAtDesc("PUBLISHED", pageable);
+            System.out.println("Found " + posts.getTotalElements() + " published blog posts");
+            System.out.println("Returning " + posts.getContent().size() + " posts on this page");
             return ResponseEntity.ok(Map.of(
                 "posts", posts.getContent(),
                 "totalPages", posts.getTotalPages(),
@@ -33,6 +37,8 @@ public class BlogPostController {
                 "currentPage", page
             ));
         } catch (Exception e) {
+            System.err.println("ERROR in getPublishedPosts: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(500).body(Map.of("message", "Greška pri učitavanju blogova"));
         }
     }
