@@ -33,6 +33,14 @@ public class User {
     private String passwordResetToken;
     private Instant passwordResetTokenExpiry;
 
+    // Admin and activity fields
+    @Column(name = "role", length = 20)
+    private String role = "USER"; // USER or ADMIN
+
+    private Instant lastLoginAt;
+    private Integer loginCount = 0;
+    private Boolean isActive = true;
+
     public Long getId() { return id; }
     public String getEmail() { return email; }
     public String getPasswordHash() { return passwordHash; }
@@ -57,4 +65,12 @@ public class User {
     public void setPasswordResetToken(String passwordResetToken) { this.passwordResetToken = passwordResetToken; }
     public Instant getPasswordResetTokenExpiry() { return passwordResetTokenExpiry; }
     public void setPasswordResetTokenExpiry(Instant passwordResetTokenExpiry) { this.passwordResetTokenExpiry = passwordResetTokenExpiry; }
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
+    public Instant getLastLoginAt() { return lastLoginAt; }
+    public void setLastLoginAt(Instant lastLoginAt) { this.lastLoginAt = lastLoginAt; }
+    public Integer getLoginCount() { return loginCount; }
+    public void setLoginCount(Integer loginCount) { this.loginCount = loginCount; }
+    public Boolean getIsActive() { return isActive; }
+    public void setIsActive(Boolean isActive) { this.isActive = isActive; }
 }

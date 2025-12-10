@@ -115,7 +115,12 @@ public class AuthController {
             return ResponseEntity.status(401).body(Map.of("message", "Neispravan email ili lozinka"));
         }
 
-        String token = jwt.generate(u.getEmail(), Map.of("uid", u.getId()));
+        // Update login activity
+        u.setLastLoginAt(Instant.now());
+        u.setLoginCount((u.getLoginCount() == null ? 0 : u.getLoginCount()) + 1);
+        users.save(u);
+
+        String token = jwt.generate(u.getEmail(), Map.of("uid", u.getId(), "role", u.getRole() != null ? u.getRole() : "USER"));
         return ResponseEntity.ok(new AuthRes(token, u.getEmail()));
     }
 
