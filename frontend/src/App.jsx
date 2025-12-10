@@ -2719,42 +2719,50 @@ function AdminPanel({ me, onLogout, isMobile }) {
                       </tr>
                     </thead>
                     <tbody>
-                      {users.map((user) => (
-                        <tr key={user.id} style={{ borderBottom: "1px solid var(--brand-border)" }}>
-                          <td style={{ padding: 15, color: "var(--brand-text)" }}>{user.email}</td>
-                          <td style={{ padding: 15, color: "var(--brand-text)" }}>{user.ime || "-"}</td>
-                          <td style={{ padding: 15, color: "var(--brand-text)" }}>{user.prezime || "-"}</td>
-                          <td style={{ padding: 15 }}>
-                            <span style={{
-                              padding: "4px 12px",
-                              borderRadius: 12,
-                              fontSize: 12,
-                              fontWeight: 600,
-                              background: (user.isActive !== false) ? "rgba(16, 185, 129, 0.1)" : "rgba(239, 68, 68, 0.1)",
-                              color: (user.isActive !== false) ? "var(--brand-success)" : "var(--brand-error)",
-                            }}>
-                              {(user.isActive !== false) ? "Aktivan" : "Neaktivan"}
-                            </span>
-                          </td>
-                          <td style={{ padding: 15 }}>
-                            <button
-                              onClick={() => setSelectedUser(user)}
-                              style={{
-                                padding: "6px 12px",
-                                background: "var(--brand-primary)",
-                                color: "#fff",
-                                border: 0,
-                                borderRadius: 6,
-                                cursor: "pointer",
-                                fontSize: 12,
-                                marginRight: 8,
-                              }}
-                            >
-                              Detalji
-                            </button>
+                      {users.length === 0 ? (
+                        <tr>
+                          <td colSpan="5" style={{ padding: 40, textAlign: "center", color: "var(--brand-text-light)" }}>
+                            Nema korisnika
                           </td>
                         </tr>
-                      ))}
+                      ) : (
+                        users.map((user) => (
+                          <tr key={user.id} style={{ borderBottom: "1px solid var(--brand-border)" }}>
+                            <td style={{ padding: 15, color: "var(--brand-text)" }}>{user.email}</td>
+                            <td style={{ padding: 15, color: "var(--brand-text)" }}>{user.ime || "-"}</td>
+                            <td style={{ padding: 15, color: "var(--brand-text)" }}>{user.prezime || "-"}</td>
+                            <td style={{ padding: 15 }}>
+                              <span style={{
+                                padding: "4px 12px",
+                                borderRadius: 12,
+                                fontSize: 12,
+                                fontWeight: 600,
+                                background: (user.isActive !== false) ? "rgba(16, 185, 129, 0.1)" : "rgba(239, 68, 68, 0.1)",
+                                color: (user.isActive !== false) ? "var(--brand-success)" : "var(--brand-error)",
+                              }}>
+                                {(user.isActive !== false) ? "Aktivan" : "Neaktivan"}
+                              </span>
+                            </td>
+                            <td style={{ padding: 15 }}>
+                              <button
+                                onClick={() => setSelectedUser(user)}
+                                style={{
+                                  padding: "6px 12px",
+                                  background: "var(--brand-primary)",
+                                  color: "#fff",
+                                  border: 0,
+                                  borderRadius: 6,
+                                  cursor: "pointer",
+                                  fontSize: 12,
+                                  marginRight: 8,
+                                }}
+                              >
+                                Detalji
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>
