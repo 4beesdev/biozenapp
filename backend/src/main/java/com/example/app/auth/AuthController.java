@@ -86,6 +86,15 @@ public class AuthController {
         u.setPasswordHash(encoder.encode(req.password));
         users.save(u);
 
+        // Pošalji welcome email
+        try {
+            emailService.sendWelcomeEmail(u.getEmail(), frontendUrl);
+        } catch (Exception e) {
+            // Log error but don't fail registration if email fails
+            System.err.println("Error sending welcome email: " + e.getMessage());
+            e.printStackTrace();
+        }
+
         String token = jwt.generate(u.getEmail(), Map.of("uid", u.getId()));
         return ResponseEntity.ok(new AuthRes(token, u.getEmail()));
     }

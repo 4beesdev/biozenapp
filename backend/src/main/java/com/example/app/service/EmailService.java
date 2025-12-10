@@ -50,5 +50,43 @@ public class EmailService {
             return false;
         }
     }
+
+    public boolean sendWelcomeEmail(String toEmail, String frontendUrl) {
+        if (mailSender == null) {
+            System.err.println("WARNING: JavaMailSender is not available. Welcome email cannot be sent.");
+            System.err.println("Welcome email for: " + toEmail);
+            return false;
+        }
+        
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(fromEmail);
+            message.setTo(toEmail);
+            message.setSubject("Dobrodošli u BioZen Tracker!");
+            message.setText(
+                "Poštovani,\n\n" +
+                "Dobrodošli u BioZen Tracker - vašu aplikaciju za praćenje kilaže i zdravog načina života!\n\n" +
+                "Vaš nalog je uspešno kreiran. Sada možete:\n\n" +
+                "• Uneti svoje podatke (ime, prezime, pol, starost, kilaža, željena kilaža)\n" +
+                "• Pratiti svoju kilažu kroz vreme\n" +
+                "• Videti grafički prikaz svojih napredaka\n" +
+                "• Dobiti savete za skidanje kilograma\n\n" +
+                "Pristupite aplikaciji ovde:\n" +
+                frontendUrl + "\n\n" +
+                "Ako imate pitanja ili vam je potrebna pomoć, slobodno nas kontaktirajte.\n\n" +
+                "Želimo vam puno uspeha u postizanju vaših ciljeva!\n\n" +
+                "Srdačan pozdrav,\n" +
+                "BioZen Tracker tim"
+            );
+            mailSender.send(message);
+            System.out.println("Welcome email sent successfully to: " + toEmail);
+            return true;
+        } catch (Exception e) {
+            // Log error but don't throw - we don't want to expose email errors to users
+            System.err.println("Error sending welcome email: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
 
