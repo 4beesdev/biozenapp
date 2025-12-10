@@ -27,18 +27,37 @@ public class AdminController {
 
     // Check if user is admin
     private boolean isAdmin(Authentication auth) {
-        if (auth == null || auth.getPrincipal() == null) return false;
+        System.out.println("=== isAdmin() CHECK ===");
+        if (auth == null) {
+            System.out.println("ERROR: auth is null");
+            return false;
+        }
+        if (auth.getPrincipal() == null) {
+            System.out.println("ERROR: auth.getPrincipal() is null");
+            return false;
+        }
         String userIdStr = String.valueOf(auth.getPrincipal());
+        System.out.println("User ID from token: " + userIdStr);
         Long userId;
         try {
             userId = Long.parseLong(userIdStr);
+            System.out.println("Parsed user ID: " + userId);
         } catch (NumberFormatException e) {
+            System.out.println("ERROR: Cannot parse user ID: " + userIdStr);
             return false;
         }
         Optional<User> userOpt = userRepository.findById(userId);
-        if (userOpt.isEmpty()) return false;
+        if (userOpt.isEmpty()) {
+            System.out.println("ERROR: User not found with ID: " + userId);
+            return false;
+        }
         User user = userOpt.get();
-        return user.getIsActive() != null && user.getIsActive() && "ADMIN".equals(user.getRole());
+        System.out.println("User found: " + user.getEmail());
+        System.out.println("User role: " + user.getRole());
+        System.out.println("User isActive: " + user.getIsActive());
+        boolean isAdmin = user.getIsActive() != null && user.getIsActive() && "ADMIN".equals(user.getRole());
+        System.out.println("Is admin? " + isAdmin);
+        return isAdmin;
     }
 
     @GetMapping("/users")
