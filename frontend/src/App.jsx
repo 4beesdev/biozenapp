@@ -2446,13 +2446,19 @@ function AdminPanel({ me, onLogout, isMobile }) {
     setLoading(true);
     try {
       const url = `/api/admin/users?page=${currentPage}&size=20${searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : ""}`;
+      console.log("Loading users from:", url);
       const res = await fetch(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
+      console.log("Users response:", data);
+      console.log("Response status:", res.status);
       if (res.ok) {
+        console.log("Setting users:", data.users);
         setUsers(data.users || []);
         setTotalPages(data.totalPages || 0);
+      } else {
+        console.error("Error loading users:", data);
       }
     } catch (e) {
       console.error("Greška pri učitavanju korisnika:", e);

@@ -49,7 +49,12 @@ public class AdminController {
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String status) {
         
+        System.out.println("=== GET /api/admin/users ===");
+        System.out.println("Page: " + page + ", Size: " + size);
+        System.out.println("Search: " + search + ", Status: " + status);
+        
         if (!isAdmin(auth)) {
+            System.out.println("ERROR: User is not admin");
             return ResponseEntity.status(403).body(Map.of("message", "Nedovoljno dozvola"));
         }
 
@@ -63,6 +68,9 @@ public class AdminController {
             } else {
                 users = userRepository.findAll(pageable);
             }
+
+            System.out.println("Total users found: " + users.getTotalElements());
+            System.out.println("Users on this page: " + users.getContent().size());
 
             // Filter by status if provided
             List<User> filteredUsers = users.getContent();
@@ -78,6 +86,8 @@ public class AdminController {
                 }
             }
 
+            System.out.println("Filtered users: " + filteredUsers.size());
+
             return ResponseEntity.ok(Map.of(
                 "users", filteredUsers,
                 "totalPages", users.getTotalPages(),
@@ -85,6 +95,8 @@ public class AdminController {
                 "currentPage", page
             ));
         } catch (Exception e) {
+            System.err.println("ERROR in getUsers: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(500).body(Map.of("message", "Greška pri učitavanju korisnika"));
         }
     }
