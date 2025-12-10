@@ -556,11 +556,17 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
     try {
       const res = await fetch("/api/blog?page=0&size=20");
       const data = await res.json();
+      console.log("=== Blogovi API Response ===", data);
       if (res.ok && data.posts) {
+        console.log("Učitano blogova:", data.posts.length);
         setBlogs(data.posts);
+      } else {
+        console.error("Greška pri učitavanju blogova:", data);
+        setBlogs([]);
       }
     } catch (e) {
       console.error("Greška pri učitavanju blogova:", e);
+      setBlogs([]);
     } finally {
       setLoadingBlogs(false);
     }
