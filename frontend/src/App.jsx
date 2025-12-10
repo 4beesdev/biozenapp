@@ -48,7 +48,9 @@ export default function App() {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
+      console.log("API /me response:", data);
       if (res.ok && data.authenticated) {
+        console.log("Setting user data:", data);
         setMe(data);
         setIsLoggedIn(true);
       } else {
@@ -178,11 +180,18 @@ export default function App() {
 
   // Ako je korisnik ulogovan, proveri da li je admin
   if (isLoggedIn) {
+    // Debug logging
+    console.log("User data:", me);
+    console.log("User role:", me?.role);
+    console.log("Is admin?", me?.role === "ADMIN");
+    
     // Ako je admin, prikaži admin panel
     if (me?.role === "ADMIN") {
+      console.log("Rendering AdminPanel");
       return <AdminPanel me={me} onLogout={logout} isMobile={isMobile} />;
     }
     // Inače prikaži obični dashboard
+    console.log("Rendering Dashboard");
     return <Dashboard me={me} onUpdate={updateUserData} onLogout={logout} activeTab={activeTab} setActiveTab={setActiveTab} message={message} isMobile={isMobile} />;
   }
 
