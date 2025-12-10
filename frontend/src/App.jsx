@@ -48,12 +48,18 @@ export default function App() {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
-      console.log("API /me response:", data);
+      console.log("=== /api/me RESPONSE ===");
+      console.log("Response status:", res.status);
+      console.log("Response data:", data);
+      console.log("Role in response:", data.role);
+      console.log("Role type:", typeof data.role);
       if (res.ok && data.authenticated) {
-        console.log("Setting user data:", data);
+        console.log("✓ Setting user data:", data);
         setMe(data);
         setIsLoggedIn(true);
+        console.log("✓ User logged in, role:", data.role);
       } else {
+        console.log("✗ Authentication failed");
         localStorage.removeItem("token");
         setIsLoggedIn(false);
       }
@@ -181,17 +187,24 @@ export default function App() {
   // Ako je korisnik ulogovan, proveri da li je admin
   if (isLoggedIn) {
     // Debug logging
-    console.log("User data:", me);
+    console.log("=== RENDERING CHECK ===");
+    console.log("isLoggedIn:", isLoggedIn);
+    console.log("User data (me):", me);
     console.log("User role:", me?.role);
-    console.log("Is admin?", me?.role === "ADMIN");
+    console.log("User role type:", typeof me?.role);
+    console.log("Role comparison (ADMIN):", me?.role === "ADMIN");
+    console.log("Role comparison (admin):", me?.role === "admin");
+    console.log("Role toUpperCase:", me?.role?.toUpperCase());
+    console.log("Is admin (case insensitive)?", me?.role?.toUpperCase() === "ADMIN");
     
-    // Ako je admin, prikaži admin panel
-    if (me?.role === "ADMIN") {
-      console.log("Rendering AdminPanel");
+    // Ako je admin, prikaži admin panel (case insensitive check)
+    const isAdmin = me?.role?.toUpperCase() === "ADMIN";
+    if (isAdmin) {
+      console.log("✓ Rendering AdminPanel");
       return <AdminPanel me={me} onLogout={logout} isMobile={isMobile} />;
     }
     // Inače prikaži obični dashboard
-    console.log("Rendering Dashboard");
+    console.log("✗ Rendering Dashboard (not admin)");
     return <Dashboard me={me} onUpdate={updateUserData} onLogout={logout} activeTab={activeTab} setActiveTab={setActiveTab} message={message} isMobile={isMobile} />;
   }
 
