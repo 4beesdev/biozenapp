@@ -547,6 +547,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
       loadMeasurements();
     }
     if (activeTab === "blogovi") {
+      console.log("=== useEffect: activeTab is 'blogovi', calling loadPublishedBlogs ===");
       loadPublishedBlogs();
     }
   }, [activeTab, me]);
@@ -2330,9 +2331,12 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                 )}
               </article>
             </div>
-          ) : blogs.length === 0 ? (
+          ) : !blogs || blogs.length === 0 ? (
             <div style={{ textAlign: "center", padding: 40, color: "var(--brand-text-light)" }}>
               Trenutno nema objavljenih blogova
+              <div style={{ marginTop: 10, fontSize: 12 }}>
+                (blogs.length: {blogs?.length || 0})
+              </div>
             </div>
           ) : (
             <div style={{
@@ -2340,7 +2344,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
               gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)",
               gap: 24,
             }}>
-              {blogs.map((blog) => (
+              {blogs && blogs.length > 0 ? blogs.map((blog) => (
                 <div
                   key={blog.id}
                   onClick={() => setSelectedBlog(blog)}
