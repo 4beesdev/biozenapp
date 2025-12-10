@@ -30,6 +30,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                     FilterChain chain)
             throws ServletException, IOException {
 
+        String path = request.getRequestURI();
+        
         // CORS headers - dodaj uvek (PRVO, pre bilo čega)
         String origin = request.getHeader("Origin");
         if (origin != null && !origin.isEmpty()) {
@@ -46,6 +48,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         // Handle preflight OPTIONS request
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             response.setStatus(HttpServletResponse.SC_OK);
+            return;
+        }
+
+        // Preskoči JWT proveru za javne endpoint-e
+        if (path.startsWith("/api/auth/") || path.startsWith("/api/blog/")) {
+            System.out.println("=== JwtAuthFilter ===");
+            System.out.println("Skipping JWT check for public endpoint: " + path);
+            chain.doFilter(request, response);
             return;
         }
 
