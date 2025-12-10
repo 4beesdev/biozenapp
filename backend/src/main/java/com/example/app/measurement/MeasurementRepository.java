@@ -5,5 +5,6 @@ import java.util.List;
 
 public interface MeasurementRepository extends JpaRepository<Measurement, Long> {
     List<Measurement> findByUserIdOrderByDatumDesc(Long userId);
+    long countByUserId(Long userId);
 }
 

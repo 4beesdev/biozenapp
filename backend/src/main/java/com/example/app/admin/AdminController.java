@@ -1,5 +1,6 @@
 package com.example.app.admin;
 
+import com.example.app.measurement.MeasurementRepository;
 import com.example.app.user.User;
 import com.example.app.user.UserRepository;
 import org.springframework.data.domain.Page;
@@ -19,10 +20,12 @@ public class AdminController {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MeasurementRepository measurementRepository;
 
-    public AdminController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AdminController(UserRepository userRepository, PasswordEncoder passwordEncoder, MeasurementRepository measurementRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.measurementRepository = measurementRepository;
     }
 
     // Check if user is admin
@@ -142,8 +145,30 @@ public class AdminController {
             System.out.println("Filtered users: " + filteredUsers.size());
             System.out.println("Returning users: " + filteredUsers.size());
 
+            // Create DTOs with measurement count
+            List<Map<String, Object>> userDtos = filteredUsers.stream().map(user -> {
+                Map<String, Object> dto = new HashMap<>();
+                dto.put("id", user.getId());
+                dto.put("email", user.getEmail());
+                dto.put("ime", user.getIme());
+                dto.put("prezime", user.getPrezime());
+                dto.put("pol", user.getPol());
+                dto.put("starost", user.getStarost());
+                dto.put("kilaza", user.getKilaza());
+                dto.put("zeljenaKilaza", user.getZeljenaKilaza());
+                dto.put("role", user.getRole());
+                dto.put("isActive", user.getIsActive());
+                dto.put("createdAt", user.getCreatedAt());
+                dto.put("lastLoginAt", user.getLastLoginAt());
+                dto.put("loginCount", user.getLoginCount());
+                // Count measurements for this user
+                long measurementCount = measurementRepository.countByUserId(user.getId());
+                dto.put("measurementCount", measurementCount);
+                return dto;
+            }).toList();
+
             return ResponseEntity.ok(Map.of(
-                "users", filteredUsers,
+                "users", userDtos,
                 "totalPages", totalPages,
                 "totalElements", totalElements,
                 "currentPage", page

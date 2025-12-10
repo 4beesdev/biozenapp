@@ -2763,6 +2763,7 @@ function AdminPanel({ me, onLogout, isMobile }) {
                         <th style={{ padding: 15, textAlign: "left", borderBottom: "2px solid var(--brand-border)", color: "var(--brand-text)" }}>Email</th>
                         <th style={{ padding: 15, textAlign: "left", borderBottom: "2px solid var(--brand-border)", color: "var(--brand-text)" }}>Ime</th>
                         <th style={{ padding: 15, textAlign: "left", borderBottom: "2px solid var(--brand-border)", color: "var(--brand-text)" }}>Prezime</th>
+                        <th style={{ padding: 15, textAlign: "left", borderBottom: "2px solid var(--brand-border)", color: "var(--brand-text)" }}>Broj merenja</th>
                         <th style={{ padding: 15, textAlign: "left", borderBottom: "2px solid var(--brand-border)", color: "var(--brand-text)" }}>Status</th>
                         <th style={{ padding: 15, textAlign: "left", borderBottom: "2px solid var(--brand-border)", color: "var(--brand-text)" }}>Akcije</th>
                       </tr>
@@ -2770,7 +2771,7 @@ function AdminPanel({ me, onLogout, isMobile }) {
                     <tbody>
                       {users.length === 0 ? (
                         <tr>
-                          <td colSpan="5" style={{ padding: 40, textAlign: "center", color: "var(--brand-text-light)" }}>
+                          <td colSpan="6" style={{ padding: 40, textAlign: "center", color: "var(--brand-text-light)" }}>
                             Nema korisnika
                           </td>
                         </tr>
@@ -2780,6 +2781,9 @@ function AdminPanel({ me, onLogout, isMobile }) {
                             <td style={{ padding: 15, color: "var(--brand-text)" }}>{user.email}</td>
                             <td style={{ padding: 15, color: "var(--brand-text)" }}>{user.ime || "-"}</td>
                             <td style={{ padding: 15, color: "var(--brand-text)" }}>{user.prezime || "-"}</td>
+                            <td style={{ padding: 15, color: "var(--brand-text)", textAlign: "center" }}>
+                              {user.measurementCount || 0}
+                            </td>
                             <td style={{ padding: 15 }}>
                               <span style={{
                                 padding: "4px 12px",
