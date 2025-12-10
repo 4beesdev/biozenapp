@@ -150,7 +150,7 @@ public class AuthController {
                 System.out.println("Reset URL: " + resetUrl);
                 
                 try {
-                    boolean emailSent = emailService.sendPasswordResetEmail(user.getEmail(), resetToken, resetUrl);
+                    boolean emailSent = emailService.sendPasswordResetEmail(user.getEmail(), resetToken, resetUrl, frontendUrl);
                     System.out.println("Email sent: " + emailSent);
                     
                     if (emailSent) {
