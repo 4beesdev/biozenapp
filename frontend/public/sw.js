@@ -1,5 +1,5 @@
 // Service Worker za BioZen PWA
-const CACHE_NAME = 'biozen-v2';
+const CACHE_NAME = 'biozen-v3';
 const urlsToCache = [
   '/',
   '/index.html',
