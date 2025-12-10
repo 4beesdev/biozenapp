@@ -84,8 +84,20 @@ public class AdminController {
             @RequestParam(required = false) String status) {
         
         System.out.println("=== GET /api/admin/users ===");
+        System.out.println("Request reached controller!");
+        System.out.println("Auth object: " + (auth != null ? "EXISTS" : "NULL"));
+        if (auth != null) {
+            System.out.println("Auth principal: " + auth.getPrincipal());
+            System.out.println("Auth authorities: " + auth.getAuthorities());
+            System.out.println("Auth isAuthenticated: " + auth.isAuthenticated());
+        }
         System.out.println("Page: " + page + ", Size: " + size);
         System.out.println("Search: " + search + ", Status: " + status);
+        
+        if (auth == null) {
+            System.out.println("ERROR: Authentication is null - returning 401");
+            return ResponseEntity.status(401).body(Map.of("message", "Niste autentifikovani"));
+        }
         
         if (!isAdmin(auth)) {
             System.out.println("ERROR: User is not admin");
@@ -162,6 +174,20 @@ public class AdminController {
 
     @GetMapping("/users/stats")
     public ResponseEntity<?> getUserStats(Authentication auth) {
+        System.out.println("=== GET /api/admin/users/stats ===");
+        System.out.println("Request reached controller!");
+        System.out.println("Auth object: " + (auth != null ? "EXISTS" : "NULL"));
+        if (auth != null) {
+            System.out.println("Auth principal: " + auth.getPrincipal());
+            System.out.println("Auth authorities: " + auth.getAuthorities());
+            System.out.println("Auth isAuthenticated: " + auth.isAuthenticated());
+        }
+        
+        if (auth == null) {
+            System.out.println("ERROR: Authentication is null - returning 401");
+            return ResponseEntity.status(401).body(Map.of("message", "Niste autentifikovani"));
+        }
+        
         if (!isAdmin(auth)) {
             return ResponseEntity.status(403).body(Map.of("message", "Nedovoljno dozvola"));
         }
