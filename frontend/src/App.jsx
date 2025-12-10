@@ -468,6 +468,37 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
   const chartRef = useRef(null);
   const isMobile = isMobileProp !== undefined ? isMobileProp : window.innerWidth <= 768;
 
+  // Priprema podataka za grafikon i domen Y ose (da obuhvati i referentne linije)
+  const chartData = measurements
+    .slice()
+    .sort((a, b) => new Date(a.datum) - new Date(b.datum))
+    .map(m => {
+      const date = new Date(m.datum);
+      return {
+        datum: date.toLocaleDateString('sr-RS', { 
+          day: '2-digit', 
+          month: '2-digit',
+          year: date.getFullYear() !== new Date().getFullYear() ? '2-digit' : undefined
+        }),
+        kilaza: m.kilaza,
+        fullDate: m.datum,
+        dateObj: date,
+      };
+    });
+
+  const currentWeight = me?.kilaza ? parseFloat(me.kilaza) : null;
+  const desiredWeight = me?.zeljenaKilaza ? parseFloat(me.zeljenaKilaza) : null;
+  const weightValues = chartData
+    .map(d => parseFloat(d.kilaza))
+    .filter(v => !Number.isNaN(v));
+  if (currentWeight && !Number.isNaN(currentWeight)) weightValues.push(currentWeight);
+  if (desiredWeight && !Number.isNaN(desiredWeight)) weightValues.push(desiredWeight);
+  const minY = weightValues.length ? Math.min(...weightValues) : 0;
+  const maxY = weightValues.length ? Math.max(...weightValues) : 0;
+  const padding = weightValues.length ? Math.max(1, Math.round((maxY - minY) * 0.05)) : 5;
+  const domainMin = minY - padding;
+  const domainMax = maxY + padding;
+
   useEffect(() => {
     if (me) {
       setFormData({
@@ -1643,22 +1674,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                 <div style={{ height: isMobile ? 300 : 400 }}>
                   <ResponsiveContainer width="100%" height="100%">
                   <LineChart
-                    data={measurements
-                      .slice()
-                      .sort((a, b) => new Date(a.datum) - new Date(b.datum))
-                      .map(m => {
-                        const date = new Date(m.datum);
-                        return {
-                          datum: date.toLocaleDateString('sr-RS', { 
-                            day: '2-digit', 
-                            month: '2-digit',
-                            year: date.getFullYear() !== new Date().getFullYear() ? '2-digit' : undefined
-                          }),
-                          kilaza: m.kilaza,
-                          fullDate: m.datum,
-                          dateObj: date,
-                        };
-                      })}
+                    data={chartData}
                     margin={{ top: 10, right: 30, left: 20, bottom: 30 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--brand-border)" />
@@ -1670,6 +1686,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                     <YAxis 
                       stroke="var(--brand-text-light)"
                       style={{ fontSize: 12 }}
+                      domain={[domainMin, domainMax]}
                       label={{ 
                         value: 'Kilaža (kg)', 
                         angle: -90, 
@@ -1706,6 +1723,14 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                         stroke="#8b5cf6" 
                         strokeWidth={2}
                         strokeDasharray="5 5"
+                      />
+                    )}
+                    {me?.zeljenaKilaza && parseFloat(me.zeljenaKilaza) > 0 && (
+                      <ReferenceLine 
+                        y={parseFloat(me.zeljenaKilaza)} 
+                        stroke="#f59e0b" 
+                        strokeWidth={2}
+                        strokeDasharray="6 3"
                       />
                     )}
                     <Line 
