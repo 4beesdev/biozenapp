@@ -176,8 +176,13 @@ export default function App() {
     setMessage("Izlogovan");
   }
 
-  // Ako je korisnik ulogovan, prikaži dashboard
+  // Ako je korisnik ulogovan, proveri da li je admin
   if (isLoggedIn) {
+    // Ako je admin, prikaži admin panel
+    if (me?.role === "ADMIN") {
+      return <AdminPanel me={me} onLogout={logout} isMobile={isMobile} />;
+    }
+    // Inače prikaži obični dashboard
     return <Dashboard me={me} onUpdate={updateUserData} onLogout={logout} activeTab={activeTab} setActiveTab={setActiveTab} message={message} isMobile={isMobile} />;
   }
 
@@ -2378,4 +2383,712 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
   );
 }
 
+// Admin Panel komponenta
+function AdminPanel({ me, onLogout, isMobile }) {
+  const [activeSection, setActiveSection] = useState("dashboard"); // dashboard | users | blogs
+  const [users, setUsers] = useState([]);
+  const [userStats, setUserStats] = useState(null);
+  const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [showBlogForm, setShowBlogForm] = useState(false);
+  const [editingBlog, setEditingBlog] = useState(null);
+  const [blogForm, setBlogForm] = useState({
+    title: "",
+    content: "",
+    excerpt: "",
+    featuredImage: "",
+    status: "DRAFT"
+  });
+
+  useEffect(() => {
+    if (activeSection === "dashboard" || activeSection === "users") {
+      loadUserStats();
+      loadUsers();
+    } else if (activeSection === "blogs") {
+      loadBlogs();
+    }
+  }, [activeSection, currentPage, searchTerm]);
+
+  async function loadUserStats() {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const res = await fetch("/api/admin/users/stats", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setUserStats(data);
+      }
+    } catch (e) {
+      console.error("Greška pri učitavanju statistika:", e);
+    }
+  }
+
+  async function loadUsers() {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    setLoading(true);
+    try {
+      const url = `/api/admin/users?page=${currentPage}&size=20${searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : ""}`;
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setUsers(data.users || []);
+        setTotalPages(data.totalPages || 0);
+      }
+    } catch (e) {
+      console.error("Greška pri učitavanju korisnika:", e);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function loadBlogs() {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/admin/blog?page=${currentPage}&size=20`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setBlogs(data.posts || []);
+        setTotalPages(data.totalPages || 0);
+      }
+    } catch (e) {
+      console.error("Greška pri učitavanju blogova:", e);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleSaveBlog() {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const url = editingBlog ? `/api/admin/blog/${editingBlog.id}` : "/api/admin/blog";
+      const method = editingBlog ? "PUT" : "POST";
+      
+      const res = await fetch(url, {
+        method,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(blogForm),
+      });
+
+      if (res.ok) {
+        setShowBlogForm(false);
+        setEditingBlog(null);
+        setBlogForm({ title: "", content: "", excerpt: "", featuredImage: "", status: "DRAFT" });
+        loadBlogs();
+      }
+    } catch (e) {
+      console.error("Greška pri čuvanju bloga:", e);
+    }
+  }
+
+  async function handleDeleteBlog(id) {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    if (!confirm("Da li ste sigurni da želite da obrišete ovaj blog?")) return;
+
+    try {
+      const res = await fetch(`/api/admin/blog/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.ok) {
+        loadBlogs();
+      }
+    } catch (e) {
+      console.error("Greška pri brisanju bloga:", e);
+    }
+  }
+
+  async function handlePublishBlog(id) {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const res = await fetch(`/api/admin/blog/${id}/publish`, {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.ok) {
+        loadBlogs();
+      }
+    } catch (e) {
+      console.error("Greška pri objavljivanju bloga:", e);
+    }
+  }
+
+  return (
+    <div style={{
+      minHeight: "100vh",
+      background: "var(--brand-bg)",
+      padding: isMobile ? "20px 10px" : "40px 20px",
+    }}>
+      {/* Header */}
+      <div style={{
+        maxWidth: 1200,
+        margin: "0 auto 30px",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        flexWrap: "wrap",
+        gap: 15,
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 15 }}>
+          <img src="/logo.svg" alt="BioZen" style={{ height: 40 }} />
+          <h1 style={{ margin: 0, color: "var(--brand-primary)", fontSize: isMobile ? 20 : 24 }}>
+            Admin Panel
+          </h1>
+        </div>
+        <button
+          onClick={onLogout}
+          style={{
+            padding: "10px 20px",
+            background: "var(--brand-error)",
+            color: "#fff",
+            border: 0,
+            borderRadius: 8,
+            cursor: "pointer",
+            fontWeight: 600,
+          }}
+        >
+          Izloguj se
+        </button>
+      </div>
+
+      {/* Navigation */}
+      <div style={{
+        maxWidth: 1200,
+        margin: "0 auto 30px",
+        display: "flex",
+        gap: 10,
+        borderBottom: "2px solid var(--brand-border)",
+      }}>
+        {["dashboard", "users", "blogs"].map((section) => (
+          <button
+            key={section}
+            onClick={() => {
+              setActiveSection(section);
+              setCurrentPage(0);
+              setSearchTerm("");
+            }}
+            style={{
+              padding: "12px 24px",
+              background: "transparent",
+              border: 0,
+              borderBottom: activeSection === section ? "3px solid var(--brand-primary)" : "3px solid transparent",
+              color: activeSection === section ? "var(--brand-primary)" : "var(--brand-text-light)",
+              fontWeight: activeSection === section ? 600 : 400,
+              cursor: "pointer",
+              fontSize: 15,
+            }}
+          >
+            {section === "dashboard" ? "Dashboard" : section === "users" ? "Korisnici" : "Blogovi"}
+          </button>
+        ))}
+      </div>
+
+      {/* Content */}
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        {activeSection === "dashboard" && (
+          <div>
+            <h2 style={{ color: "var(--brand-text)", marginBottom: 20 }}>Statistike</h2>
+            {userStats && (
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: isMobile ? "1fr" : "repeat(4, 1fr)",
+                gap: 20,
+                marginBottom: 30,
+              }}>
+                <div style={{
+                  background: "#fff",
+                  padding: 20,
+                  borderRadius: 12,
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                }}>
+                  <div style={{ color: "var(--brand-text-light)", fontSize: 14, marginBottom: 8 }}>Ukupno korisnika</div>
+                  <div style={{ color: "var(--brand-primary)", fontSize: 32, fontWeight: 700 }}>{userStats.totalUsers}</div>
+                </div>
+                <div style={{
+                  background: "#fff",
+                  padding: 20,
+                  borderRadius: 12,
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                }}>
+                  <div style={{ color: "var(--brand-text-light)", fontSize: 14, marginBottom: 8 }}>Aktivni korisnici</div>
+                  <div style={{ color: "var(--brand-success)", fontSize: 32, fontWeight: 700 }}>{userStats.activeUsers}</div>
+                </div>
+                <div style={{
+                  background: "#fff",
+                  padding: 20,
+                  borderRadius: 12,
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                }}>
+                  <div style={{ color: "var(--brand-text-light)", fontSize: 14, marginBottom: 8 }}>Novi danas</div>
+                  <div style={{ color: "var(--brand-primary)", fontSize: 32, fontWeight: 700 }}>{userStats.newUsersToday}</div>
+                </div>
+                <div style={{
+                  background: "#fff",
+                  padding: 20,
+                  borderRadius: 12,
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                }}>
+                  <div style={{ color: "var(--brand-text-light)", fontSize: 14, marginBottom: 8 }}>Prosečna kilaža</div>
+                  <div style={{ color: "var(--brand-primary)", fontSize: 32, fontWeight: 700 }}>{userStats.averageWeight} kg</div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeSection === "users" && (
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 15 }}>
+              <h2 style={{ color: "var(--brand-text)", margin: 0 }}>Korisnici</h2>
+              <input
+                type="text"
+                placeholder="Pretraži po email-u..."
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(0);
+                }}
+                style={{
+                  padding: "10px 15px",
+                  border: "1px solid var(--brand-border)",
+                  borderRadius: 8,
+                  fontSize: 14,
+                  minWidth: 200,
+                }}
+              />
+            </div>
+            {loading ? (
+              <div style={{ textAlign: "center", padding: 40, color: "var(--brand-text-light)" }}>Učitavanje...</div>
+            ) : (
+              <>
+                <div style={{
+                  background: "#fff",
+                  borderRadius: 12,
+                  overflow: "hidden",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                    <thead>
+                      <tr style={{ background: "var(--brand-bg)" }}>
+                        <th style={{ padding: 15, textAlign: "left", borderBottom: "2px solid var(--brand-border)", color: "var(--brand-text)" }}>Email</th>
+                        <th style={{ padding: 15, textAlign: "left", borderBottom: "2px solid var(--brand-border)", color: "var(--brand-text)" }}>Ime</th>
+                        <th style={{ padding: 15, textAlign: "left", borderBottom: "2px solid var(--brand-border)", color: "var(--brand-text)" }}>Prezime</th>
+                        <th style={{ padding: 15, textAlign: "left", borderBottom: "2px solid var(--brand-border)", color: "var(--brand-text)" }}>Status</th>
+                        <th style={{ padding: 15, textAlign: "left", borderBottom: "2px solid var(--brand-border)", color: "var(--brand-text)" }}>Akcije</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {users.map((user) => (
+                        <tr key={user.id} style={{ borderBottom: "1px solid var(--brand-border)" }}>
+                          <td style={{ padding: 15, color: "var(--brand-text)" }}>{user.email}</td>
+                          <td style={{ padding: 15, color: "var(--brand-text)" }}>{user.ime || "-"}</td>
+                          <td style={{ padding: 15, color: "var(--brand-text)" }}>{user.prezime || "-"}</td>
+                          <td style={{ padding: 15 }}>
+                            <span style={{
+                              padding: "4px 12px",
+                              borderRadius: 12,
+                              fontSize: 12,
+                              fontWeight: 600,
+                              background: (user.isActive !== false) ? "rgba(16, 185, 129, 0.1)" : "rgba(239, 68, 68, 0.1)",
+                              color: (user.isActive !== false) ? "var(--brand-success)" : "var(--brand-error)",
+                            }}>
+                              {(user.isActive !== false) ? "Aktivan" : "Neaktivan"}
+                            </span>
+                          </td>
+                          <td style={{ padding: 15 }}>
+                            <button
+                              onClick={() => setSelectedUser(user)}
+                              style={{
+                                padding: "6px 12px",
+                                background: "var(--brand-primary)",
+                                color: "#fff",
+                                border: 0,
+                                borderRadius: 6,
+                                cursor: "pointer",
+                                fontSize: 12,
+                                marginRight: 8,
+                              }}
+                            >
+                              Detalji
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                {totalPages > 1 && (
+                  <div style={{ display: "flex", justifyContent: "center", gap: 10, marginTop: 20 }}>
+                    <button
+                      onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
+                      disabled={currentPage === 0}
+                      style={{
+                        padding: "8px 16px",
+                        background: currentPage === 0 ? "var(--brand-border)" : "var(--brand-primary)",
+                        color: "#fff",
+                        border: 0,
+                        borderRadius: 6,
+                        cursor: currentPage === 0 ? "not-allowed" : "pointer",
+                      }}
+                    >
+                      Prethodna
+                    </button>
+                    <span style={{ padding: "8px 16px", color: "var(--brand-text)" }}>
+                      Strana {currentPage + 1} od {totalPages}
+                    </span>
+                    <button
+                      onClick={() => setCurrentPage(p => Math.min(totalPages - 1, p + 1))}
+                      disabled={currentPage >= totalPages - 1}
+                      style={{
+                        padding: "8px 16px",
+                        background: currentPage >= totalPages - 1 ? "var(--brand-border)" : "var(--brand-primary)",
+                        color: "#fff",
+                        border: 0,
+                        borderRadius: 6,
+                        cursor: currentPage >= totalPages - 1 ? "not-allowed" : "pointer",
+                      }}
+                    >
+                      Sledeća
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
+
+        {activeSection === "blogs" && (
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 15 }}>
+              <h2 style={{ color: "var(--brand-text)", margin: 0 }}>Blogovi</h2>
+              <button
+                onClick={() => {
+                  setEditingBlog(null);
+                  setBlogForm({ title: "", content: "", excerpt: "", featuredImage: "", status: "DRAFT" });
+                  setShowBlogForm(true);
+                }}
+                style={{
+                  padding: "12px 24px",
+                  background: "var(--brand-primary)",
+                  color: "#fff",
+                  border: 0,
+                  borderRadius: 8,
+                  cursor: "pointer",
+                  fontWeight: 600,
+                }}
+              >
+                + Novi blog
+              </button>
+            </div>
+            {loading ? (
+              <div style={{ textAlign: "center", padding: 40, color: "var(--brand-text-light)" }}>Učitavanje...</div>
+            ) : (
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)",
+                gap: 20,
+              }}>
+                {blogs.map((blog) => (
+                  <div key={blog.id} style={{
+                    background: "#fff",
+                    padding: 20,
+                    borderRadius: 12,
+                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                  }}>
+                    <h3 style={{ margin: "0 0 10px 0", color: "var(--brand-text)" }}>{blog.title}</h3>
+                    <p style={{ color: "var(--brand-text-light)", fontSize: 14, margin: "0 0 15px 0" }}>
+                      {blog.excerpt || blog.content?.substring(0, 100) + "..."}
+                    </p>
+                    <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                      <span style={{
+                        padding: "4px 12px",
+                        borderRadius: 12,
+                        fontSize: 12,
+                        fontWeight: 600,
+                        background: blog.status === "PUBLISHED" ? "rgba(16, 185, 129, 0.1)" : "rgba(239, 68, 68, 0.1)",
+                        color: blog.status === "PUBLISHED" ? "var(--brand-success)" : "var(--brand-error)",
+                      }}>
+                        {blog.status === "PUBLISHED" ? "Objavljen" : "Nacrt"}
+                      </span>
+                      <button
+                        onClick={() => {
+                          setEditingBlog(blog);
+                          setBlogForm({
+                            title: blog.title,
+                            content: blog.content,
+                            excerpt: blog.excerpt,
+                            featuredImage: blog.featuredImage,
+                            status: blog.status,
+                          });
+                          setShowBlogForm(true);
+                        }}
+                        style={{
+                          padding: "6px 12px",
+                          background: "var(--brand-primary)",
+                          color: "#fff",
+                          border: 0,
+                          borderRadius: 6,
+                          cursor: "pointer",
+                          fontSize: 12,
+                        }}
+                      >
+                        Edit
+                      </button>
+                      {blog.status !== "PUBLISHED" && (
+                        <button
+                          onClick={() => handlePublishBlog(blog.id)}
+                          style={{
+                            padding: "6px 12px",
+                            background: "var(--brand-success)",
+                            color: "#fff",
+                            border: 0,
+                            borderRadius: 6,
+                            cursor: "pointer",
+                            fontSize: 12,
+                          }}
+                        >
+                          Objavi
+                        </button>
+                      )}
+                      <button
+                        onClick={() => handleDeleteBlog(blog.id)}
+                        style={{
+                          padding: "6px 12px",
+                          background: "var(--brand-error)",
+                          color: "#fff",
+                          border: 0,
+                          borderRadius: 6,
+                          cursor: "pointer",
+                          fontSize: 12,
+                        }}
+                      >
+                        Obriši
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Blog Form Modal */}
+        {showBlogForm && (
+          <div style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+            padding: 20,
+          }}>
+            <div style={{
+              background: "#fff",
+              borderRadius: 12,
+              padding: 30,
+              maxWidth: 800,
+              width: "100%",
+              maxHeight: "90vh",
+              overflow: "auto",
+            }}>
+              <h2 style={{ margin: "0 0 20px 0", color: "var(--brand-text)" }}>
+                {editingBlog ? "Izmeni blog" : "Novi blog"}
+              </h2>
+              <div style={{ display: "flex", flexDirection: "column", gap: 15 }}>
+                <input
+                  type="text"
+                  placeholder="Naslov"
+                  value={blogForm.title}
+                  onChange={(e) => setBlogForm({ ...blogForm, title: e.target.value })}
+                  style={{
+                    padding: 12,
+                    border: "1px solid var(--brand-border)",
+                    borderRadius: 8,
+                    fontSize: 14,
+                  }}
+                />
+                <textarea
+                  placeholder="Kratak opis (excerpt)"
+                  value={blogForm.excerpt}
+                  onChange={(e) => setBlogForm({ ...blogForm, excerpt: e.target.value })}
+                  rows={3}
+                  style={{
+                    padding: 12,
+                    border: "1px solid var(--brand-border)",
+                    borderRadius: 8,
+                    fontSize: 14,
+                    resize: "vertical",
+                  }}
+                />
+                <textarea
+                  placeholder="Sadržaj (HTML)"
+                  value={blogForm.content}
+                  onChange={(e) => setBlogForm({ ...blogForm, content: e.target.value })}
+                  rows={10}
+                  style={{
+                    padding: 12,
+                    border: "1px solid var(--brand-border)",
+                    borderRadius: 8,
+                    fontSize: 14,
+                    resize: "vertical",
+                    fontFamily: "monospace",
+                  }}
+                />
+                <input
+                  type="text"
+                  placeholder="URL slike (opciono)"
+                  value={blogForm.featuredImage}
+                  onChange={(e) => setBlogForm({ ...blogForm, featuredImage: e.target.value })}
+                  style={{
+                    padding: 12,
+                    border: "1px solid var(--brand-border)",
+                    borderRadius: 8,
+                    fontSize: 14,
+                  }}
+                />
+                <select
+                  value={blogForm.status}
+                  onChange={(e) => setBlogForm({ ...blogForm, status: e.target.value })}
+                  style={{
+                    padding: 12,
+                    border: "1px solid var(--brand-border)",
+                    borderRadius: 8,
+                    fontSize: 14,
+                  }}
+                >
+                  <option value="DRAFT">Nacrt</option>
+                  <option value="PUBLISHED">Objavljen</option>
+                  <option value="ARCHIVED">Arhiviran</option>
+                </select>
+                <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+                  <button
+                    onClick={() => {
+                      setShowBlogForm(false);
+                      setEditingBlog(null);
+                      setBlogForm({ title: "", content: "", excerpt: "", featuredImage: "", status: "DRAFT" });
+                    }}
+                    style={{
+                      padding: "12px 24px",
+                      background: "var(--brand-border)",
+                      color: "var(--brand-text)",
+                      border: 0,
+                      borderRadius: 8,
+                      cursor: "pointer",
+                      fontWeight: 600,
+                    }}
+                  >
+                    Otkaži
+                  </button>
+                  <button
+                    onClick={handleSaveBlog}
+                    style={{
+                      padding: "12px 24px",
+                      background: "var(--brand-primary)",
+                      color: "#fff",
+                      border: 0,
+                      borderRadius: 8,
+                      cursor: "pointer",
+                      fontWeight: 600,
+                    }}
+                  >
+                    Sačuvaj
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* User Details Modal */}
+        {selectedUser && (
+          <div style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+            padding: 20,
+          }}>
+            <div style={{
+              background: "#fff",
+              borderRadius: 12,
+              padding: 30,
+              maxWidth: 600,
+              width: "100%",
+              maxHeight: "90vh",
+              overflow: "auto",
+            }}>
+              <h2 style={{ margin: "0 0 20px 0", color: "var(--brand-text)" }}>Detalji korisnika</h2>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <div><strong>Email:</strong> {selectedUser.email}</div>
+                <div><strong>Ime:</strong> {selectedUser.ime || "-"}</div>
+                <div><strong>Prezime:</strong> {selectedUser.prezime || "-"}</div>
+                <div><strong>Pol:</strong> {selectedUser.pol || "-"}</div>
+                <div><strong>Starost:</strong> {selectedUser.starost || "-"}</div>
+                <div><strong>Kilaža:</strong> {selectedUser.kilaza || "-"} kg</div>
+                <div><strong>Željena kilaža:</strong> {selectedUser.zeljenaKilaza || "-"} kg</div>
+                <div><strong>Status:</strong> {selectedUser.isActive !== false ? "Aktivan" : "Neaktivan"}</div>
+                <div><strong>Registracija:</strong> {selectedUser.createdAt ? new Date(selectedUser.createdAt).toLocaleDateString('sr-RS') : "-"}</div>
+                <div><strong>Poslednji login:</strong> {selectedUser.lastLoginAt ? new Date(selectedUser.lastLoginAt).toLocaleDateString('sr-RS') : "-"}</div>
+                <div><strong>Broj login-a:</strong> {selectedUser.loginCount || 0}</div>
+              </div>
+              <button
+                onClick={() => setSelectedUser(null)}
+                style={{
+                  marginTop: 20,
+                  padding: "12px 24px",
+                  background: "var(--brand-primary)",
+                  color: "#fff",
+                  border: 0,
+                  borderRadius: 8,
+                  cursor: "pointer",
+                  fontWeight: 600,
+                  width: "100%",
+                }}
+              >
+                Zatvori
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 

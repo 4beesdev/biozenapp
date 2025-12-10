@@ -48,6 +48,7 @@ public class MeController {
         response.put("kilaza", user.getKilaza());
         response.put("zeljenaKilaza", user.getZeljenaKilaza());
         response.put("id", user.getId());
+        response.put("role", user.getRole() != null ? user.getRole() : "USER");
 
         return ResponseEntity.ok(response);
     }
@@ -85,6 +86,7 @@ public class MeController {
         response.put("starost", user.getStarost());
         response.put("kilaza", user.getKilaza());
         response.put("zeljenaKilaza", user.getZeljenaKilaza());
+        response.put("role", user.getRole() != null ? user.getRole() : "USER");
 
         return ResponseEntity.ok(response);
     }
