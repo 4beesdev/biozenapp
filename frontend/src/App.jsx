@@ -552,16 +552,23 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
   }, [activeTab, me]);
 
   async function loadPublishedBlogs() {
+    console.log("=== loadPublishedBlogs() called ===");
     setLoadingBlogs(true);
     try {
       const res = await fetch("/api/blog?page=0&size=20");
+      console.log("Response status:", res.status, res.ok);
       const data = await res.json();
       console.log("=== Blogovi API Response ===", data);
+      console.log("Data.posts:", data.posts);
+      console.log("Data.posts type:", typeof data.posts);
+      console.log("Data.posts is array:", Array.isArray(data.posts));
       if (res.ok && data.posts) {
         console.log("Učitano blogova:", data.posts.length);
+        console.log("Blogovi:", data.posts);
         setBlogs(data.posts);
+        console.log("Blogs state set to:", data.posts);
       } else {
-        console.error("Greška pri učitavanju blogova:", data);
+        console.error("Greška pri učitavanju blogova - res.ok:", res.ok, "data.posts:", data.posts);
         setBlogs([]);
       }
     } catch (e) {
@@ -569,6 +576,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
       setBlogs([]);
     } finally {
       setLoadingBlogs(false);
+      console.log("Loading finished, blogs state:", blogs);
     }
   }
 
@@ -2229,6 +2237,14 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
             letterSpacing: "-0.3px",
           }}>Blogovi</h2>
           
+          {(() => {
+            console.log("=== Rendering blogovi section ===");
+            console.log("loadingBlogs:", loadingBlogs);
+            console.log("blogs.length:", blogs.length);
+            console.log("blogs:", blogs);
+            console.log("selectedBlog:", selectedBlog);
+            return null;
+          })()}
           {loadingBlogs ? (
             <div style={{ textAlign: "center", padding: 40, color: "var(--brand-text-light)" }}>
               Učitavanje...
