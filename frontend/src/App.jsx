@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from "recharts";
 import html2canvas from "html2canvas";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
 import "./brand.css";
 
 export default function App() {
@@ -2675,6 +2673,14 @@ function AdminPanel({ me, onLogout, isMobile }) {
     status: "DRAFT"
   });
   const [uploadingImage, setUploadingImage] = useState(false);
+  const contentEditorRef = useRef(null);
+
+  // Update contentEditable when editing blog
+  useEffect(() => {
+    if (contentEditorRef.current && editingBlog) {
+      contentEditorRef.current.innerHTML = blogForm.content || "";
+    }
+  }, [editingBlog, showBlogForm]);
 
   useEffect(() => {
     console.log("AdminPanel useEffect triggered, activeSection:", activeSection);
@@ -3168,6 +3174,12 @@ function AdminPanel({ me, onLogout, isMobile }) {
                   setEditingBlog(null);
                   setBlogForm({ title: "", content: "", excerpt: "", featuredImage: "", status: "DRAFT" });
                   setShowBlogForm(true);
+                  // Clear editor
+                  setTimeout(() => {
+                    if (contentEditorRef.current) {
+                      contentEditorRef.current.innerHTML = "";
+                    }
+                  }, 100);
                 }}
                 style={{
                   padding: "12px 24px",
@@ -3216,13 +3228,19 @@ function AdminPanel({ me, onLogout, isMobile }) {
                         onClick={() => {
                           setEditingBlog(blog);
                           setBlogForm({
-                            title: blog.title,
-                            content: blog.content,
-                            excerpt: blog.excerpt,
-                            featuredImage: blog.featuredImage,
-                            status: blog.status,
+                            title: blog.title || "",
+                            content: blog.content || "",
+                            excerpt: blog.excerpt || "",
+                            featuredImage: blog.featuredImage || "",
+                            status: blog.status || "DRAFT",
                           });
                           setShowBlogForm(true);
+                          // Set content in editor after a brief delay to ensure DOM is ready
+                          setTimeout(() => {
+                            if (contentEditorRef.current) {
+                              contentEditorRef.current.innerHTML = blog.content || "";
+                            }
+                          }, 100);
                         }}
                         style={{
                           padding: "6px 12px",
@@ -3331,26 +3349,114 @@ function AdminPanel({ me, onLogout, isMobile }) {
                   <label style={{ display: "block", marginBottom: 8, color: "var(--brand-text)", fontWeight: 600 }}>
                     Sadržaj
                   </label>
-                  <ReactQuill
-                    theme="snow"
-                    value={blogForm.content}
-                    onChange={(content) => setBlogForm({ ...blogForm, content })}
-                    modules={{
-                      toolbar: [
-                        [{ 'header': [1, 2, 3, false] }],
-                        ['bold', 'italic', 'underline', 'strike'],
-                        [{ 'size': ['small', false, 'large', 'huge'] }],
-                        [{ 'font': [] }],
-                        [{ 'color': [] }, { 'background': [] }],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                        [{ 'align': [] }],
-                        ['clean']
-                      ],
+                  {/* Toolbar */}
+                  <div style={{
+                    display: "flex",
+                    gap: 8,
+                    padding: 8,
+                    background: "var(--brand-bg)",
+                    border: "1px solid var(--brand-border)",
+                    borderBottom: "none",
+                    borderRadius: "8px 8px 0 0",
+                    flexWrap: "wrap",
+                  }}>
+                    <button
+                      type="button"
+                      onClick={() => document.execCommand('bold', false, null)}
+                      style={{
+                        padding: "6px 12px",
+                        background: "#fff",
+                        border: "1px solid var(--brand-border)",
+                        borderRadius: 4,
+                        cursor: "pointer",
+                        fontWeight: 600,
+                      }}
+                      title="Bold"
+                    >
+                      B
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => document.execCommand('italic', false, null)}
+                      style={{
+                        padding: "6px 12px",
+                        background: "#fff",
+                        border: "1px solid var(--brand-border)",
+                        borderRadius: 4,
+                        cursor: "pointer",
+                        fontStyle: "italic",
+                      }}
+                      title="Italic"
+                    >
+                      I
+                    </button>
+                    <select
+                      onChange={(e) => {
+                        const size = e.target.value;
+                        if (size) {
+                          document.execCommand('fontSize', false, size);
+                        }
+                        e.target.value = "";
+                      }}
+                      style={{
+                        padding: "6px 12px",
+                        background: "#fff",
+                        border: "1px solid var(--brand-border)",
+                        borderRadius: 4,
+                        cursor: "pointer",
+                      }}
+                      title="Font Size"
+                    >
+                      <option value="">Font Size</option>
+                      <option value="1">Mali</option>
+                      <option value="3">Normalan</option>
+                      <option value="5">Veliki</option>
+                      <option value="7">Vrlo veliki</option>
+                    </select>
+                    <select
+                      onChange={(e) => {
+                        const font = e.target.value;
+                        if (font) {
+                          document.execCommand('fontName', false, font);
+                        }
+                        e.target.value = "";
+                      }}
+                      style={{
+                        padding: "6px 12px",
+                        background: "#fff",
+                        border: "1px solid var(--brand-border)",
+                        borderRadius: 4,
+                        cursor: "pointer",
+                      }}
+                      title="Font Family"
+                    >
+                      <option value="">Font</option>
+                      <option value="Arial">Arial</option>
+                      <option value="Times New Roman">Times New Roman</option>
+                      <option value="Courier New">Courier New</option>
+                      <option value="Georgia">Georgia</option>
+                      <option value="Verdana">Verdana</option>
+                    </select>
+                  </div>
+                  {/* ContentEditable Editor */}
+                  <div
+                    ref={contentEditorRef}
+                    contentEditable
+                    onInput={(e) => {
+                      const html = e.target.innerHTML;
+                      setBlogForm({ ...blogForm, content: html });
                     }}
+                    suppressContentEditableWarning={true}
                     style={{
-                      background: "#fff",
                       minHeight: 300,
-                      marginBottom: 15,
+                      padding: 12,
+                      border: "1px solid var(--brand-border)",
+                      borderRadius: "0 0 8px 8px",
+                      background: "#fff",
+                      fontSize: 14,
+                      lineHeight: 1.6,
+                      outline: "none",
+                      overflow: "auto",
                     }}
                   />
                 </div>
