@@ -2427,14 +2427,19 @@ function AdminPanel({ me, onLogout, isMobile }) {
   });
 
   useEffect(() => {
-    console.log("AdminPanel useEffect triggered, activeSection:", activeSection);
+    console.log("=== AdminPanel useEffect triggered ===");
+    console.log("activeSection:", activeSection);
+    console.log("currentPage:", currentPage);
+    console.log("searchTerm:", searchTerm);
     if (activeSection === "dashboard" || activeSection === "users") {
-      console.log("Loading users and stats...");
+      console.log("✓ Loading users and stats...");
       loadUserStats();
       loadUsers();
     } else if (activeSection === "blogs") {
-      console.log("Loading blogs...");
+      console.log("✓ Loading blogs...");
       loadBlogs();
+    } else {
+      console.log("✗ No action for activeSection:", activeSection);
     }
   }, [activeSection, currentPage, searchTerm]);
 
