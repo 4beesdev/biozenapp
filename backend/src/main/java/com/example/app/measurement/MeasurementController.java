@@ -30,14 +30,19 @@ public class MeasurementController {
             return ResponseEntity.status(401).build();
         }
 
-        String email = String.valueOf(auth.getPrincipal());
-        Optional<User> userOpt = userRepository.findByEmail(email);
+        String userIdStr = String.valueOf(auth.getPrincipal());
+        Long userId;
+        try {
+            userId = Long.parseLong(userIdStr);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.status(401).build();
+        }
 
-        if (userOpt.isEmpty()) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty() || userOpt.get().getIsActive() == null || !userOpt.get().getIsActive()) {
             return ResponseEntity.status(404).build();
         }
 
-        Long userId = userOpt.get().getId();
         List<Measurement> measurements = measurementRepository.findByUserIdOrderByDatumDesc(userId);
         return ResponseEntity.ok(measurements);
     }
@@ -48,15 +53,18 @@ public class MeasurementController {
             return ResponseEntity.status(401).body(Map.of("message", "Niste autentifikovani"));
         }
 
-        String email = String.valueOf(auth.getPrincipal());
-        Optional<User> userOpt = userRepository.findByEmail(email);
-
-        if (userOpt.isEmpty()) {
-            return ResponseEntity.status(404).body(Map.of("message", "Korisnik nije pronađen"));
+        String userIdStr = String.valueOf(auth.getPrincipal());
+        Long userId;
+        try {
+            userId = Long.parseLong(userIdStr);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.status(401).body(Map.of("message", "Neispravan token"));
         }
 
-        User user = userOpt.get();
-        Long userId = user.getId();
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty() || userOpt.get().getIsActive() == null || !userOpt.get().getIsActive()) {
+            return ResponseEntity.status(404).body(Map.of("message", "Korisnik nije pronađen ili je deaktiviran"));
+        }
 
         // Proveri da li postoji prethodno merenje za izračunavanje promene
         List<Measurement> previousMeasurements = measurementRepository.findByUserIdOrderByDatumDesc(userId);
@@ -91,14 +99,18 @@ public class MeasurementController {
             return ResponseEntity.status(401).body(Map.of("message", "Niste autentifikovani"));
         }
 
-        String email = String.valueOf(auth.getPrincipal());
-        Optional<User> userOpt = userRepository.findByEmail(email);
-
-        if (userOpt.isEmpty()) {
-            return ResponseEntity.status(404).body(Map.of("message", "Korisnik nije pronađen"));
+        String userIdStr = String.valueOf(auth.getPrincipal());
+        Long userId;
+        try {
+            userId = Long.parseLong(userIdStr);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.status(401).body(Map.of("message", "Neispravan token"));
         }
 
-        Long userId = userOpt.get().getId();
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty() || userOpt.get().getIsActive() == null || !userOpt.get().getIsActive()) {
+            return ResponseEntity.status(404).body(Map.of("message", "Korisnik nije pronađen ili je deaktiviran"));
+        }
         Optional<Measurement> measurementOpt = measurementRepository.findById(id);
 
         if (measurementOpt.isEmpty() || !measurementOpt.get().getUserId().equals(userId)) {

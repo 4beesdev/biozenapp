@@ -52,8 +52,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String token = h.substring(7);
             try {
                 Claims c = jwt.parse(token).getBody();
+                // Subject is now user ID (not email) for security
+                String userId = c.getSubject();
+                // Store user ID as principal, and email/role in claims for easy access
                 UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(c.getSubject(), null, List.of());
+                        new UsernamePasswordAuthenticationToken(userId, null, List.of());
                 SecurityContextHolder.getContext().setAuthentication(auth);
             } catch (Exception ignored) {
                 // nevalidan/istekao token -> nastavi kao neregistrovan

@@ -27,17 +27,37 @@ public class MeController {
             ));
         }
 
-        String email = String.valueOf(auth.getPrincipal());
-        Optional<User> userOpt = userRepository.findByEmail(email);
+        // Principal is now user ID (not email) for security
+        String userIdStr = String.valueOf(auth.getPrincipal());
+        Long userId;
+        try {
+            userId = Long.parseLong(userIdStr);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.status(401).body(Map.of(
+                    "authenticated", false,
+                    "message", "Neispravan token"
+            ));
+        }
+
+        Optional<User> userOpt = userRepository.findById(userId);
 
         if (userOpt.isEmpty()) {
-            return ResponseEntity.ok(Map.of(
-                    "authenticated", true,
-                    "email", email
+            return ResponseEntity.status(404).body(Map.of(
+                    "authenticated", false,
+                    "message", "Korisnik nije pronađen"
             ));
         }
 
         User user = userOpt.get();
+        
+        // Check if user is active
+        if (user.getIsActive() == null || !user.getIsActive()) {
+            return ResponseEntity.status(403).body(Map.of(
+                    "authenticated", false,
+                    "message", "Korisnički nalog je deaktiviran"
+            ));
+        }
+
         Map<String, Object> response = new HashMap<>();
         response.put("authenticated", true);
         response.put("email", user.getEmail());
@@ -59,14 +79,27 @@ public class MeController {
             return ResponseEntity.status(401).body(Map.of("message", "Niste autentifikovani"));
         }
 
-        String email = String.valueOf(auth.getPrincipal());
-        Optional<User> userOpt = userRepository.findByEmail(email);
+        // Principal is now user ID (not email) for security
+        String userIdStr = String.valueOf(auth.getPrincipal());
+        Long userId;
+        try {
+            userId = Long.parseLong(userIdStr);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.status(401).body(Map.of("message", "Neispravan token"));
+        }
+
+        Optional<User> userOpt = userRepository.findById(userId);
 
         if (userOpt.isEmpty()) {
             return ResponseEntity.status(404).body(Map.of("message", "Korisnik nije pronađen"));
         }
 
         User user = userOpt.get();
+        
+        // Check if user is active
+        if (user.getIsActive() == null || !user.getIsActive()) {
+            return ResponseEntity.status(403).body(Map.of("message", "Korisnički nalog je deaktiviran"));
+        }
         
         if (request.ime != null) user.setIme(request.ime);
         if (request.prezime != null) user.setPrezime(request.prezime);

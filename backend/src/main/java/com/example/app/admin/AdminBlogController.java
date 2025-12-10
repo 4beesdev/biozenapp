@@ -28,9 +28,17 @@ public class AdminBlogController {
 
     private boolean isAdmin(Authentication auth) {
         if (auth == null || auth.getPrincipal() == null) return false;
-        String email = String.valueOf(auth.getPrincipal());
-        Optional<User> userOpt = userRepository.findByEmail(email);
-        return userOpt.isPresent() && "ADMIN".equals(userOpt.get().getRole());
+        String userIdStr = String.valueOf(auth.getPrincipal());
+        Long userId;
+        try {
+            userId = Long.parseLong(userIdStr);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) return false;
+        User user = userOpt.get();
+        return user.getIsActive() != null && user.getIsActive() && "ADMIN".equals(user.getRole());
     }
 
     private String generateSlug(String title) {
@@ -106,8 +114,14 @@ public class AdminBlogController {
         }
 
         try {
-            String email = String.valueOf(auth.getPrincipal());
-            Optional<User> userOpt = userRepository.findByEmail(email);
+            String userIdStr = String.valueOf(auth.getPrincipal());
+            Long userId;
+            try {
+                userId = Long.parseLong(userIdStr);
+            } catch (NumberFormatException e) {
+                return ResponseEntity.status(401).body(Map.of("message", "Neispravan token"));
+            }
+            Optional<User> userOpt = userRepository.findById(userId);
             if (userOpt.isEmpty()) {
                 return ResponseEntity.status(401).body(Map.of("message", "Korisnik nije pronađen"));
             }
@@ -118,7 +132,7 @@ public class AdminBlogController {
             post.setContent((String) req.get("content"));
             post.setExcerpt((String) req.get("excerpt"));
             post.setFeaturedImage((String) req.get("featuredImage"));
-            post.setAuthorId(userOpt.get().getId());
+            post.setAuthorId(userId);
             post.setStatus((String) req.getOrDefault("status", "DRAFT"));
             post.setCreatedAt(Instant.now());
 

@@ -95,7 +95,8 @@ public class AuthController {
             e.printStackTrace();
         }
 
-        String token = jwt.generate(u.getEmail(), Map.of("uid", u.getId()));
+        // Use user ID as subject (not email) for security - email can change
+        String token = jwt.generate(String.valueOf(u.getId()), Map.of("email", u.getEmail(), "role", u.getRole() != null ? u.getRole() : "USER"));
         return ResponseEntity.ok(new AuthRes(token, u.getEmail()));
     }
 
@@ -120,7 +121,8 @@ public class AuthController {
         u.setLoginCount((u.getLoginCount() == null ? 0 : u.getLoginCount()) + 1);
         users.save(u);
 
-        String token = jwt.generate(u.getEmail(), Map.of("uid", u.getId(), "role", u.getRole() != null ? u.getRole() : "USER"));
+        // Use user ID as subject (not email) for security - email can change
+        String token = jwt.generate(String.valueOf(u.getId()), Map.of("email", u.getEmail(), "role", u.getRole() != null ? u.getRole() : "USER"));
         return ResponseEntity.ok(new AuthRes(token, u.getEmail()));
     }
 

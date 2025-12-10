@@ -28,9 +28,17 @@ public class AdminController {
     // Check if user is admin
     private boolean isAdmin(Authentication auth) {
         if (auth == null || auth.getPrincipal() == null) return false;
-        String email = String.valueOf(auth.getPrincipal());
-        Optional<User> userOpt = userRepository.findByEmail(email);
-        return userOpt.isPresent() && "ADMIN".equals(userOpt.get().getRole());
+        String userIdStr = String.valueOf(auth.getPrincipal());
+        Long userId;
+        try {
+            userId = Long.parseLong(userIdStr);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) return false;
+        User user = userOpt.get();
+        return user.getIsActive() != null && user.getIsActive() && "ADMIN".equals(user.getRole());
     }
 
     @GetMapping("/users")

@@ -33,6 +33,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()   // register/login javne
                 .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/api/**").permitAll()  // OPTIONS zahtevi bez autentifikacije
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")  // Admin endpoints require ADMIN role
                 .anyRequest().authenticated()                  // ostalo traži token
         );
         http.httpBasic(basic -> basic.disable());
