@@ -102,18 +102,39 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginReq req) {
+        System.out.println("=== LOGIN REQUEST ===");
+        System.out.println("Email: " + (req != null ? req.email : "null"));
+        System.out.println("Password present: " + (req != null && req.password != null));
+        
         if (req == null || req.email == null || req.password == null) {
+            System.out.println("ERROR: Missing email or password");
             return ResponseEntity.status(401).body(Map.of("message", "Neispravan email ili lozinka"));
         }
 
         Optional<User> userOpt = users.findByEmail(req.email);
+        System.out.println("User found: " + userOpt.isPresent());
+        
         if (userOpt.isEmpty()) {
+            System.out.println("ERROR: User not found for email: " + req.email);
             return ResponseEntity.status(401).body(Map.of("message", "Neispravan email ili lozinka"));
         }
 
         User u = userOpt.get();
-        if (!encoder.matches(req.password, u.getPasswordHash())) {
+        System.out.println("User ID: " + u.getId());
+        System.out.println("User active: " + u.getIsActive());
+        System.out.println("User role: " + u.getRole());
+        
+        boolean passwordMatches = encoder.matches(req.password, u.getPasswordHash());
+        System.out.println("Password matches: " + passwordMatches);
+        
+        if (!passwordMatches) {
+            System.out.println("ERROR: Password does not match");
             return ResponseEntity.status(401).body(Map.of("message", "Neispravan email ili lozinka"));
+        }
+        
+        if (u.getIsActive() == null || !u.getIsActive()) {
+            System.out.println("ERROR: User account is inactive");
+            return ResponseEntity.status(403).body(Map.of("message", "Korisnički nalog je deaktiviran"));
         }
 
         // Update login activity
