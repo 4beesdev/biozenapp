@@ -3756,6 +3756,8 @@ function AdminPanel({ me, onLogout, isMobile }) {
                       setShowBlogForm(false);
                       setEditingBlog(null);
                       setBlogForm({ title: "", content: "", excerpt: "", featuredImage: "", status: "DRAFT" });
+                      setImageInputMode("upload");
+                      setImageUrl("");
                     }}
                     style={{
                       padding: "12px 24px",
