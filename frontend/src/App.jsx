@@ -2238,14 +2238,6 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
             letterSpacing: "-0.3px",
           }}>Blogovi</h2>
           
-          {(() => {
-            console.log("=== Rendering blogovi section ===");
-            console.log("loadingBlogs:", loadingBlogs);
-            console.log("blogs.length:", blogs.length);
-            console.log("blogs:", blogs);
-            console.log("selectedBlog:", selectedBlog);
-            return null;
-          })()}
           {loadingBlogs ? (
             <div style={{ textAlign: "center", padding: 40, color: "var(--brand-text-light)" }}>
               Učitavanje...
