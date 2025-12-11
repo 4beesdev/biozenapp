@@ -3367,6 +3367,14 @@ function AdminPanel({ me, onLogout, isMobile }) {
                             featuredImage: blog.featuredImage || "",
                             status: blog.status || "DRAFT",
                           });
+                          // Ako blog ima featuredImage, proveri da li je URL ili upload
+                          if (blog.featuredImage && (blog.featuredImage.startsWith("http") || blog.featuredImage.startsWith("https"))) {
+                            setImageInputMode("url");
+                            setImageUrl(blog.featuredImage);
+                          } else {
+                            setImageInputMode("upload");
+                            setImageUrl("");
+                          }
                           setShowBlogForm(true);
                           // Set content in editor after a brief delay to ensure DOM is ready
                           setTimeout(() => {
