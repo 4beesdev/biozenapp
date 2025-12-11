@@ -2976,6 +2976,8 @@ function AdminPanel({ me, onLogout, isMobile }) {
         setShowBlogForm(false);
         setEditingBlog(null);
         setBlogForm({ title: "", content: "", excerpt: "", featuredImage: "", status: "DRAFT" });
+        setImageInputMode("upload");
+        setImageUrl("");
         loadBlogs();
       } else {
         const data = await res.json();
@@ -3302,6 +3304,8 @@ function AdminPanel({ me, onLogout, isMobile }) {
                 onClick={() => {
                   setEditingBlog(null);
                   setBlogForm({ title: "", content: "", excerpt: "", featuredImage: "", status: "DRAFT" });
+                  setImageInputMode("upload");
+                  setImageUrl("");
                   setShowBlogForm(true);
                   // Clear editor
                   setTimeout(() => {
