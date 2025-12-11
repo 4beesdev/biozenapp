@@ -14,6 +14,9 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [activeTab, setActiveTab] = useState(null); // null = home, "merenja" | "podaci" | "saveti" | "blogovi" | "shop"
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [showPublicBlogs, setShowPublicBlogs] = useState(false);
+  const [publicBlogs, setPublicBlogs] = useState([]);
+  const [loadingPublicBlogs, setLoadingPublicBlogs] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
