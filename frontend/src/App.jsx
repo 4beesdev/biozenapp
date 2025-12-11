@@ -474,7 +474,7 @@ export default function App() {
 
       {/* Floating notifikacija */}
       {message && (
-        <div style={{
+        <div style={{ 
           position: "fixed",
           top: 20,
           left: "50%",
@@ -2010,11 +2010,11 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
           <h2 style={{ 
             marginTop: 0,
             marginBottom: 24,
-            fontSize: 24,
-            fontWeight: 600,
-            color: "var(--brand-primary)",
-            letterSpacing: "-0.3px",
-          }}>Moji podaci</h2>
+              fontSize: 24,
+              fontWeight: 600,
+              color: "var(--brand-primary)",
+              letterSpacing: "-0.3px",
+            }}>Moji podaci</h2>
           <form onSubmit={handleSubmit}>
             <div style={{ marginBottom: 20 }}>
               <label style={{ 
@@ -2097,8 +2097,8 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
               boxSizing: "border-box",
               fontSize: 15,
               transition: "all 0.2s",
-              background: "var(--brand-bg-light)",
-            }}
+                  background: "var(--brand-bg-light)",
+                }}
                 onFocus={(e) => e.target.style.borderColor = "var(--brand-primary)"}
                 onBlur={(e) => e.target.style.borderColor = "var(--brand-border)"}
               >
@@ -2963,22 +2963,13 @@ function AdminPanel({ me, onLogout, isMobile }) {
       const url = editingBlog ? `/api/admin/blog/${editingBlog.id}` : "/api/admin/blog";
       const method = editingBlog ? "PUT" : "POST";
       
-      // Get content from editor if available
-      const content = contentEditorRef.current ? contentEditorRef.current.innerHTML : blogForm.content;
-      const formData = {
-        ...blogForm,
-        content: content || blogForm.content || ""
-      };
-      
-      console.log("Sending blog data:", formData);
-      
       const res = await fetch(url, {
         method,
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(blogForm),
       });
 
       if (res.ok) {
@@ -3663,14 +3654,14 @@ function AdminPanel({ me, onLogout, isMobile }) {
                             handleImageUpload(file);
                           }
                         }}
-                        style={{
-                          padding: 12,
-                          border: "1px solid var(--brand-border)",
-                          borderRadius: 8,
-                          fontSize: 14,
+                  style={{
+                    padding: 12,
+                    border: "1px solid var(--brand-border)",
+                    borderRadius: 8,
+                    fontSize: 14,
                           width: "100%",
-                        }}
-                      />
+                  }}
+                />
                       {uploadingImage && (
                         <div style={{ marginTop: 8, color: "var(--brand-text-light)", fontSize: 14 }}>
                           Upload-ovanje slike...
@@ -3681,7 +3672,7 @@ function AdminPanel({ me, onLogout, isMobile }) {
 
                   {/* URL opcija */}
                   {imageInputMode === "url" && (
-                    <input
+                <input
                       type="url"
                       placeholder="https://example.com/image.jpg"
                       value={imageUrl}
@@ -3690,14 +3681,14 @@ function AdminPanel({ me, onLogout, isMobile }) {
                         setImageUrl(url);
                         setBlogForm({ ...blogForm, featuredImage: url });
                       }}
-                      style={{
-                        padding: 12,
-                        border: "1px solid var(--brand-border)",
-                        borderRadius: 8,
-                        fontSize: 14,
+                  style={{
+                    padding: 12,
+                    border: "1px solid var(--brand-border)",
+                    borderRadius: 8,
+                    fontSize: 14,
                         width: "100%",
-                      }}
-                    />
+                  }}
+                />
                   )}
 
                   {/* Preview slike */}
