@@ -1056,6 +1056,36 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
               <span>Saveti</span>
             </button>
             <button
+              onClick={() => setActiveTab("blogovi")}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "30px 20px",
+                background: "var(--brand-bg-light)",
+                color: "var(--brand-text)",
+                border: "1px solid var(--brand-border)",
+                borderRadius: 16,
+                fontWeight: 600,
+                cursor: "pointer",
+                fontSize: 14,
+                transition: "all 0.3s ease",
+                boxShadow: "0 2px 8px rgba(65, 101, 57, 0.1)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-4px)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(65, 101, 57, 0.2)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 2px 8px rgba(65, 101, 57, 0.1)";
+              }}
+            >
+              <span style={{ fontSize: 48, marginBottom: 12 }}>📝</span>
+              <span>Blogovi</span>
+            </button>
+            <button
               onClick={() => setActiveTab("shop")}
               style={{
                 display: "flex",
