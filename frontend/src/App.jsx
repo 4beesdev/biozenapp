@@ -2344,7 +2344,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
               gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)",
               gap: 24,
             }}>
-              {blogs && blogs.length > 0 && blogs.map((blog) => (
+              {blogs.map((blog) => (
                 <div
                   key={blog.id}
                   onClick={() => setSelectedBlog(blog)}
