@@ -39,6 +39,16 @@ export default function App() {
     }
   }, []);
 
+  // Auto-hide notifikacija nakon 2 sekunde
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage("");
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
+
   async function loadUserData() {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -462,15 +472,27 @@ export default function App() {
         )}
       </div>
 
+      {/* Floating notifikacija */}
       {message && (
-        <div style={{ 
-          marginTop: 16,
-          padding: 12,
-          borderRadius: 8,
-          background: message.includes("uspeš") ? "rgba(16, 185, 129, 0.1)" : "rgba(239, 68, 68, 0.1)",
-          color: message.includes("uspeš") ? "var(--brand-success)" : "var(--brand-error)",
+        <div style={{
+          position: "fixed",
+          top: 20,
+          left: "50%",
+          transform: "translateX(-50%)",
+          padding: "14px 24px",
+          borderRadius: 12,
+          background: message.includes("uspeš") || message.includes("uspešno") || message.includes("uspešan") || message.includes("Izlogovan")
+            ? "rgba(16, 185, 129, 0.95)" 
+            : "rgba(239, 68, 68, 0.95)",
+          color: "white",
           fontSize: 14,
+          fontWeight: 500,
+          boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
+          zIndex: 10000,
+          animation: "slideDown 0.3s ease-out",
+          maxWidth: "90%",
           textAlign: "center",
+          whiteSpace: "nowrap",
         }}>
           {message}
         </div>

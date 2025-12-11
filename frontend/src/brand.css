@@ -29,3 +29,26 @@
   --brand-gradient-soft: linear-gradient(135deg, rgba(65, 101, 57, 0.1) 0%, rgba(107, 142, 79, 0.1) 100%);
 }
 
+/* Animacije za floating notifikacije */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+}
+
