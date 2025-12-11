@@ -2963,13 +2963,22 @@ function AdminPanel({ me, onLogout, isMobile }) {
       const url = editingBlog ? `/api/admin/blog/${editingBlog.id}` : "/api/admin/blog";
       const method = editingBlog ? "PUT" : "POST";
       
+      // Get content from editor if available
+      const content = contentEditorRef.current ? contentEditorRef.current.innerHTML : blogForm.content;
+      const formData = {
+        ...blogForm,
+        content: content || blogForm.content || ""
+      };
+      
+      console.log("Sending blog data:", formData);
+      
       const res = await fetch(url, {
         method,
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(blogForm),
+        body: JSON.stringify(formData),
       });
 
       if (res.ok) {
