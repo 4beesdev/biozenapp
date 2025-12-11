@@ -2800,8 +2800,6 @@ function AdminPanel({ me, onLogout, isMobile }) {
     status: "DRAFT"
   });
   const [uploadingImage, setUploadingImage] = useState(false);
-  const [imageInputMode, setImageInputMode] = useState("upload"); // "upload" | "url"
-  const [imageUrl, setImageUrl] = useState("");
   const contentEditorRef = useRef(null);
 
   // Update contentEditable when editing blog
@@ -2976,8 +2974,6 @@ function AdminPanel({ me, onLogout, isMobile }) {
         setShowBlogForm(false);
         setEditingBlog(null);
         setBlogForm({ title: "", content: "", excerpt: "", featuredImage: "", status: "DRAFT" });
-        setImageInputMode("upload");
-        setImageUrl("");
         loadBlogs();
       } else {
         const data = await res.json();
@@ -3304,8 +3300,6 @@ function AdminPanel({ me, onLogout, isMobile }) {
                 onClick={() => {
                   setEditingBlog(null);
                   setBlogForm({ title: "", content: "", excerpt: "", featuredImage: "", status: "DRAFT" });
-                  setImageInputMode("upload");
-                  setImageUrl("");
                   setShowBlogForm(true);
                   // Clear editor
                   setTimeout(() => {
@@ -3367,14 +3361,6 @@ function AdminPanel({ me, onLogout, isMobile }) {
                             featuredImage: blog.featuredImage || "",
                             status: blog.status || "DRAFT",
                           });
-                          // Ako blog ima featuredImage, proveri da li je URL ili upload
-                          if (blog.featuredImage && (blog.featuredImage.startsWith("http") || blog.featuredImage.startsWith("https"))) {
-                            setImageInputMode("url");
-                            setImageUrl(blog.featuredImage);
-                          } else {
-                            setImageInputMode("upload");
-                            setImageUrl("");
-                          }
                           setShowBlogForm(true);
                           // Set content in editor after a brief delay to ensure DOM is ready
                           setTimeout(() => {
@@ -3764,8 +3750,6 @@ function AdminPanel({ me, onLogout, isMobile }) {
                       setShowBlogForm(false);
                       setEditingBlog(null);
                       setBlogForm({ title: "", content: "", excerpt: "", featuredImage: "", status: "DRAFT" });
-                      setImageInputMode("upload");
-                      setImageUrl("");
                     }}
                     style={{
                       padding: "12px 24px",
