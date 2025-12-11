@@ -2800,6 +2800,8 @@ function AdminPanel({ me, onLogout, isMobile }) {
     status: "DRAFT"
   });
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [imageInputMode, setImageInputMode] = useState("upload"); // "upload" | "url"
+  const [imageUrl, setImageUrl] = useState("");
   const contentEditorRef = useRef(null);
 
   // Update contentEditable when editing blog
@@ -2974,6 +2976,8 @@ function AdminPanel({ me, onLogout, isMobile }) {
         setShowBlogForm(false);
         setEditingBlog(null);
         setBlogForm({ title: "", content: "", excerpt: "", featuredImage: "", status: "DRAFT" });
+        setImageInputMode("upload");
+        setImageUrl("");
         loadBlogs();
       } else {
         const data = await res.json();
@@ -3300,6 +3304,8 @@ function AdminPanel({ me, onLogout, isMobile }) {
                 onClick={() => {
                   setEditingBlog(null);
                   setBlogForm({ title: "", content: "", excerpt: "", featuredImage: "", status: "DRAFT" });
+                  setImageInputMode("upload");
+                  setImageUrl("");
                   setShowBlogForm(true);
                   // Clear editor
                   setTimeout(() => {
@@ -3361,6 +3367,13 @@ function AdminPanel({ me, onLogout, isMobile }) {
                             featuredImage: blog.featuredImage || "",
                             status: blog.status || "DRAFT",
                           });
+                          if (blog.featuredImage && (blog.featuredImage.startsWith("http://") || blog.featuredImage.startsWith("https://"))) {
+                            setImageInputMode("url");
+                            setImageUrl(blog.featuredImage);
+                          } else {
+                            setImageInputMode("upload");
+                            setImageUrl("");
+                          }
                           setShowBlogForm(true);
                           // Set content in editor after a brief delay to ensure DOM is ready
                           setTimeout(() => {
@@ -3591,27 +3604,97 @@ function AdminPanel({ me, onLogout, isMobile }) {
                   <label style={{ display: "block", marginBottom: 8, color: "var(--brand-text)", fontWeight: 600 }}>
                     Cover slika (obavezno)
                   </label>
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        handleImageUpload(file);
-                      }
-                    }}
-                    style={{
-                      padding: 12,
-                      border: "1px solid var(--brand-border)",
-                      borderRadius: 8,
-                      fontSize: 14,
-                      width: "100%",
-                    }}
-                  />
-                  {uploadingImage && (
-                    <div style={{ marginTop: 8, color: "var(--brand-text-light)", fontSize: 14 }}>
-                      Upload-ovanje slike...
-                    </div>
+                  {/* Toggle između Upload i URL */}
+                  <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setImageInputMode("upload");
+                        setImageUrl("");
+                      }}
+                      style={{
+                        flex: 1,
+                        padding: "8px 16px",
+                        background: imageInputMode === "upload" ? "var(--brand-primary)" : "var(--brand-bg-light)",
+                        color: imageInputMode === "upload" ? "#fff" : "var(--brand-text)",
+                        border: `1px solid ${imageInputMode === "upload" ? "var(--brand-primary)" : "var(--brand-border)"}`,
+                        borderRadius: 6,
+                        cursor: "pointer",
+                        fontSize: 14,
+                        fontWeight: 500,
+                      }}
+                    >
+                      Upload
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setImageInputMode("url");
+                        setImageUrl(blogForm.featuredImage || "");
+                      }}
+                      style={{
+                        flex: 1,
+                        padding: "8px 16px",
+                        background: imageInputMode === "url" ? "var(--brand-primary)" : "var(--brand-bg-light)",
+                        color: imageInputMode === "url" ? "#fff" : "var(--brand-text)",
+                        border: `1px solid ${imageInputMode === "url" ? "var(--brand-primary)" : "var(--brand-border)"}`,
+                        borderRadius: 6,
+                        cursor: "pointer",
+                        fontSize: 14,
+                        fontWeight: 500,
+                      }}
+                    >
+                      URL
+                    </button>
+                  </div>
+
+                  {/* Upload opcija */}
+                  {imageInputMode === "upload" && (
+                    <>
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            handleImageUpload(file);
+                          }
+                        }}
+                        style={{
+                          padding: 12,
+                          border: "1px solid var(--brand-border)",
+                          borderRadius: 8,
+                          fontSize: 14,
+                          width: "100%",
+                        }}
+                      />
+                      {uploadingImage && (
+                        <div style={{ marginTop: 8, color: "var(--brand-text-light)", fontSize: 14 }}>
+                          Upload-ovanje slike...
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {/* URL opcija */}
+                  {imageInputMode === "url" && (
+                    <input
+                      type="url"
+                      placeholder="https://example.com/image.jpg"
+                      value={imageUrl}
+                      onChange={(e) => {
+                        const url = e.target.value;
+                        setImageUrl(url);
+                        setBlogForm({ ...blogForm, featuredImage: url });
+                      }}
+                      style={{
+                        padding: 12,
+                        border: "1px solid var(--brand-border)",
+                        borderRadius: 8,
+                        fontSize: 14,
+                        width: "100%",
+                      }}
+                    />
                   )}
 
                   {/* Preview slike */}
@@ -3641,6 +3724,7 @@ function AdminPanel({ me, onLogout, isMobile }) {
                         type="button"
                         onClick={() => {
                           setBlogForm({ ...blogForm, featuredImage: "" });
+                          setImageUrl("");
                         }}
                         style={{
                           marginTop: 8,
@@ -3678,6 +3762,8 @@ function AdminPanel({ me, onLogout, isMobile }) {
                       setShowBlogForm(false);
                       setEditingBlog(null);
                       setBlogForm({ title: "", content: "", excerpt: "", featuredImage: "", status: "DRAFT" });
+                      setImageInputMode("upload");
+                      setImageUrl("");
                     }}
                     style={{
                       padding: "12px 24px",
