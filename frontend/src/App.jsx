@@ -1116,6 +1116,47 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
               <span>BioZen Shop</span>
             </button>
           </div>
+
+          {/* Instagram link - samo na Home stranici */}
+          <div style={{
+            marginTop: 32,
+            padding: "16px",
+            background: "var(--brand-bg-light)",
+            border: "1px solid var(--brand-border)",
+            borderRadius: 12,
+            width: "100%",
+            maxWidth: 300,
+          }}>
+            <a
+              href="https://www.instagram.com/bio.zen_official?igsh=MXFnODhkbTBvazRnYw=="
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 10,
+                color: "var(--brand-text)",
+                textDecoration: "none",
+                fontSize: 15,
+                fontWeight: 500,
+                padding: "10px 20px",
+                borderRadius: 8,
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "var(--brand-bg)";
+                e.currentTarget.style.color = "var(--brand-primary)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.color = "var(--brand-text)";
+              }}
+            >
+              <span style={{ fontSize: 22 }}>📷</span>
+              <span>Pratite nas na Instagramu</span>
+            </a>
+          </div>
         </div>
       )}
 
@@ -2701,52 +2742,6 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
               </button>
             </div>
           )}
-        </div>
-      )}
-
-      {/* Instagram link - samo za mobile */}
-      {isMobile && (
-        <div style={{
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          padding: "12px",
-          background: "var(--brand-bg-light)",
-          borderTop: "1px solid var(--brand-border)",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          zIndex: 999,
-        }}>
-          <a
-            href="https://www.instagram.com/bio.zen_official?igsh=MXFnODhkbTBvazRnYw=="
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              color: "var(--brand-text)",
-              textDecoration: "none",
-              fontSize: 14,
-              fontWeight: 500,
-              padding: "8px 16px",
-              borderRadius: 8,
-              transition: "all 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "var(--brand-bg)";
-              e.currentTarget.style.color = "var(--brand-primary)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "transparent";
-              e.currentTarget.style.color = "var(--brand-text)";
-            }}
-          >
-            <span style={{ fontSize: 20 }}>📷</span>
-            <span>Instagram</span>
-          </a>
         </div>
       )}
     </div>
