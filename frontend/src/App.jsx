@@ -1899,12 +1899,11 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
           <h2 style={{ 
             marginTop: 0,
             marginBottom: 24,
-            color: "var(--brand-text)",
-              fontSize: 24,
-              fontWeight: 600,
-              color: "var(--brand-primary)",
-              letterSpacing: "-0.3px",
-            }}>Moji podaci</h2>
+            fontSize: 24,
+            fontWeight: 600,
+            color: "var(--brand-primary)",
+            letterSpacing: "-0.3px",
+          }}>Moji podaci</h2>
           <form onSubmit={handleSubmit}>
             <div style={{ marginBottom: 20 }}>
               <label style={{ 
@@ -1988,8 +1987,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
               fontSize: 15,
               transition: "all 0.2s",
               background: "var(--brand-bg-light)",
-                  background: "var(--brand-bg-light)",
-                }}
+            }}
                 onFocus={(e) => e.target.style.borderColor = "var(--brand-primary)"}
                 onBlur={(e) => e.target.style.borderColor = "var(--brand-border)"}
               >
