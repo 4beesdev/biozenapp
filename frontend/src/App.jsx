@@ -178,10 +178,20 @@ export default function App() {
   }
 
   function logout() {
+    // Obriši sve iz localStorage
     localStorage.removeItem("token");
+    localStorage.clear(); // Očisti sve za sigurnost
+    
+    // Resetuj sve state varijable
     setMe(null);
     setIsLoggedIn(false);
     setMessage("Izlogovan");
+    setActiveTab(null);
+    setEmail("");
+    setPassword("");
+    
+    // Force reload stranice da se osigura da se sve očisti
+    window.location.href = "/";
   }
 
   // Ako je korisnik ulogovan, proveri da li je admin
