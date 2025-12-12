@@ -14,6 +14,7 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [activeTab, setActiveTab] = useState(null); // null = home, "merenja" | "podaci" | "saveti" | "blogovi" | "shop" | "chat"
   const [showTermsModal, setShowTermsModal] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
@@ -226,7 +227,7 @@ export default function App() {
     }
     // Inače prikaži obični dashboard
     console.log("✗ Rendering Dashboard (not admin)");
-    return <Dashboard me={me} onUpdate={updateUserData} onLogout={logout} activeTab={activeTab} setActiveTab={setActiveTab} message={message} isMobile={isMobile} showTermsModal={showTermsModal} setShowTermsModal={setShowTermsModal} />;
+    return <Dashboard me={me} onUpdate={updateUserData} onLogout={logout} activeTab={activeTab} setActiveTab={setActiveTab} message={message} isMobile={isMobile} showTermsModal={showTermsModal} setShowTermsModal={setShowTermsModal} showPrivacyModal={showPrivacyModal} setShowPrivacyModal={setShowPrivacyModal} />;
   }
 
   // Ako nije ulogovan, prikaži login/register formu
@@ -503,7 +504,7 @@ export default function App() {
 }
 
 // Dashboard komponenta
-function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, isMobile: isMobileProp, showTermsModal, setShowTermsModal }) {
+function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, isMobile: isMobileProp, showTermsModal, setShowTermsModal, showPrivacyModal, setShowPrivacyModal }) {
   const [formData, setFormData] = useState({
     ime: me?.ime || "",
     prezime: me?.prezime || "",
@@ -3363,8 +3364,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
             href="#"
             onClick={(e) => {
               e.preventDefault();
-              // TODO: Navigate to Privacy Policy page
-              alert("Politika privatnosti - stranica u pripremi");
+              setShowPrivacyModal(true);
             }}
             style={{
               color: "var(--brand-text-light)",
@@ -3565,6 +3565,291 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
 
               <p style={{ marginBottom: 20 }}>
                 Ako niste saglasni s Uslovima i pravilima korišćenja BioZen aplikacije, molimo Vas nemojte koristiti aplikaciju, a Vas molimo obratite se našem Kontakt centru ili putem emaila: <strong>office@biozen.rs</strong>, a kako bismo Vas izbrisali iz baze korisnika BioZen aplikacije.
+              </p>
+
+              <div style={{
+                marginTop: 40,
+                padding: 20,
+                background: "var(--brand-bg)",
+                borderRadius: 8,
+                border: "1px solid var(--brand-border)",
+                textAlign: "center",
+              }}>
+                <p style={{ margin: 0, fontSize: isMobile ? 13 : 14, color: "var(--brand-text-light)" }}>
+                  Za dodatne informacije, kontaktirajte nas na: <strong>office@biozen.rs</strong>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Privacy Policy Modal */}
+      {showPrivacyModal && (
+        <div style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: "rgba(0,0,0,0.5)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 2000,
+          padding: isMobile ? "10px" : "20px",
+        }}
+        onClick={() => setShowPrivacyModal(false)}
+        >
+          <div style={{
+            background: "#fff",
+            borderRadius: 12,
+            padding: isMobile ? 20 : 35,
+            maxWidth: 800,
+            width: "100%",
+            maxHeight: "90vh",
+            overflowY: "auto",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
+          }}
+          onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: 24,
+            }}>
+              <h2 style={{ 
+                margin: 0,
+                fontSize: isMobile ? 20 : 24,
+                fontWeight: 600,
+                color: "var(--brand-primary)",
+                letterSpacing: "-0.3px",
+              }}>Politika privatnosti</h2>
+              <button
+                onClick={() => setShowPrivacyModal(false)}
+                style={{
+                  background: "transparent",
+                  border: 0,
+                  fontSize: 24,
+                  cursor: "pointer",
+                  color: "var(--brand-text-light)",
+                  padding: "4px 8px",
+                  borderRadius: 4,
+                  lineHeight: 1,
+                }}
+                onMouseEnter={(e) => e.target.style.color = "var(--brand-text)"}
+                onMouseLeave={(e) => e.target.style.color = "var(--brand-text-light)"}
+              >
+                ×
+              </button>
+            </div>
+            
+            <div style={{
+              fontSize: isMobile ? 14 : 15,
+              lineHeight: 1.8,
+              color: "var(--brand-text)",
+            }}>
+              <p style={{ marginBottom: 20 }}>
+                Ovde su sadržane informacije o obradi podataka o ličnosti korisnika BioZen aplikacije za praćenje zdravlja, kilaže i merenja.
+              </p>
+
+              <h3 style={{ 
+                marginTop: 30,
+                marginBottom: 16,
+                fontSize: isMobile ? 18 : 20,
+                fontWeight: 600,
+                color: "var(--brand-primary)",
+              }}>I. OSNOVNE INFORMACIJE O RUKOVAOCU</h3>
+
+              <p style={{ marginBottom: 20 }}>
+                Rukovalac podacima je:
+              </p>
+              <p style={{ marginBottom: 20, padding: 16, background: "var(--brand-bg)", borderRadius: 8 }}>
+                <strong>BIOZEN d.o.o. Beograd</strong>, sa sedištem u Beogradu – Savski Venac, ul. Kronštatska 5, matični broj: 22133462, PIB: 115251472.
+              </p>
+
+              <h3 style={{ 
+                marginTop: 30,
+                marginBottom: 16,
+                fontSize: isMobile ? 18 : 20,
+                fontWeight: 600,
+                color: "var(--brand-primary)",
+              }}>II. SVRHA I OSNOV PRIKUPLJANJA PODATAKA</h3>
+
+              <p style={{ marginBottom: 20 }}>
+                Podatak o ličnosti je svaki podatak koji se odnosi na fizičko lice čiji je identitet određen ili odrediv, neposredno ili posredno, posebno na osnovu oznake identiteta, kao što je ime i identifikacioni broj, podataka o lokaciji, identifikatora u elektronskim komunikacionim mrežama ili jednog, odnosno više obeležja njegovog fizičkog, fiziološkog, genetskog, mentalnog, ekonomskog, kulturnog i društvenog identiteta.
+              </p>
+
+              <p style={{ marginBottom: 20 }}>
+                Obrada podataka o ličnosti je svaka radnja ili skup radnji koje se vrše automatizovano ili neautomatizovano sa podacima o ličnosti ili njihovim skupovima, kao što su prikupljanje, beleženje, razvrstavanje, grupisanje, odnosno strukturisanje, pohranjivanje, upodobljavanje ili menjanje, otkrivanje, uvid, upotreba, otkrivanje prenosom, odnosno dostavljanjem, umnožavanje, širenje ili na drugi način činjenje dostupnim, upoređivanje, ograničavanje, brisanje ili uništavanje.
+              </p>
+
+              <p style={{ marginBottom: 20, padding: 16, background: "rgba(65, 101, 57, 0.1)", borderRadius: 8, border: "1px solid var(--brand-primary)" }}>
+                <strong>Važno:</strong> Obradu podataka vršimo na osnovu Vaše saglasnosti (pristanka) koja je neophodna za korišćenje aplikacije. <strong>Vaši uneti podaci (ime, prezime, kilaža, merenja, obim struka i drugi lični podaci) se ne koriste i ne pregledaju od strane naših zaposlenih ili trećih lica.</strong>
+              </p>
+
+              <p style={{ marginBottom: 20 }}>
+                Pored navedenog, obrađujemo Vaše podatke o ličnosti kada je obrada neophodna u cilju izvršenja zakonom propisanih obaveza i ovlašćenja rukovaoca.
+              </p>
+
+              <h3 style={{ 
+                marginTop: 30,
+                marginBottom: 16,
+                fontSize: isMobile ? 18 : 20,
+                fontWeight: 600,
+                color: "var(--brand-primary)",
+              }}>III. PODACI KOJI SE PRIKUPLJAJU I OBRAĐUJU</h3>
+
+              <h4 style={{ 
+                marginTop: 20,
+                marginBottom: 12,
+                fontSize: isMobile ? 16 : 17,
+                fontWeight: 600,
+                color: "var(--brand-text)",
+              }}>Korisnički nalog</h4>
+
+              <p style={{ marginBottom: 20 }}>
+                Kontakt podaci navedeni u obrascu za registraciju (ime, prezime, e-mail adresa), kao i podaci o ličnosti u obliku zdravstvenih podataka (kilaža, željena kilaža, obim struka, merenja, komentari) biće obrađeni.
+              </p>
+
+              <p style={{ marginBottom: 20 }}>
+                Korisnički nalog koristi se prvenstveno za praćenje Vaših zdravstvenih podataka, praćenje napretka ka postizanju ciljne kilaže, pristup blogovima sa savetima o zdravlju i ishrani, kao i komunikaciju sa AI asistentom.
+              </p>
+
+              <p style={{ marginBottom: 20, padding: 16, background: "rgba(65, 101, 57, 0.1)", borderRadius: 8, border: "1px solid var(--brand-primary)" }}>
+                <strong>Važno:</strong> Korisnik ima mogućnost da otvori nalog ili može da koristi aplikaciju bez kreiranja naloga (u ograničenom obimu). Korisnik ima mogućnost da ažurira ili dopuni podatke i odgovoran je za tačnost podataka. <strong>Svi podaci su potpuno privatni i dostupni samo Vama.</strong>
+              </p>
+
+              <p style={{ marginBottom: 20 }}>
+                Navedeni podaci će se obrađivati tokom celog trajanja naloga. Ako se nalog nije aktivno koristio u poslednje 3 godine, ovi podaci o ličnosti će biti izbrisani.
+              </p>
+
+              <p style={{ marginBottom: 20 }}>
+                Korisnik ima mogućnost da sam otkaže nalog ili može da kontaktira podršku putem: <strong>office@biozen.rs</strong>
+              </p>
+
+              <h3 style={{ 
+                marginTop: 30,
+                marginBottom: 16,
+                fontSize: isMobile ? 18 : 20,
+                fontWeight: 600,
+                color: "var(--brand-primary)",
+              }}>IV. PRAVA LICA ČIJI SE PODACI OBRAĐUJU</h3>
+
+              <p style={{ marginBottom: 20 }}>
+                Imate pravo da u svakom trenutku zatražite:
+              </p>
+
+              <ul style={{ marginBottom: 20, paddingLeft: 20 }}>
+                <li style={{ marginBottom: 12 }}>
+                  <strong>• da Vam omogućimo pristup Vašim podacima o ličnosti</strong><br/>
+                  U svakom trenutku imate pravo da od naše ustanove zahtevate da pristupite podacima o ličnosti, dobijete informaciju u koju svrhu se podaci koriste i obrađuju, kategoriju Vaših podataka o ličnosti koje čuvamo, period tokom kojeg obrađujemo i čuvamo Vaše podatke.
+                </li>
+                <li style={{ marginBottom: 12 }}>
+                  <strong>• da Vam damo kopiju podataka o ličnosti koje obrađujemo</strong><br/>
+                  Imate pravo da od naše ustanove zahtevate da Vam damo kopiju pojedinih ili svih podataka o ličnosti koje obrađujemo.
+                </li>
+                <li style={{ marginBottom: 12 }}>
+                  <strong>• da zahtevate ispravku i dopunu Vaših podataka o ličnosti</strong><br/>
+                  Bitno nam je da su Vaši podaci tačni i potpuni. Imate pravo da zahtevate da se Vaši netačno uneti podaci bez odlaganje izbrišu odnosno isprave kao i da tražite od nas da Vam ih dopunimo i ažuriramo ukoliko su zastareli.
+                </li>
+                <li style={{ marginBottom: 12 }}>
+                  <strong>• da zahtevate brisanje podataka o ličnosti</strong><br/>
+                  U slučaju da želite da se Vaši podaci obrišu odnosno želite da prekinemo obradu istih možete nam se obratiti.
+                </li>
+                <li style={{ marginBottom: 12 }}>
+                  <strong>• da ograničite obradu Vaših podataka o ličnosti</strong><br/>
+                  Imate pravo da ograničite obradu Vaših podataka o ličnosti u određenom delu ili u potpunosti.
+                </li>
+                <li style={{ marginBottom: 12 }}>
+                  <strong>• da podnesete pravo na prigovor</strong><br/>
+                  U svakom trenutku imate pravo da podnesete prigovor rukovaocu na obradu Vaših podataka.
+                </li>
+                <li style={{ marginBottom: 12 }}>
+                  <strong>• da prenesete svoje podatke drugom rukovaocu</strong><br/>
+                  Ukoliko se obrada podataka vrši na osnovu Vašeg pristanka ili se obrada vrši automatizovano imate pravo da tražite da se Vaši podaci o ličnosti prebace drugom rukovaocu.
+                </li>
+                <li style={{ marginBottom: 12 }}>
+                  <strong>• da opozovete pristanak za obradu Vaših podataka o ličnosti</strong><br/>
+                  Kada se obrada vrši na osnovu Vašeg pristanka u svakom trenutku imate pravo da ga opozovete.
+                </li>
+                <li style={{ marginBottom: 12 }}>
+                  <strong>• da podnesete tužbu povereniku</strong><br/>
+                  U slučaju da smatrate da se obrada podataka vrši suprotno Zakonu imate pravo na podnošenje pritužbe Povereniku za zaštitu podataka ličnosti.
+                </li>
+              </ul>
+
+              <h3 style={{ 
+                marginTop: 30,
+                marginBottom: 16,
+                fontSize: isMobile ? 18 : 20,
+                fontWeight: 600,
+                color: "var(--brand-primary)",
+              }}>V. OBRAĐIVAČI</h3>
+
+              <p style={{ marginBottom: 20 }}>
+                Podaci o ličnosti Korisnika mogu se proslediti drugim obrađivačima ili primaocima u slučaju da je to neophodno za funkcionisanje aplikacije (npr. hosting provajderi, servisi za analitiku).
+              </p>
+
+              <p style={{ marginBottom: 20 }}>
+                Njihova obaveza je da Vaše podatke zaštite i drže ih u tajnosti i obezbede visok nivo zaštite kako bi podaci bili bezbedni (kriptozaštita, pseudoanomizacija i dr).
+              </p>
+
+              <h3 style={{ 
+                marginTop: 30,
+                marginBottom: 16,
+                fontSize: isMobile ? 18 : 20,
+                fontWeight: 600,
+                color: "var(--brand-primary)",
+              }}>VI. PERIOD ČUVANJA PODATAKA O LIČNOSTI</h3>
+
+              <p style={{ marginBottom: 20 }}>
+                Vremenski period čuvanja podataka Vaših podataka o ličnosti zavisi od svrhe zbog koje ih obrađujemo.
+              </p>
+
+              <p style={{ marginBottom: 20 }}>
+                Podaci o korisničkom nalogu čuvaju se tokom celog trajanja naloga. Ako se nalog nije aktivno koristio u poslednje 3 godine, ovi podaci o ličnosti će biti izbrisani.
+              </p>
+
+              <h3 style={{ 
+                marginTop: 30,
+                marginBottom: 16,
+                fontSize: isMobile ? 18 : 20,
+                fontWeight: 600,
+                color: "var(--brand-primary)",
+              }}>VII. BEZBEDNOST</h3>
+
+              <p style={{ marginBottom: 20 }}>
+                Podaci o ličnosti se čuvaju u bezbednoj bazi podataka. Pristup podacima o ličnosti dozvoljen je samo ovlašćenim zaposlenima i samo koristeći odobrene pristupe na bezbedan način. Podaci o ličnosti će se obrađivati u elektronskom obliku na automatizovan način ili u štampanom obliku na neautomatizovani način.
+              </p>
+
+              <p style={{ marginBottom: 20, padding: 16, background: "rgba(65, 101, 57, 0.1)", borderRadius: 8, border: "1px solid var(--brand-primary)" }}>
+                <strong>Važno:</strong> Rukovalac je preduzeo odgovarajuće tehničke i organizacione mere kako bi osigurao dovoljnu zaštitu podataka o ličnosti. <strong>Vaši podaci su potpuno privatni i nisu dostupni za pregled ili korišćenje od strane zaposlenih ili trećih lica.</strong>
+              </p>
+
+              <h3 style={{ 
+                marginTop: 30,
+                marginBottom: 16,
+                fontSize: isMobile ? 18 : 20,
+                fontWeight: 600,
+                color: "var(--brand-primary)",
+              }}>VIII. PRIJAVLJIVANJE KRŠENJA PODATAKA O LIČNOSTI</h3>
+
+              <p style={{ marginBottom: 20 }}>
+                <strong>Šta je kršenje privatnosti?</strong>
+              </p>
+
+              <p style={{ marginBottom: 20 }}>
+                To su događaji koji su doveli ili bi mogli dovesti do (i) slučajnog ili namernog gubitka podataka o ličnosti (u elektronskoj ili papirnoj formi), (ii) uništavanja podataka ili (iii) neovlašćenog pristupa podacima.
+              </p>
+
+              <p style={{ marginBottom: 20 }}>
+                <strong>Kada treba da prijavim takav incident?</strong>
+              </p>
+
+              <p style={{ marginBottom: 20 }}>
+                U određenim slučajevima rukovalac podacima o ličnosti dužan je da prijavi Povereniku za zaštitu podataka o ličnosti povredu bezbednosti podataka o ličnosti u roku od 72 sata od trenutka kada je za to saznao. Stoga, ako utvrdite kršenje podataka o ličnosti gde naša kompanija deluje kao administrator, nemojte se ustručavati da odmah prijavite incident putem: <strong>office@biozen.rs</strong>.
               </p>
 
               <div style={{
