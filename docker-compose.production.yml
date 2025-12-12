@@ -1,22 +1,45 @@
 # Production docker-compose za Droplet
-# Koristi managed database (ne lokalnu)
+# Koristi lokalnu PostgreSQL bazu u Docker container-u
 services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: biozen-postgres
+    environment:
+      POSTGRES_DB: biozenapp
+      POSTGRES_USER: biozen
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-this-password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - biozen-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U biozen"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: biozen-backend
     environment:
-      # Koristi environment variables iz .env fajla
-      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
-      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      # Koristi lokalnu PostgreSQL bazu
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/biozenapp
+      SPRING_DATASOURCE_USERNAME: biozen
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-change-this-password}
       APP_JWT_SECRET: ${JWT_SECRET}
       APP_JWT_TTLMILLIS: ${APP_JWT_TTLMILLIS:-604800000}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       MAIL_PASSWORD: ${MAIL_PASSWORD:-}
     ports:
       - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - biozen-network
@@ -39,4 +62,7 @@ services:
 networks:
   biozen-network:
     driver: bridge
+
+volumes:
+  postgres_data:
 
