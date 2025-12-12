@@ -1546,7 +1546,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
           </h2>
           <div style={{ 
             display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
+            gridTemplateColumns: "repeat(3, 1fr)",
             gap: 24,
             width: "100%",
             maxWidth: 900,
@@ -1642,6 +1642,36 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
               <span>Saveti</span>
             </button>
             <button
+              onClick={() => setActiveTab("blogovi")}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "40px 24px",
+                background: "var(--brand-bg-light)",
+                color: "var(--brand-text)",
+                border: "1px solid var(--brand-border)",
+                borderRadius: 16,
+                fontWeight: 600,
+                cursor: "pointer",
+                fontSize: 15,
+                transition: "all 0.3s ease",
+                boxShadow: "0 2px 8px rgba(65, 101, 57, 0.1)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-4px)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(65, 101, 57, 0.2)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 2px 8px rgba(65, 101, 57, 0.1)";
+              }}
+            >
+              <span style={{ fontSize: 56, marginBottom: 16 }}>📝</span>
+              <span>Blogovi</span>
+            </button>
+            <button
               onClick={() => setActiveTab("shop")}
               style={{
                 display: "flex",
@@ -1670,6 +1700,36 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
             >
               <span style={{ fontSize: 56, marginBottom: 16 }}>🛒</span>
               <span>BioZen Shop</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("chat")}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "40px 24px",
+                background: "var(--brand-bg-light)",
+                color: "var(--brand-text)",
+                border: "1px solid var(--brand-border)",
+                borderRadius: 16,
+                fontWeight: 600,
+                cursor: "pointer",
+                fontSize: 15,
+                transition: "all 0.3s ease",
+                boxShadow: "0 2px 8px rgba(65, 101, 57, 0.1)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-4px)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(65, 101, 57, 0.2)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 2px 8px rgba(65, 101, 57, 0.1)";
+              }}
+            >
+              <span style={{ fontSize: 56, marginBottom: 16 }}>💬</span>
+              <span>Chat</span>
             </button>
           </div>
         </div>
