@@ -578,6 +578,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
         starost: me.starost || "",
         kilaza: me.kilaza || "",
         zeljenaKilaza: me.zeljenaKilaza || "",
+        obimStruka: me.obimStruka || "",
       });
     }
   }, [me]);
@@ -877,6 +878,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
       starost: formData.starost ? parseInt(formData.starost) : null,
       kilaza: formData.kilaza ? parseFloat(formData.kilaza) : null,
       zeljenaKilaza: formData.zeljenaKilaza ? parseFloat(formData.zeljenaKilaza) : null,
+      obimStruka: formData.obimStruka ? parseFloat(formData.obimStruka) : null,
     };
     onUpdate(dataToSend);
   }
