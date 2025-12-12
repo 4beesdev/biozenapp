@@ -1060,6 +1060,23 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
           >
             BioZen Shop
           </button>
+          <button
+            onClick={() => setActiveTab("chat")}
+            style={{
+              flex: 1,
+              padding: 14,
+              background: activeTab === "chat" ? "var(--brand-gradient)" : "transparent",
+              color: activeTab === "chat" ? "white" : "var(--brand-text)",
+              border: 0,
+              borderRadius: 6,
+              fontWeight: 600,
+              cursor: "pointer",
+              fontSize: 15,
+              transition: "all 0.2s",
+            }}
+          >
+            💬 Chat
+          </button>
         </div>
       )}
 
