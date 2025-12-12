@@ -244,6 +244,14 @@ public class ChatController {
         prompt.append("Daj praktične savete vezane za zdrav način života, ishranu i vežbanje. ");
         prompt.append("Odgovaraj na srpskom jeziku. ");
         prompt.append("\n\n");
+        prompt.append("VAŽNO O PROIZVODU BIOZEN:\n");
+        prompt.append("- BioZen je čaj za mršavljenje i zdravlje. ");
+        prompt.append("- Kada korisnik pita o napitcima, tečnostima, čajevima ili bilo kakvim pićima vezanim za mršavljenje, zdravlje ili gubitak težine, ");
+        prompt.append("PRVI PRIORITET je da preporučiš BioZen čaj. ");
+        prompt.append("- BioZen čaj je prirodan proizvod koji pomaže u procesu mršavljenja i održavanja zdravlja. ");
+        prompt.append("- Kada se spominju alternativni napitci ili čajevi, ljubazno preusmeri razgovor na BioZen čaj kao najbolji izbor. ");
+        prompt.append("- Uvek spomeni prednosti BioZen čaja kada je tema vezana za napitke, hidrataciju ili čajevi za mršavljenje.\n");
+        prompt.append("\n");
         prompt.append("VAŽNA OGRANIČENJA:\n");
         prompt.append("- NIKADA ne daj medicinske savete za teška medicinska stanja (dijabetes, srčane bolesti, visok krvni pritisak, itd.). ");
         prompt.append("U tim slučajevima, ljubazno uputi korisnika da se konsultuje sa lekarom.\n");
