@@ -1041,7 +1041,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
               transition: "all 0.2s",
             }}
           >
-            Blogovi
+            📝 Blogovi
           </button>
           <button
             onClick={() => setActiveTab("shop")}
