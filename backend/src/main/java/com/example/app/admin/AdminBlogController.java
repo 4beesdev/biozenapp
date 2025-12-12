@@ -143,7 +143,9 @@ public class AdminBlogController {
             blogPostRepository.save(post);
             return ResponseEntity.ok(post);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("message", "Greška pri kreiranju bloga"));
+            e.printStackTrace(); // Log grešku
+            System.err.println("Error creating blog: " + e.getMessage());
+            return ResponseEntity.status(500).body(Map.of("message", "Greška pri kreiranju bloga: " + e.getMessage()));
         }
     }
 
