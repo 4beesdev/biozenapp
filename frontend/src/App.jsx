@@ -927,11 +927,12 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
         maxWidth: 1000,
         width: "100%",
         margin: "0 auto",
-        padding: isMobile ? "15px 10px" : "30px 20px",
+        padding: isMobile ? "0" : "30px 20px",
         paddingBottom: isMobile && showInstallButton ? "100px" : (isMobile ? "80px" : "100px"),
         minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
+        overflowX: "hidden",
       }}
     >
       <div style={{ 
