@@ -41,6 +41,15 @@ export default function App() {
     }
   }, []);
 
+  // Proveri autentifikaciju kada se activeTab promeni (npr. kada ide back)
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token && !isLoggedIn) {
+      // Ako postoji token ali nismo ulogovani, proveri autentifikaciju
+      loadUserData();
+    }
+  }, [activeTab]);
+
   // Auto-hide notifikacija nakon 2 sekunde
   useEffect(() => {
     if (message) {
