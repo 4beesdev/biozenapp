@@ -8,29 +8,44 @@
     <link rel="manifest" href="/manifest.json" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <script>
-      // Prevent iOS zoom on input focus - must be in head before DOM loads
+      // Prevent iOS zoom on input focus
       (function() {
         var viewport = document.querySelector('meta[name="viewport"]');
-        if (!viewport) {
-          viewport = document.createElement('meta');
-          viewport.name = 'viewport';
-          document.getElementsByTagName('head')[0].appendChild(viewport);
-        }
+        var lastTouchEnd = 0;
         
         function preventZoom() {
           viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
         }
         
-        // Prevent zoom on input focus
+        // Prevent double-tap zoom
+        document.addEventListener('touchend', function(e) {
+          var now = Date.now();
+          if (now - lastTouchEnd <= 300) {
+            e.preventDefault();
+          }
+          lastTouchEnd = now;
+        }, false);
+        
+        // Prevent zoom on input focus - must happen BEFORE focus
+        document.addEventListener('touchstart', function(e) {
+          if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+            preventZoom();
+          }
+        }, { passive: true });
+        
+        // Also prevent on focus
         document.addEventListener('focusin', function(e) {
           if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
             preventZoom();
+            // Force viewport update
+            setTimeout(preventZoom, 10);
+            setTimeout(preventZoom, 50);
+            setTimeout(preventZoom, 100);
           }
         }, true);
         
         // Keep viewport locked
         preventZoom();
-        setInterval(preventZoom, 100);
       })();
     </script>
     <meta name="theme-color" content="#416539" />
