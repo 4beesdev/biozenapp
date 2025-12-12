@@ -55,7 +55,9 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./ssl:/etc/nginx/ssl:ro  # Mount SSL sertifikata (ako postoje)
+      # Koristi postojeće SSL sertifikate iz /etc/ssl/
+      - /etc/ssl/certs/app.biozen.rs.pem:/etc/nginx/ssl/origin.crt:ro
+      - /etc/ssl/private/app.biozen.rs.key:/etc/nginx/ssl/origin.key:ro
     depends_on:
       - backend
     restart: unless-stopped
