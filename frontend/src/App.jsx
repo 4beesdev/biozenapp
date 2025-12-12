@@ -2906,12 +2906,60 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                textAlign: "center",
-                color: "var(--brand-text-light)",
+                padding: isMobile ? "20px" : "40px",
               }}>
-                <div>
-                  <p style={{ fontSize: 16, marginBottom: 8 }}>👋 Zdravo!</p>
-                  <p style={{ fontSize: 14 }}>Kako mogu da ti pomognem danas?</p>
+                <div style={{
+                  maxWidth: 500,
+                  textAlign: "center",
+                  background: "var(--brand-bg)",
+                  padding: isMobile ? "24px" : "32px",
+                  borderRadius: 16,
+                  border: "1px solid var(--brand-border)",
+                }}>
+                  <div style={{
+                    fontSize: isMobile ? 20 : 24,
+                    fontWeight: 600,
+                    color: "var(--brand-primary)",
+                    marginBottom: 12,
+                  }}>
+                    👋 Zdravo!
+                  </div>
+                  <p style={{
+                    fontSize: isMobile ? 15 : 16,
+                    color: "var(--brand-text)",
+                    marginBottom: 20,
+                    lineHeight: 1.6,
+                  }}>
+                    Ja sam BioZen AI asistent. Mogu da ti pomognem sa:
+                  </p>
+                  <div style={{
+                    textAlign: "left",
+                    marginBottom: 20,
+                    padding: isMobile ? "16px" : "20px",
+                    background: "var(--brand-bg-light)",
+                    borderRadius: 12,
+                    border: "1px solid var(--brand-border)",
+                  }}>
+                    <div style={{
+                      fontSize: isMobile ? 14 : 15,
+                      color: "var(--brand-text)",
+                      lineHeight: 1.8,
+                    }}>
+                      <div style={{ marginBottom: 8 }}>✅ <strong>Ishrana</strong> - saveti o zdravoj ishrani i planiranju obroka</div>
+                      <div style={{ marginBottom: 8 }}>✅ <strong>Vežbanje</strong> - preporuke za fizičku aktivnost</div>
+                      <div style={{ marginBottom: 8 }}>✅ <strong>Mršavljenje</strong> - strategije za postizanje ciljne kilaže</div>
+                      <div style={{ marginBottom: 8 }}>✅ <strong>Zdravlje</strong> - opšti saveti za zdrav način života</div>
+                      <div style={{ marginBottom: 8 }}>✅ <strong>Motivacija</strong> - podrška i motivacija za postizanje ciljeva</div>
+                    </div>
+                  </div>
+                  <p style={{
+                    fontSize: isMobile ? 13 : 14,
+                    color: "var(--brand-text-light)",
+                    fontStyle: "italic",
+                    lineHeight: 1.6,
+                  }}>
+                    💡 <strong>Napomena:</strong> Ne dajem medicinske savete. Za teška medicinska stanja, decu ili trudnice, molimo konsultujte se sa lekarom.
+                  </p>
                 </div>
               </div>
             ) : (
