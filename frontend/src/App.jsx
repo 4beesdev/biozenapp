@@ -12,7 +12,7 @@ export default function App() {
   const [message, setMessage] = useState("");
   const [me, setMe] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [activeTab, setActiveTab] = useState(null); // null = home, "merenja" | "podaci" | "saveti" | "blogovi" | "shop" | "chat"
+  const [activeTab, setActiveTab] = useState(null); // null = home, "merenja" | "podaci" | "saveti" | "blogovi" | "shop" | "chat" | "uslovi-koriscenja"
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
@@ -3122,6 +3122,162 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
         </div>
       )}
 
+      {activeTab === "uslovi-koriscenja" && (
+        <div
+          style={{
+            border: "1px solid var(--brand-border)",
+            borderRadius: 10,
+            padding: isMobile ? 20 : 35,
+            background: "var(--brand-bg-light)",
+            boxShadow: "0 2px 8px rgba(65, 101, 57, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04)",
+            maxHeight: isMobile ? "calc(100vh - 200px)" : "calc(100vh - 250px)",
+            overflowY: "auto",
+          }}
+        >
+          <h2 style={{ 
+            marginTop: 0,
+            marginBottom: 24,
+            fontSize: isMobile ? 20 : 24,
+            fontWeight: 600,
+            color: "var(--brand-primary)",
+            letterSpacing: "-0.3px",
+          }}>Uslovi korišćenja</h2>
+          
+          <div style={{
+            fontSize: isMobile ? 14 : 15,
+            lineHeight: 1.8,
+            color: "var(--brand-text)",
+          }}>
+            <p style={{ marginBottom: 20 }}>
+              BioZen je aplikacija za praćenje zdravlja, kilaže i merenja koja posluje u skladu sa važećim zakonima i propisima u Republici Srbiji.
+            </p>
+
+            <p style={{ marginBottom: 20 }}>
+              Aplikacija BioZen dostupna je na internet stranici <strong>www.biozen.rs</strong>. Aplikacija se može koristiti za Vašu privatnu upotrebu bez ikakvih naknada za korišćenje, a prema niže navedenim uslovima i pravilima.
+            </p>
+
+            <p style={{ marginBottom: 20 }}>
+              <strong>Korišćenjem aplikacije BioZen obavezujete se da ćete poštovati niže navedene uslove i pravila i da ste sa istim saglasni.</strong>
+            </p>
+
+            <h3 style={{ 
+              marginTop: 30,
+              marginBottom: 16,
+              fontSize: isMobile ? 18 : 20,
+              fontWeight: 600,
+              color: "var(--brand-primary)",
+            }}>Registracija</h3>
+
+            <p style={{ marginBottom: 20 }}>
+              Kupac snosi odgovornost za tačnost unetih podataka prilikom registracije.
+            </p>
+
+            <p style={{ marginBottom: 20, padding: 16, background: "rgba(65, 101, 57, 0.1)", borderRadius: 8, border: "1px solid var(--brand-primary)" }}>
+              <strong>Važno:</strong> "BIOZEN" DOO se obavezuje da će čuvati privatnost svih registrovanih korisnika. <strong>Vaši uneti podaci (ime, prezime, kilaža, merenja, i drugi lični podaci) se ne koriste i ne pregledaju od strane naših zaposlenih ili trećih lica.</strong> Svi podaci su zaštićeni i dostupni samo Vama kroz Vaš korisnički nalog.
+            </p>
+
+            <p style={{ marginBottom: 20 }}>
+              Ukoliko dođe do bilo kakve promene podataka koje ste uneli prilikom registracije, molimo Vas da blagovremeno ažurirate Vaš korisnički račun, odnosno obavestite nas o nastalim promenama putem email adrese <strong>office@biozen.rs</strong>.
+            </p>
+
+            <h3 style={{ 
+              marginTop: 30,
+              marginBottom: 16,
+              fontSize: isMobile ? 18 : 20,
+              fontWeight: 600,
+              color: "var(--brand-primary)",
+            }}>Korišćenje aplikacije</h3>
+
+            <p style={{ marginBottom: 20 }}>
+              Aplikacija BioZen omogućava Vam da:
+            </p>
+            <ul style={{ marginBottom: 20, paddingLeft: 20 }}>
+              <li style={{ marginBottom: 8 }}>Unesete i pratite Vašu kilažu i merenja</li>
+              <li style={{ marginBottom: 8 }}>Pratite napredak ka postizanju ciljne kilaže</li>
+              <li style={{ marginBottom: 8 }}>Pristupite blogovima sa savetima o zdravlju i ishrani</li>
+              <li style={{ marginBottom: 8 }}>Komunicirate sa AI asistentom za opšte savete o zdravlju, ishrani i mršavljenju</li>
+            </ul>
+
+            <h3 style={{ 
+              marginTop: 30,
+              marginBottom: 16,
+              fontSize: isMobile ? 18 : 20,
+              fontWeight: 600,
+              color: "var(--brand-primary)",
+            }}>Privatnost podataka</h3>
+
+            <p style={{ marginBottom: 20 }}>
+              U ime kompanije BIOZEN DOO obavezujemo se da ćemo čuvati privatnost svih naših korisnika. Prikupljamo samo neophodne, osnovne podatke o korisnicima i podatke neophodne za funkcionisanje aplikacije u skladu sa dobrim poslovnim običajima i u cilju pružanja kvalitetne usluge.
+            </p>
+
+            <p style={{ marginBottom: 20, padding: 16, background: "rgba(65, 101, 57, 0.1)", borderRadius: 8, border: "1px solid var(--brand-primary)" }}>
+              <strong>Važno:</strong> Svi podaci o korisnicima se strogo čuvaju i <strong>nisu dostupni zaposlenima ili trećim licima za pregled ili korišćenje</strong>. Vaši lični podaci, merenja i ostali uneti podaci su potpuno privatni i dostupni samo Vama kroz Vaš korisnički nalog.
+            </p>
+
+            <p style={{ marginBottom: 20 }}>
+              Svi zaposleni BIOZEN DOO (i poslovni partneri) odgovorni su za poštovanje načela zaštite privatnosti.
+            </p>
+
+            <h3 style={{ 
+              marginTop: 30,
+              marginBottom: 16,
+              fontSize: isMobile ? 18 : 20,
+              fontWeight: 600,
+              color: "var(--brand-primary)",
+            }}>Dostupnost aplikacije</h3>
+
+            <p style={{ marginBottom: 20 }}>
+              BioZen aplikacija "BIOZEN" DOO nastoji da Vam da najbolju moguću ponudu usluga, pri čemu ne može garantovati da će usluge na aplikaciji odgovarati Vašim potrebama. "BIOZEN" DOO ne može garantovati da će usluga biti bez grešaka. Ukoliko dođe do greške, molimo Vas da je prijavite našem Kontakt centru ili na email <strong>office@biozen.rs</strong> kako bismo je otklonili na najbrži mogući način.
+            </p>
+
+            <h3 style={{ 
+              marginTop: 30,
+              marginBottom: 16,
+              fontSize: isMobile ? 18 : 20,
+              fontWeight: 600,
+              color: "var(--brand-primary)",
+            }}>Povezane Internet stranice</h3>
+
+            <p style={{ marginBottom: 20 }}>
+              Aplikacija BioZen može uključivati linkove na druge internet stranice. Materijali na tim stranicama su izvan kontrole "BIOZEN" DOO, korisnici na njih pristupaju na vlastitu odgovornost i rizik te stoga "BIOZEN" DOO nije odgovorana za sadržaj na tim stranicama.
+            </p>
+
+            <h3 style={{ 
+              marginTop: 30,
+              marginBottom: 16,
+              fontSize: isMobile ? 18 : 20,
+              fontWeight: 600,
+              color: "var(--brand-primary)",
+            }}>Važenje pravila</h3>
+
+            <p style={{ marginBottom: 20 }}>
+              "BIOZEN" DOO zadržava pravo da u bilo kom trenutku, ukoliko to smatra potrebnim, ukine ili izmeni bilo koji od ovde navedenih Uslova i pravila korišćenja. Bilo kakva izmena ili ukidanje Uslova i pravila korišćenja stupiće na snagu odmah u trenutku objavljivanja istih na aplikaciji BioZen.
+            </p>
+
+            <p style={{ marginBottom: 20 }}>
+              Ako aplikaciju BioZen nastavite da koristite nakon što su izmenjeni Uslovi i pravila korišćenja, smatra se da ste saglasni s novim Uslovima i pravilima korišćenja BioZen aplikacije. "BIOZEN" DOO neće biti odgovoran ni za kakve moguće posledice proizašle iz promena aplikacije.
+            </p>
+
+            <p style={{ marginBottom: 20 }}>
+              Ako niste saglasni s Uslovima i pravilima korišćenja BioZen aplikacije, molimo Vas nemojte koristiti aplikaciju, a Vas molimo obratite se našem Kontakt centru ili putem emaila: <strong>office@biozen.rs</strong>, a kako bismo Vas izbrisali iz baze korisnika BioZen aplikacije.
+            </p>
+
+            <div style={{
+              marginTop: 40,
+              padding: 20,
+              background: "var(--brand-bg)",
+              borderRadius: 8,
+              border: "1px solid var(--brand-border)",
+              textAlign: "center",
+            }}>
+              <p style={{ margin: 0, fontSize: isMobile ? 13 : 14, color: "var(--brand-text-light)" }}>
+                Za dodatne informacije, kontaktirajte nas na: <strong>office@biozen.rs</strong>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* PWA Install Button */}
       {showInstallButton && isMobile && !isStandalone && (
         <div style={{
@@ -3343,8 +3499,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
             href="#"
             onClick={(e) => {
               e.preventDefault();
-              // TODO: Navigate to Terms of Service page
-              alert("Uslovi korišćenja - stranica u pripremi");
+              setActiveTab("uslovi-koriscenja");
             }}
             style={{
               color: "var(--brand-text-light)",
