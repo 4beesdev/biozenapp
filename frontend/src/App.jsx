@@ -67,7 +67,10 @@ export default function App() {
 
   async function loadUserData() {
     const token = localStorage.getItem("token");
-    if (!token) return;
+    if (!token) {
+      setIsLoggedIn(false);
+      return;
+    }
     
     try {
       const res = await fetch("/api/me", {
@@ -85,13 +88,15 @@ export default function App() {
         setIsLoggedIn(true);
         console.log("✓ User logged in, role:", data.role);
       } else {
-        console.log("✗ Authentication failed");
-        localStorage.removeItem("token");
+        console.log("✗ Authentication failed - response not ok or not authenticated");
+        // Ne briši token odmah - možda je privremena greška
+        // Samo resetuj isLoggedIn state
         setIsLoggedIn(false);
       }
     } catch (e) {
       console.error("Greška pri učitavanju podataka:", e);
-      localStorage.removeItem("token");
+      // Ne briši token odmah - možda je privremena greška
+      // Samo resetuj isLoggedIn state
       setIsLoggedIn(false);
     }
   }
