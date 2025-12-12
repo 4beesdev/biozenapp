@@ -940,6 +940,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
         justifyContent: "space-between", 
         alignItems: "center", 
         marginBottom: 32,
+        padding: isMobile ? "15px 15px 20px 15px" : "0 0 20px 0",
         paddingBottom: 20,
         borderBottom: "2px solid var(--brand-border)",
       }}>
@@ -1001,6 +1002,8 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
           padding: 4,
           borderRadius: 12,
           border: "1px solid var(--brand-border)",
+          marginLeft: isMobile ? "15px" : "0",
+          marginRight: isMobile ? "15px" : "0",
         }}>
           <button
             onClick={() => setActiveTab(null)}
@@ -1132,7 +1135,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
           alignItems: "center",
           justifyContent: "center",
           minHeight: "60vh",
-          padding: "40px 20px",
+          padding: "40px 15px",
         }}>
           <h2 style={{
             margin: "0 0 40px 0",
@@ -1390,6 +1393,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
           gridTemplateColumns: "1fr 1fr 1fr",
           gap: 16, 
           marginBottom: 24,
+          padding: "0 15px",
         }}>
           <button
             onClick={() => setActiveTab("merenja")}
