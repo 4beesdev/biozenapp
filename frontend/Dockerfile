@@ -20,7 +20,10 @@ COPY --from=build /app/dist .
 # Kopiraj nginx konfiguraciju
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 80
+# Kreiraj SSL direktorijum (sertifikati će biti mount-ovani kroz docker-compose)
+RUN mkdir -p /etc/nginx/ssl
+
+EXPOSE 80 443
 
 CMD ["nginx", "-g", "daemon off;"]
 
