@@ -25,6 +25,14 @@ export default function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Wrapper funkcija za setActiveTab koja dodaje history entry
+  const navigateToTab = (tab) => {
+    setActiveTab(tab);
+    // Dodaj history entry za browser back button
+    const url = tab ? `#${tab}` : '/';
+    window.history.pushState({ tab }, '', url);
+  };
+
   // Proveri da li je korisnik ulogovan pri učitavanju
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -40,10 +48,20 @@ export default function App() {
       setMode("reset-password");
     }
 
+    // Proveri hash u URL-u pri učitavanju
+    const hash = window.location.hash.slice(1); // Ukloni #
+    if (hash && ['merenja', 'podaci', 'saveti', 'blogovi', 'shop', 'chat'].includes(hash)) {
+      setActiveTab(hash);
+    }
+
     // Listener za browser back button - samo vrati na home
-    const handlePopState = () => {
-      // Vrati na home (activeTab = null) kada ide back
-      setActiveTab(null);
+    const handlePopState = (e) => {
+      // Ako postoji state sa tab-om, koristi ga, inače vrati na home
+      if (e.state && e.state.tab) {
+        setActiveTab(e.state.tab);
+      } else {
+        setActiveTab(null);
+      }
       // Proveri autentifikaciju ako postoji token
       const token = localStorage.getItem("token");
       if (token && !isLoggedIn) {
@@ -217,7 +235,7 @@ export default function App() {
     setMe(null);
     setIsLoggedIn(false);
     setMessage("Izlogovan");
-    setActiveTab(null);
+    navigateToTab(null);
     setEmail("");
     setPassword("");
     
@@ -246,7 +264,7 @@ export default function App() {
     }
     // Inače prikaži obični dashboard
     console.log("✗ Rendering Dashboard (not admin)");
-    return <Dashboard me={me} onUpdate={updateUserData} onLogout={logout} activeTab={activeTab} setActiveTab={setActiveTab} message={message} isMobile={isMobile} showTermsModal={showTermsModal} setShowTermsModal={setShowTermsModal} showPrivacyModal={showPrivacyModal} setShowPrivacyModal={setShowPrivacyModal} />;
+    return <Dashboard me={me} onUpdate={updateUserData} onLogout={logout} activeTab={activeTab} setActiveTab={navigateToTab} message={message} isMobile={isMobile} showTermsModal={showTermsModal} setShowTermsModal={setShowTermsModal} showPrivacyModal={showPrivacyModal} setShowPrivacyModal={setShowPrivacyModal} />;
   }
 
   // Ako nije ulogovan, prikaži login/register formu
