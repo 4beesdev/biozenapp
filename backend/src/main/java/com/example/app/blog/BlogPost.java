@@ -19,10 +19,10 @@ public class BlogPost {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @Column(length = 500)
+    @Column(columnDefinition = "TEXT")
     private String excerpt;
 
-    @Column(name = "featured_image")
+    @Column(name = "featured_image", length = 1000)
     private String featuredImage;
 
     @Column(name = "author_id", nullable = false)
