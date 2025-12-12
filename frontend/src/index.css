@@ -99,9 +99,21 @@ button:focus-visible {
     font-size: 14px;
   }
   
-  /* Prevent iOS zoom on input focus - using 18px like Facebook/Instagram */
+  /* Prevent zoom on input focus - using 18px like Facebook/Instagram */
   input, textarea, select {
     font-size: 18px !important;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    /* Prevent zoom on focus */
+    touch-action: manipulation;
+  }
+  
+  /* Additional protection for all form elements */
+  input:focus, textarea:focus, select:focus {
+    font-size: 18px !important;
+    transform: scale(1);
+    -webkit-transform: scale(1);
   }
   
   /* Login form responsive */

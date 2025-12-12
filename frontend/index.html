@@ -6,15 +6,15 @@
     <link rel="apple-touch-icon" sizes="192x192" href="/logo-192x192.png" />
     <link rel="apple-touch-icon" sizes="512x512" href="/logo-512x512.png" />
     <link rel="manifest" href="/manifest.json" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no" />
     <script>
-      // Prevent iOS zoom on input focus
+      // Prevent zoom on input focus (Chrome Mobile & Safari)
       (function() {
         var viewport = document.querySelector('meta[name="viewport"]');
         var lastTouchEnd = 0;
         
         function preventZoom() {
-          viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+          viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
         }
         
         // Prevent double-tap zoom
@@ -30,6 +30,8 @@
         document.addEventListener('touchstart', function(e) {
           if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
             preventZoom();
+            // Force immediate viewport lock
+            e.target.style.fontSize = '18px';
           }
         }, { passive: true });
         
@@ -37,15 +39,22 @@
         document.addEventListener('focusin', function(e) {
           if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
             preventZoom();
-            // Force viewport update
+            // Force font size
+            e.target.style.fontSize = '18px';
+            // Force viewport update multiple times
+            setTimeout(preventZoom, 0);
             setTimeout(preventZoom, 10);
             setTimeout(preventZoom, 50);
             setTimeout(preventZoom, 100);
+            setTimeout(preventZoom, 200);
           }
         }, true);
         
         // Keep viewport locked
         preventZoom();
+        
+        // Continuously lock viewport
+        setInterval(preventZoom, 500);
       })();
     </script>
     <meta name="theme-color" content="#416539" />
