@@ -69,9 +69,13 @@ public class MeasurementController {
         // Proveri da li postoji prethodno merenje za izračunavanje promene
         List<Measurement> previousMeasurements = measurementRepository.findByUserIdOrderByDatumDesc(userId);
         Double promena = null;
+        Double promenaObimStruka = null;
         if (!previousMeasurements.isEmpty()) {
             Measurement lastMeasurement = previousMeasurements.get(0);
             promena = request.kilaza - lastMeasurement.getKilaza();
+            if (request.obimStruka != null && lastMeasurement.getObimStruka() != null) {
+                promenaObimStruka = request.obimStruka - lastMeasurement.getObimStruka();
+            }
         }
 
         Measurement measurement = new Measurement();
@@ -79,6 +83,8 @@ public class MeasurementController {
         measurement.setDatum(request.datum != null ? LocalDate.parse(request.datum) : LocalDate.now());
         measurement.setKilaza(request.kilaza);
         measurement.setPromena(promena);
+        measurement.setObimStruka(request.obimStruka);
+        measurement.setPromenaObimStruka(promenaObimStruka);
         measurement.setKomentar(request.komentar);
 
         Measurement saved = measurementRepository.save(measurement);
@@ -88,6 +94,8 @@ public class MeasurementController {
         response.put("datum", saved.getDatum().toString());
         response.put("kilaza", saved.getKilaza());
         response.put("promena", saved.getPromena());
+        response.put("obimStruka", saved.getObimStruka());
+        response.put("promenaObimStruka", saved.getPromenaObimStruka());
         response.put("komentar", saved.getKomentar());
 
         return ResponseEntity.ok(response);
@@ -124,6 +132,7 @@ public class MeasurementController {
     public static class CreateMeasurementRequest {
         public String datum;
         public Double kilaza;
+        public Double obimStruka;
         public String komentar;
     }
 }

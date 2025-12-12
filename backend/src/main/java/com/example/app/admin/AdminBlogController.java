@@ -42,10 +42,7 @@ public class AdminBlogController {
     }
 
     private String generateSlug(String title) {
-        if (title == null || title.trim().isEmpty()) {
-            return "blog-post-" + System.currentTimeMillis();
-        }
-        String baseSlug = title.toLowerCase()
+        return title.toLowerCase()
             .replace("ć", "c")
             .replace("č", "c")
             .replace("đ", "d")
@@ -55,20 +52,6 @@ public class AdminBlogController {
             .replaceAll("\\s+", "-")
             .replaceAll("-+", "-")
             .trim();
-        
-        if (baseSlug.isEmpty()) {
-            return "blog-post-" + System.currentTimeMillis();
-        }
-        
-        // Proveri da li slug već postoji, ako postoji dodaj broj
-        String slug = baseSlug;
-        int counter = 1;
-        while (blogPostRepository.findBySlug(slug).isPresent()) {
-            slug = baseSlug + "-" + counter;
-            counter++;
-        }
-        
-        return slug;
     }
 
     @GetMapping
@@ -143,50 +126,24 @@ public class AdminBlogController {
                 return ResponseEntity.status(401).body(Map.of("message", "Korisnik nije pronađen"));
             }
 
-            String title = (String) req.get("title");
-            if (title == null || title.trim().isEmpty()) {
-                return ResponseEntity.status(400).body(Map.of("message", "Naslov je obavezan"));
-            }
-            
-            System.out.println("Creating blog post with title: " + title);
-            System.out.println("Request data: " + req);
-            
             BlogPost post = new BlogPost();
-            post.setTitle(title.trim());
-            
-            String slug = generateSlug(title);
-            System.out.println("Generated slug: " + slug);
-            post.setSlug(slug);
-            
-            String content = (String) req.getOrDefault("content", "");
-            String excerpt = (String) req.getOrDefault("excerpt", "");
-            String featuredImage = (String) req.getOrDefault("featuredImage", "");
-            String status = (String) req.getOrDefault("status", "DRAFT");
-            
-            System.out.println("Content length: " + (content != null ? content.length() : 0));
-            System.out.println("Excerpt: " + excerpt);
-            System.out.println("Featured image: " + featuredImage);
-            System.out.println("Status: " + status);
-            
-            post.setContent(content);
-            post.setExcerpt(excerpt != null && excerpt.length() > 500 ? excerpt.substring(0, 500) : excerpt);
-            post.setFeaturedImage(featuredImage);
+            post.setTitle((String) req.get("title"));
+            post.setSlug(generateSlug((String) req.get("title")));
+            post.setContent((String) req.get("content"));
+            post.setExcerpt((String) req.get("excerpt"));
+            post.setFeaturedImage((String) req.get("featuredImage"));
             post.setAuthorId(userId);
-            post.setStatus(status);
+            post.setStatus((String) req.getOrDefault("status", "DRAFT"));
             post.setCreatedAt(Instant.now());
 
             if ("PUBLISHED".equals(post.getStatus())) {
                 post.setPublishedAt(Instant.now());
             }
 
-            System.out.println("Attempting to save blog post...");
             blogPostRepository.save(post);
-            System.out.println("Blog post saved successfully with ID: " + post.getId());
             return ResponseEntity.ok(post);
         } catch (Exception e) {
-            System.err.println("ERROR in createBlog: " + e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.status(500).body(Map.of("message", "Greška pri kreiranju bloga: " + e.getMessage()));
+            return ResponseEntity.status(500).body(Map.of("message", "Greška pri kreiranju bloga"));
         }
     }
 

@@ -67,6 +67,7 @@ public class MeController {
         response.put("starost", user.getStarost());
         response.put("kilaza", user.getKilaza());
         response.put("zeljenaKilaza", user.getZeljenaKilaza());
+        response.put("obimStruka", user.getObimStruka());
         response.put("id", user.getId());
         response.put("role", user.getRole() != null ? user.getRole() : "USER");
 
@@ -107,6 +108,7 @@ public class MeController {
         if (request.starost != null) user.setStarost(request.starost);
         if (request.kilaza != null) user.setKilaza(request.kilaza);
         if (request.zeljenaKilaza != null) user.setZeljenaKilaza(request.zeljenaKilaza);
+        if (request.obimStruka != null) user.setObimStruka(request.obimStruka);
 
         userRepository.save(user);
 
@@ -119,6 +121,7 @@ public class MeController {
         response.put("starost", user.getStarost());
         response.put("kilaza", user.getKilaza());
         response.put("zeljenaKilaza", user.getZeljenaKilaza());
+        response.put("obimStruka", user.getObimStruka());
         response.put("role", user.getRole() != null ? user.getRole() : "USER");
 
         return ResponseEntity.ok(response);
@@ -131,5 +134,6 @@ public class MeController {
         public Integer starost;
         public Double kilaza;
         public Double zeljenaKilaza;
+        public Double obimStruka;
     }
 }

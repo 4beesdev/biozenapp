@@ -21,6 +21,10 @@ public class Measurement {
 
     private Double promena; // promena u odnosu na prethodno merenje
 
+    private Double obimStruka; // obim struka u cm
+
+    private Double promenaObimStruka; // promena obima struka u odnosu na prethodno merenje
+
     @Column(length = 1000)
     private String komentar;
 
@@ -38,6 +42,8 @@ public class Measurement {
     public LocalDate getDatum() { return datum; }
     public Double getKilaza() { return kilaza; }
     public Double getPromena() { return promena; }
+    public Double getObimStruka() { return obimStruka; }
+    public Double getPromenaObimStruka() { return promenaObimStruka; }
     public String getKomentar() { return komentar; }
 
     public void setId(Long id) { this.id = id; }
@@ -45,6 +51,8 @@ public class Measurement {
     public void setDatum(LocalDate datum) { this.datum = datum; }
     public void setKilaza(Double kilaza) { this.kilaza = kilaza; }
     public void setPromena(Double promena) { this.promena = promena; }
+    public void setObimStruka(Double obimStruka) { this.obimStruka = obimStruka; }
+    public void setPromenaObimStruka(Double promenaObimStruka) { this.promenaObimStruka = promenaObimStruka; }
     public void setKomentar(String komentar) { this.komentar = komentar; }
 }
 

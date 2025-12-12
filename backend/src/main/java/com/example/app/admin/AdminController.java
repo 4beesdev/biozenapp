@@ -43,35 +43,35 @@ public class AdminController {
         
         if (hasAdminAuthority) {
             // Also verify in database that user is active
-            if (auth.getPrincipal() == null) {
-                System.out.println("ERROR: auth.getPrincipal() is null");
-                return false;
-            }
-            String userIdStr = String.valueOf(auth.getPrincipal());
-            System.out.println("User ID from token: " + userIdStr);
-            Long userId;
-            try {
-                userId = Long.parseLong(userIdStr);
-                System.out.println("Parsed user ID: " + userId);
-            } catch (NumberFormatException e) {
-                System.out.println("ERROR: Cannot parse user ID: " + userIdStr);
-                return false;
-            }
-            Optional<User> userOpt = userRepository.findById(userId);
-            if (userOpt.isEmpty()) {
-                System.out.println("ERROR: User not found with ID: " + userId);
-                return false;
-            }
-            User user = userOpt.get();
-            System.out.println("User found: " + user.getEmail());
-            System.out.println("User role: " + user.getRole());
-            System.out.println("User isActive: " + user.getIsActive());
+        if (auth.getPrincipal() == null) {
+            System.out.println("ERROR: auth.getPrincipal() is null");
+            return false;
+        }
+        String userIdStr = String.valueOf(auth.getPrincipal());
+        System.out.println("User ID from token: " + userIdStr);
+        Long userId;
+        try {
+            userId = Long.parseLong(userIdStr);
+            System.out.println("Parsed user ID: " + userId);
+        } catch (NumberFormatException e) {
+            System.out.println("ERROR: Cannot parse user ID: " + userIdStr);
+            return false;
+        }
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            System.out.println("ERROR: User not found with ID: " + userId);
+            return false;
+        }
+        User user = userOpt.get();
+        System.out.println("User found: " + user.getEmail());
+        System.out.println("User role: " + user.getRole());
+        System.out.println("User isActive: " + user.getIsActive());
             // Check if user is active (case-insensitive role check)
             boolean isActive = user.getIsActive() != null && user.getIsActive();
             boolean hasAdminRole = user.getRole() != null && "ADMIN".equalsIgnoreCase(user.getRole());
             boolean isAdmin = isActive && hasAdminRole;
-            System.out.println("Is admin? " + isAdmin);
-            return isAdmin;
+        System.out.println("Is admin? " + isAdmin);
+        return isAdmin;
         }
         
         System.out.println("Is admin? false (no ROLE_ADMIN authority)");

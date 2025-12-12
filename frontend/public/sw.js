@@ -18,7 +18,9 @@ self.addEventListener('fetch', (event) => {
   }
   
   // Preskoči API zahteve - ne cache-ujemo API odgovore
+  // Ne presreći API zahteve uopšte - neka idu direktno na network
   if (request.url.includes('/api/')) {
+    event.respondWith(fetch(request));
     return;
   }
   

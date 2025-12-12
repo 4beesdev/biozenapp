@@ -510,6 +510,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
     starost: me?.starost || "",
     kilaza: me?.kilaza || "",
     zeljenaKilaza: me?.zeljenaKilaza || "",
+    obimStruka: me?.obimStruka || "",
   });
 
   const [measurements, setMeasurements] = useState([]);
@@ -517,6 +518,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
   const [measurementForm, setMeasurementForm] = useState({
     datum: new Date().toISOString().split('T')[0],
     kilaza: "",
+    obimStruka: "",
     komentar: "",
   });
   const [measurementMessage, setMeasurementMessage] = useState("");
@@ -691,6 +693,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
         setMeasurementForm({
           datum: new Date().toISOString().split('T')[0],
           kilaza: "",
+          obimStruka: "",
           komentar: "",
         });
         setShowMeasurementForm(false);
@@ -1628,6 +1631,38 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                     color: "var(--brand-text)",
                     fontSize: 14,
                   }}>
+                    Obim struka (cm)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={measurementForm.obimStruka}
+                    onChange={(e) => setMeasurementForm({ ...measurementForm, obimStruka: e.target.value })}
+                    style={{ 
+                      width: "100%", 
+                      padding: 12, 
+              borderRadius: 6,
+              border: "1px solid var(--brand-border)",
+              boxSizing: "border-box",
+              fontSize: 15,
+              transition: "all 0.2s",
+              background: "var(--brand-bg-light)",
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = "var(--brand-primary)"}
+                    onBlur={(e) => e.target.style.borderColor = "var(--brand-border)"}
+                    placeholder="Unesite obim struka"
+                    min="0"
+                  />
+                </div>
+
+                <div style={{ marginBottom: 20 }}>
+                  <label style={{ 
+                    display: "block", 
+                    marginBottom: 8, 
+                    fontWeight: 600,
+                    color: "var(--brand-text)",
+                    fontSize: 14,
+                  }}>
                     Komentar
                   </label>
                   <textarea
@@ -1717,6 +1752,18 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                       textAlign: "left",
                       fontWeight: 600,
                       color: "var(--brand-text)",
+                    }}>Obim struka</th>
+                    <th style={{
+                      padding: "12px",
+                      textAlign: "left",
+                      fontWeight: 600,
+                      color: "var(--brand-text)",
+                    }}>Promena obima</th>
+                    <th style={{
+                      padding: "12px",
+                      textAlign: "left",
+                      fontWeight: 600,
+                      color: "var(--brand-text)",
                     }}>Komentar</th>
                     <th style={{
                       padding: "12px",
@@ -1744,6 +1791,16 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                         fontWeight: 500,
                       }}>
                         {m.promena === null ? "-" : (m.promena >= 0 ? `+${m.promena.toFixed(1)}` : m.promena.toFixed(1))} kg
+                      </td>
+                      <td style={{ padding: "12px", color: "var(--brand-text)", fontWeight: 500 }}>
+                        {m.obimStruka ? `${m.obimStruka} cm` : "-"}
+                      </td>
+                      <td style={{ 
+                        padding: "12px", 
+                        color: m.promenaObimStruka === null ? "var(--brand-text-light)" : (m.promenaObimStruka <= 0 ? "var(--brand-success)" : "var(--brand-error)"),
+                        fontWeight: 500,
+                      }}>
+                        {m.promenaObimStruka === null ? "-" : (m.promenaObimStruka <= 0 ? `${m.promenaObimStruka.toFixed(1)}` : `+${m.promenaObimStruka.toFixed(1)}`)} cm
                       </td>
                       <td style={{ padding: "12px", color: "var(--brand-text-light)", maxWidth: 300 }}>
                         {m.komentar || "-"}
@@ -1965,6 +2022,111 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                   </ResponsiveContainer>
                 </div>
               </div>
+              
+              {/* Progress bar za kilograme */}
+              {me?.kilaza && me?.zeljenaKilaza && parseFloat(me.kilaza) > 0 && parseFloat(me.zeljenaKilaza) > 0 && (
+                <div style={{ 
+                  marginTop: 24,
+                  padding: 20,
+                  background: "var(--brand-bg-light)",
+                  borderRadius: 12,
+                  border: "1px solid var(--brand-border)",
+                }}>
+                  <div style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: 12,
+                  }}>
+                    <span style={{
+                      fontSize: 14,
+                      fontWeight: 600,
+                      color: "var(--brand-text)",
+                    }}>
+                      Napredak ka cilju
+                    </span>
+                    <span style={{
+                      fontSize: 14,
+                      fontWeight: 500,
+                      color: "var(--brand-text-light)",
+                    }}>
+                      {(() => {
+                        const pocetna = parseFloat(me.kilaza);
+                        const zeljena = parseFloat(me.zeljenaKilaza);
+                        const trenutna = measurements.length > 0 ? parseFloat(measurements[0].kilaza) : pocetna;
+                        const razlika = Math.abs(pocetna - zeljena);
+                        const napredak = razlika > 0 ? Math.abs(pocetna - trenutna) : 0;
+                        const procenat = razlika > 0 ? Math.min(100, (napredak / razlika) * 100) : 0;
+                        return `${procenat.toFixed(1)}%`;
+                      })()}
+                    </span>
+                  </div>
+                  <div style={{
+                    width: "100%",
+                    height: 24,
+                    background: "var(--brand-bg)",
+                    borderRadius: 12,
+                    overflow: "hidden",
+                    border: "1px solid var(--brand-border)",
+                    position: "relative",
+                  }}>
+                    <div style={{
+                      height: "100%",
+                      width: `${(() => {
+                        const pocetna = parseFloat(me.kilaza);
+                        const zeljena = parseFloat(me.zeljenaKilaza);
+                        const trenutna = measurements.length > 0 ? parseFloat(measurements[0].kilaza) : pocetna;
+                        const razlika = Math.abs(pocetna - zeljena);
+                        const napredak = razlika > 0 ? Math.abs(pocetna - trenutna) : 0;
+                        const procenat = razlika > 0 ? Math.min(100, (napredak / razlika) * 100) : 0;
+                        return procenat;
+                      })()}%`,
+                      background: "var(--brand-gradient)",
+                      borderRadius: 12,
+                      transition: "width 0.5s ease",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "flex-end",
+                      paddingRight: 8,
+                    }}>
+                      <span style={{
+                        fontSize: 11,
+                        fontWeight: 600,
+                        color: "#fff",
+                        textShadow: "0 1px 2px rgba(0,0,0,0.2)",
+                      }}>
+                        {(() => {
+                          const pocetna = parseFloat(me.kilaza);
+                          const zeljena = parseFloat(me.zeljenaKilaza);
+                          const trenutna = measurements.length > 0 ? parseFloat(measurements[0].kilaza) : pocetna;
+                          const razlika = Math.abs(pocetna - zeljena);
+                          const napredak = razlika > 0 ? Math.abs(pocetna - trenutna) : 0;
+                          const procenat = razlika > 0 ? Math.min(100, (napredak / razlika) * 100) : 0;
+                          return procenat > 10 ? `${procenat.toFixed(0)}%` : "";
+                        })()}
+                      </span>
+                    </div>
+                  </div>
+                  <div style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginTop: 8,
+                    fontSize: 12,
+                    color: "var(--brand-text-light)",
+                  }}>
+                    <span>
+                      Početna: {parseFloat(me.kilaza).toFixed(1)} kg
+                    </span>
+                    <span>
+                      Cilj: {parseFloat(me.zeljenaKilaza).toFixed(1)} kg
+                    </span>
+                    <span>
+                      Trenutna: {measurements.length > 0 ? parseFloat(measurements[0].kilaza).toFixed(1) : parseFloat(me.kilaza).toFixed(1)} kg
+                    </span>
+                  </div>
+                </div>
+              )}
+
               <div style={{ marginTop: 20, textAlign: "center" }}>
                 <button
                   onClick={saveChartAsImage}
@@ -2173,7 +2335,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
               />
             </div>
 
-            <div style={{ marginBottom: 24 }}>
+            <div style={{ marginBottom: 20 }}>
               <label style={{ 
                 display: "block", 
                 marginBottom: 8, 
@@ -2201,6 +2363,38 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                 onFocus={(e) => e.target.style.borderColor = "var(--brand-primary)"}
                 onBlur={(e) => e.target.style.borderColor = "var(--brand-border)"}
                 placeholder="Unesite željenu kilažu"
+                min="0"
+              />
+            </div>
+
+            <div style={{ marginBottom: 24 }}>
+              <label style={{ 
+                display: "block", 
+                marginBottom: 8, 
+                fontWeight: 600,
+                color: "var(--brand-text)",
+                fontSize: 14,
+              }}>
+                Obim struka (cm)
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                value={formData.obimStruka}
+                onChange={(e) => setFormData({ ...formData, obimStruka: e.target.value })}
+                style={{ 
+                  width: "100%", 
+                  padding: 12, 
+              borderRadius: 6,
+              border: "1px solid var(--brand-border)",
+              boxSizing: "border-box",
+              fontSize: 15,
+              transition: "all 0.2s",
+              background: "var(--brand-bg-light)",
+                }}
+                onFocus={(e) => e.target.style.borderColor = "var(--brand-primary)"}
+                onBlur={(e) => e.target.style.borderColor = "var(--brand-border)"}
+                placeholder="Unesite obim struka"
                 min="0"
               />
             </div>
