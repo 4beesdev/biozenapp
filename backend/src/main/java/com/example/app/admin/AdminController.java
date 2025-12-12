@@ -1,5 +1,6 @@
 package com.example.app.admin;
 
+import com.example.app.chat.ChatMessageRepository;
 import com.example.app.measurement.MeasurementRepository;
 import com.example.app.user.User;
 import com.example.app.user.UserRepository;
@@ -21,11 +22,13 @@ public class AdminController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final MeasurementRepository measurementRepository;
+    private final ChatMessageRepository chatMessageRepository;
 
-    public AdminController(UserRepository userRepository, PasswordEncoder passwordEncoder, MeasurementRepository measurementRepository) {
+    public AdminController(UserRepository userRepository, PasswordEncoder passwordEncoder, MeasurementRepository measurementRepository, ChatMessageRepository chatMessageRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.measurementRepository = measurementRepository;
+        this.chatMessageRepository = chatMessageRepository;
     }
 
     // Check if user is admin
@@ -145,7 +148,7 @@ public class AdminController {
             System.out.println("Filtered users: " + filteredUsers.size());
             System.out.println("Returning users: " + filteredUsers.size());
 
-            // Create DTOs with measurement count
+            // Create DTOs with measurement count and chat count
             List<Map<String, Object>> userDtos = filteredUsers.stream().map(user -> {
                 Map<String, Object> dto = new HashMap<>();
                 dto.put("id", user.getId());
@@ -164,6 +167,9 @@ public class AdminController {
                 // Count measurements for this user
                 long measurementCount = measurementRepository.countByUserId(user.getId());
                 dto.put("measurementCount", measurementCount);
+                // Count chat messages (only user messages, not assistant responses)
+                long chatCount = chatMessageRepository.countByUserIdAndRole(user.getId(), "user");
+                dto.put("chatCount", chatCount);
                 return dto;
             }).toList();
 

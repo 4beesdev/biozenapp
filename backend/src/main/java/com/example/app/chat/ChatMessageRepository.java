@@ -5,5 +5,6 @@ import java.util.List;
 
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
     List<ChatMessage> findByUserIdOrderByCreatedAtAsc(Long userId);
+    long countByUserIdAndRole(Long userId, String role);
 }
 
