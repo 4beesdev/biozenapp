@@ -352,7 +352,7 @@ export default function App() {
               boxSizing: "border-box",
               border: "1px solid var(--brand-border)",
               borderRadius: 8,
-              fontSize: 14,
+              fontSize: isMobile ? 16 : 14,
               transition: "border-color 0.2s",
             }}
             onFocus={(e) => e.target.style.borderColor = "var(--brand-primary)"}
@@ -373,7 +373,7 @@ export default function App() {
               boxSizing: "border-box",
               border: "1px solid var(--brand-border)",
               borderRadius: 8,
-              fontSize: 14,
+              fontSize: isMobile ? 16 : 14,
               transition: "border-color 0.2s",
             }}
             onFocus={(e) => e.target.style.borderColor = "var(--brand-primary)"}
@@ -394,7 +394,7 @@ export default function App() {
               boxSizing: "border-box",
               border: "1px solid var(--brand-border)",
               borderRadius: 8,
-              fontSize: 14,
+              fontSize: isMobile ? 16 : 14,
               transition: "border-color 0.2s",
             }}
             onFocus={(e) => e.target.style.borderColor = "var(--brand-primary)"}
@@ -1856,7 +1856,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
               borderRadius: 6,
               border: "1px solid var(--brand-border)",
               boxSizing: "border-box",
-              fontSize: 15,
+              fontSize: isMobile ? 16 : 15,
               transition: "all 0.2s",
               background: "var(--brand-bg-light)",
                     }}
@@ -1887,7 +1887,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
               borderRadius: 6,
               border: "1px solid var(--brand-border)",
               boxSizing: "border-box",
-              fontSize: 15,
+              fontSize: isMobile ? 16 : 15,
               transition: "all 0.2s",
               background: "var(--brand-bg-light)",
                     }}
@@ -1920,7 +1920,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
               borderRadius: 6,
               border: "1px solid var(--brand-border)",
               boxSizing: "border-box",
-              fontSize: 15,
+              fontSize: isMobile ? 16 : 15,
               transition: "all 0.2s",
               background: "var(--brand-bg-light)",
                     }}
@@ -1950,7 +1950,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
               borderRadius: 6,
               border: "1px solid var(--brand-border)",
               boxSizing: "border-box",
-              fontSize: 15,
+              fontSize: isMobile ? 16 : 15,
               transition: "all 0.2s",
               background: "var(--brand-bg-light)",
                       minHeight: 80,
@@ -2474,7 +2474,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
               borderRadius: 6,
               border: "1px solid var(--brand-border)",
               boxSizing: "border-box",
-              fontSize: 15,
+              fontSize: isMobile ? 16 : 15,
               transition: "all 0.2s",
               background: "var(--brand-bg-light)",
                 }}
@@ -2504,7 +2504,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
               borderRadius: 6,
               border: "1px solid var(--brand-border)",
               boxSizing: "border-box",
-              fontSize: 15,
+              fontSize: isMobile ? 16 : 15,
               transition: "all 0.2s",
               background: "var(--brand-bg-light)",
                 }}
@@ -2533,7 +2533,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
               borderRadius: 6,
               border: "1px solid var(--brand-border)",
               boxSizing: "border-box",
-              fontSize: 15,
+              fontSize: isMobile ? 16 : 15,
               transition: "all 0.2s",
                   background: "var(--brand-bg-light)",
                 }}
@@ -2567,7 +2567,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
               borderRadius: 6,
               border: "1px solid var(--brand-border)",
               boxSizing: "border-box",
-              fontSize: 15,
+              fontSize: isMobile ? 16 : 15,
               transition: "all 0.2s",
               background: "var(--brand-bg-light)",
                 }}
@@ -2600,7 +2600,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
               borderRadius: 6,
               border: "1px solid var(--brand-border)",
               boxSizing: "border-box",
-              fontSize: 15,
+              fontSize: isMobile ? 16 : 15,
               transition: "all 0.2s",
               background: "var(--brand-bg-light)",
                 }}
@@ -2632,7 +2632,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
               borderRadius: 6,
               border: "1px solid var(--brand-border)",
               boxSizing: "border-box",
-              fontSize: 15,
+              fontSize: isMobile ? 16 : 15,
               transition: "all 0.2s",
               background: "var(--brand-bg-light)",
                 }}
@@ -2664,7 +2664,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
               borderRadius: 6,
               border: "1px solid var(--brand-border)",
               boxSizing: "border-box",
-              fontSize: 15,
+              fontSize: isMobile ? 16 : 15,
               transition: "all 0.2s",
               background: "var(--brand-bg-light)",
                 }}
