@@ -6,7 +6,20 @@
     <link rel="apple-touch-icon" sizes="192x192" href="/logo-192x192.png" />
     <link rel="apple-touch-icon" sizes="512x512" href="/logo-512x512.png" />
     <link rel="manifest" href="/manifest.json" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <script>
+      // Prevent iOS zoom on input focus
+      document.addEventListener('DOMContentLoaded', function() {
+        var viewport = document.querySelector('meta[name="viewport"]');
+        function preventZoom(e) {
+          if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+          }
+        }
+        document.addEventListener('touchstart', preventZoom, { passive: true });
+        document.addEventListener('touchend', preventZoom, { passive: true });
+      });
+    </script>
     <meta name="theme-color" content="#416539" />
     <meta name="description" content="BioZen Tracker - Aplikacija za praćenje kilaže i zdravog načina života" />
     <title>BioZen Tracker</title>
