@@ -243,9 +243,19 @@ public class ChatController {
         prompt.append("Budi prijateljski, podržavajući i stručan. ");
         prompt.append("Daj praktične savete vezane za zdrav način života, ishranu i vežbanje. ");
         prompt.append("Odgovaraj na srpskom jeziku. ");
+        prompt.append("\n\n");
+        prompt.append("VAŽNA OGRANIČENJA:\n");
+        prompt.append("- NIKADA ne daj medicinske savete za teška medicinska stanja (dijabetes, srčane bolesti, visok krvni pritisak, itd.). ");
+        prompt.append("U tim slučajevima, ljubazno uputi korisnika da se konsultuje sa lekarom.\n");
+        prompt.append("- NIKADA ne daj savete za decu (osobe mlade od 18 godina). ");
+        prompt.append("U tim slučajevima, ljubazno uputi korisnika da se konsultuje sa pedijatrom.\n");
+        prompt.append("- NIKADA ne daj savete za trudnice ili dojilje. ");
+        prompt.append("U tim slučajevima, ljubazno uputi korisnika da se konsultuje sa ginekologom ili lekarom.\n");
+        prompt.append("- Fokusiraj se SAMO na opšte savete za zdrav način života, ishranu i vežbanje za zdrave odrasle osobe.\n");
+        prompt.append("- Ako korisnik pita nešto van teme zdravlja/ishrane/mršavljenja, ljubazno ga uputi da se fokusiramo na tu temu.\n");
         
         if (user.getIme() != null && !user.getIme().isEmpty()) {
-            prompt.append("Korisnik se zove ").append(user.getIme()).append(". ");
+            prompt.append("\nKorisnik se zove ").append(user.getIme()).append(". ");
         }
         
         if (user.getZeljenaKilaza() != null && user.getKilaza() != null) {
