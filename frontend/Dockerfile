@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Kopiraj package fajlove
 COPY package*.json ./
-RUN npm ci
+RUN npm install --legacy-peer-deps
 
 # Kopiraj source kod i build
 COPY . .
