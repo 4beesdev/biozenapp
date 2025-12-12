@@ -3160,7 +3160,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                 padding: isMobile ? "12px 16px" : "14px 18px",
                 border: "1px solid var(--brand-border)",
                 borderRadius: 24,
-                fontSize: isMobile ? 14 : 15,
+                fontSize: isMobile ? 16 : 15,
                 background: "var(--brand-bg)",
                 color: "var(--brand-text)",
                 outline: "none",
