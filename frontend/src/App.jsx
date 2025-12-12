@@ -887,8 +887,10 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
         width: "100%",
         margin: "0 auto",
         padding: isMobile ? "15px 10px" : "30px 20px",
-        paddingBottom: isMobile && showInstallButton ? "100px" : (isMobile ? "20px" : "30px"),
+        paddingBottom: isMobile && showInstallButton ? "100px" : (isMobile ? "80px" : "100px"),
         minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       <div style={{ 
@@ -3319,12 +3321,14 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
         </div>
       )}
 
-      {/* Footer */}
+      {/* Footer - vidljiv na svim tabovima */}
       <footer style={{
-        marginTop: isMobile ? 40 : 60,
-        paddingTop: isMobile ? 20 : 30,
+        marginTop: "auto",
+        paddingTop: isMobile ? 30 : 40,
+        paddingBottom: isMobile ? 20 : 30,
         borderTop: "1px solid var(--brand-border)",
         textAlign: "center",
+        width: "100%",
       }}>
         <div style={{
           display: "flex",
@@ -3333,6 +3337,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
           flexWrap: "wrap",
           fontSize: isMobile ? 13 : 14,
           color: "var(--brand-text-light)",
+          marginBottom: isMobile ? 12 : 16,
         }}>
           <a
             href="#"
@@ -3345,12 +3350,14 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
               color: "var(--brand-text-light)",
               textDecoration: "none",
               transition: "color 0.2s",
+              cursor: "pointer",
             }}
             onMouseEnter={(e) => e.target.style.color = "var(--brand-primary)"}
             onMouseLeave={(e) => e.target.style.color = "var(--brand-text-light)"}
           >
             Uslovi korišćenja
           </a>
+          <span style={{ color: "var(--brand-border)" }}>|</span>
           <a
             href="#"
             onClick={(e) => {
@@ -3362,6 +3369,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
               color: "var(--brand-text-light)",
               textDecoration: "none",
               transition: "color 0.2s",
+              cursor: "pointer",
             }}
             onMouseEnter={(e) => e.target.style.color = "var(--brand-primary)"}
             onMouseLeave={(e) => e.target.style.color = "var(--brand-text-light)"}
@@ -3370,7 +3378,6 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
           </a>
         </div>
         <div style={{
-          marginTop: isMobile ? 12 : 16,
           fontSize: isMobile ? 11 : 12,
           color: "var(--brand-text-light)",
           opacity: 0.7,
