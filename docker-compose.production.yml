@@ -1,5 +1,3 @@
-version: '3.8'
-
 # Production docker-compose za Droplet
 # Koristi managed database (ne lokalnu)
 services:
