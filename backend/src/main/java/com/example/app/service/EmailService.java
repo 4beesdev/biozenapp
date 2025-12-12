@@ -145,7 +145,7 @@ public class EmailService {
                 "<p style=\"margin: 10px 0 5px 0; color: #6b6b6b; font-size: 13px;\">BioZen Tracker</p>" +
                 "<p style=\"margin: 5px 0; color: #6b6b6b; font-size: 12px;\">Aplikacija za praćenje kilaže i zdravog načina života</p>" +
                 "<p style=\"margin: 15px 0 0 0; color: #6b6b6b; font-size: 11px;\">" +
-                "<a href=\"" + frontendUrl + "\" style=\"color: #416539; text-decoration: none;\">" + frontendUrl + "</a>" +
+                "<a href=\"https://app.biozen.rs\" style=\"color: #416539; text-decoration: none;\">https://app.biozen.rs</a>" +
                 "</p>" +
                 "</td>" +
                 "</tr>" +
