@@ -81,7 +81,9 @@ public class ChatController {
         
         // Dodaj system message sa kontekstom korisnika
         String systemPrompt = buildSystemPrompt(user);
-        messages.add(Map.of("role", "system", "content", systemPrompt));
+        if (systemPrompt != null && !systemPrompt.trim().isEmpty()) {
+            messages.add(Map.of("role", "system", "content", systemPrompt));
+        }
         
         // Dodaj istoriju poruka (zadnjih 10)
         List<ChatMessage> recentHistory = history.size() > 10 
@@ -89,8 +91,18 @@ public class ChatController {
             : history;
         
         for (ChatMessage msg : recentHistory) {
-            messages.add(Map.of("role", msg.getRole(), "content", msg.getMessage()));
+            // Validacija: proveri da li je role validan i da li postoji content
+            if (msg.getRole() != null && msg.getMessage() != null && !msg.getMessage().trim().isEmpty()) {
+                String role = msg.getRole().toLowerCase();
+                // OpenAI prihvata samo "system", "user", "assistant"
+                if (role.equals("user") || role.equals("assistant") || role.equals("system")) {
+                    messages.add(Map.of("role", role, "content", msg.getMessage().trim()));
+                }
+            }
         }
+        
+        // Dodaj trenutnu korisničku poruku na kraju
+        messages.add(Map.of("role", "user", "content", userMessage));
 
         // Rate limiting: proveri koliko poruka je korisnik poslao u poslednjih 5 minuta
         Instant fiveMinutesAgo = Instant.now().minus(5, ChronoUnit.MINUTES);
@@ -140,17 +152,31 @@ public class ChatController {
             return ResponseEntity.ok(responseMap);
 
         } catch (WebClientResponseException e) {
-            if (e.getStatusCode().value() == 429) {
+            int statusCode = e.getStatusCode().value();
+            String responseBody = e.getResponseBodyAsString();
+            System.out.println("=== OpenAI API Error ===");
+            System.out.println("Status: " + statusCode);
+            System.out.println("Response Body: " + responseBody);
+            System.out.println("Request Body: " + messages);
+            
+            if (statusCode == 400) {
+                return ResponseEntity.status(400).body(Map.of(
+                    "message", 
+                    "Neispravan zahtev. " + (responseBody != null && responseBody.contains("message") 
+                        ? responseBody 
+                        : "Proverite format poruke.")
+                ));
+            } else if (statusCode == 429) {
                 return ResponseEntity.status(429).body(Map.of(
                     "message", 
                     "OpenAI API rate limit je prekoračen. Molimo sačekajte nekoliko minuta pre nego što pošaljete novu poruku."
                 ));
-            } else if (e.getStatusCode().value() == 401) {
+            } else if (statusCode == 401) {
                 return ResponseEntity.status(500).body(Map.of(
                     "message", 
                     "OpenAI API ključ nije validan. Molimo kontaktirajte administratora."
                 ));
-            } else if (e.getStatusCode().value() == 402 || e.getStatusCode().value() == 403) {
+            } else if (statusCode == 402 || statusCode == 403) {
                 return ResponseEntity.status(500).body(Map.of(
                     "message", 
                     "OpenAI nalog nema dovoljno kredita. Molimo kontaktirajte administratora."
@@ -159,17 +185,21 @@ public class ChatController {
             e.printStackTrace();
             return ResponseEntity.status(500).body(Map.of(
                 "message", 
-                "Greška pri pozivanju OpenAI API: " + e.getMessage()
+                "Greška pri pozivanju OpenAI API (Status " + statusCode + "): " + 
+                (responseBody != null ? responseBody : e.getMessage())
             ));
         } catch (Exception e) {
             String errorMessage = e.getMessage();
+            System.out.println("=== OpenAI API Exception ===");
+            System.out.println("Error: " + errorMessage);
+            e.printStackTrace();
+            
             if (errorMessage != null && errorMessage.contains("rate limit")) {
                 return ResponseEntity.status(429).body(Map.of(
                     "message", 
                     "Previše zahteva. Molimo sačekajte nekoliko minuta."
                 ));
             }
-            e.printStackTrace();
             return ResponseEntity.status(500).body(Map.of(
                 "message", 
                 "Greška pri pozivanju OpenAI API: " + (errorMessage != null ? errorMessage : "Nepoznata greška")
