@@ -9,7 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -89,6 +92,19 @@ public class ChatController {
             messages.add(Map.of("role", msg.getRole(), "content", msg.getMessage()));
         }
 
+        // Rate limiting: proveri koliko poruka je korisnik poslao u poslednjih 5 minuta
+        Instant fiveMinutesAgo = Instant.now().minus(5, ChronoUnit.MINUTES);
+        long recentMessages = chatMessageRepository.findByUserIdOrderByCreatedAtAsc(userId).stream()
+                .filter(msg -> msg.getRole().equals("user") && msg.getCreatedAt().isAfter(fiveMinutesAgo))
+                .count();
+        
+        if (recentMessages >= 10) {
+            return ResponseEntity.status(429).body(Map.of(
+                "message", 
+                "Previše zahteva. Molimo sačekajte nekoliko minuta pre nego što pošaljete novu poruku."
+            ));
+        }
+
         // Pozovi OpenAI API
         try {
             OpenAIRequest openaiRequest = new OpenAIRequest();
@@ -101,6 +117,9 @@ public class ChatController {
                     .uri("/chat/completions")
                     .bodyValue(openaiRequest)
                     .retrieve()
+                    .onStatus(status -> status.value() == 429, clientResponse -> {
+                        throw new RuntimeException("OpenAI rate limit prekoračen. Molimo sačekajte nekoliko minuta.");
+                    })
                     .bodyToMono(OpenAIResponse.class)
                     .block();
 
@@ -120,9 +139,41 @@ public class ChatController {
 
             return ResponseEntity.ok(responseMap);
 
-        } catch (Exception e) {
+        } catch (WebClientResponseException e) {
+            if (e.getStatusCode().value() == 429) {
+                return ResponseEntity.status(429).body(Map.of(
+                    "message", 
+                    "OpenAI API rate limit je prekoračen. Molimo sačekajte nekoliko minuta pre nego što pošaljete novu poruku."
+                ));
+            } else if (e.getStatusCode().value() == 401) {
+                return ResponseEntity.status(500).body(Map.of(
+                    "message", 
+                    "OpenAI API ključ nije validan. Molimo kontaktirajte administratora."
+                ));
+            } else if (e.getStatusCode().value() == 402 || e.getStatusCode().value() == 403) {
+                return ResponseEntity.status(500).body(Map.of(
+                    "message", 
+                    "OpenAI nalog nema dovoljno kredita. Molimo kontaktirajte administratora."
+                ));
+            }
             e.printStackTrace();
-            return ResponseEntity.status(500).body(Map.of("message", "Greška pri pozivanju OpenAI API: " + e.getMessage()));
+            return ResponseEntity.status(500).body(Map.of(
+                "message", 
+                "Greška pri pozivanju OpenAI API: " + e.getMessage()
+            ));
+        } catch (Exception e) {
+            String errorMessage = e.getMessage();
+            if (errorMessage != null && errorMessage.contains("rate limit")) {
+                return ResponseEntity.status(429).body(Map.of(
+                    "message", 
+                    "Previše zahteva. Molimo sačekajte nekoliko minuta."
+                ));
+            }
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of(
+                "message", 
+                "Greška pri pozivanju OpenAI API: " + (errorMessage != null ? errorMessage : "Nepoznata greška")
+            ));
         }
     }
 
