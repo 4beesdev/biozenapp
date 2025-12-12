@@ -64,7 +64,7 @@ public class AuthController {
 
     public AuthController(UserRepository users, PasswordEncoder encoder, JwtService jwt, 
                          EmailService emailService,
-                         @Value("${app.frontend.url:https://dev.biozen.rs}") String frontendUrl) {
+                         @Value("${app.frontend.url:https://app.biozen.rs}") String frontendUrl) {
         this.users = users;
         this.encoder = encoder;
         this.jwt = jwt;
