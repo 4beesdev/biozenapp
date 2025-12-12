@@ -4462,69 +4462,6 @@ function AdminPanel({ me, onLogout, isMobile }) {
             </div>
           </div>
         )}
-
-        {/* Footer */}
-        <footer style={{
-          marginTop: 60,
-          paddingTop: 30,
-          borderTop: "1px solid var(--brand-border)",
-          textAlign: "center",
-          maxWidth: 1200,
-          marginLeft: "auto",
-          marginRight: "auto",
-        }}>
-          <div style={{
-            display: "flex",
-            justifyContent: "center",
-            gap: isMobile ? 20 : 30,
-            flexWrap: "wrap",
-            fontSize: isMobile ? 13 : 14,
-            color: "var(--brand-text-light)",
-          }}>
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                // TODO: Navigate to Terms of Service page
-                alert("Uslovi korišćenja - stranica u pripremi");
-              }}
-              style={{
-                color: "var(--brand-text-light)",
-                textDecoration: "none",
-                transition: "color 0.2s",
-              }}
-              onMouseEnter={(e) => e.target.style.color = "var(--brand-primary)"}
-              onMouseLeave={(e) => e.target.style.color = "var(--brand-text-light)"}
-            >
-              Uslovi korišćenja
-            </a>
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                // TODO: Navigate to Privacy Policy page
-                alert("Politika privatnosti - stranica u pripremi");
-              }}
-              style={{
-                color: "var(--brand-text-light)",
-                textDecoration: "none",
-                transition: "color 0.2s",
-              }}
-              onMouseEnter={(e) => e.target.style.color = "var(--brand-primary)"}
-              onMouseLeave={(e) => e.target.style.color = "var(--brand-text-light)"}
-            >
-              Politika privatnosti
-            </a>
-          </div>
-          <div style={{
-            marginTop: isMobile ? 12 : 16,
-            fontSize: isMobile ? 11 : 12,
-            color: "var(--brand-text-light)",
-            opacity: 0.7,
-          }}>
-            © {new Date().getFullYear()} BioZen. Sva prava zadržana.
-          </div>
-        </footer>
       </div>
     </div>
   );
