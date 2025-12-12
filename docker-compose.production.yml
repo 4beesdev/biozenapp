@@ -16,6 +16,7 @@ services:
       APP_JWT_SECRET: ${JWT_SECRET}
       APP_JWT_TTLMILLIS: ${APP_JWT_TTLMILLIS:-604800000}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
     ports:
       - "8080:8080"
     restart: unless-stopped
