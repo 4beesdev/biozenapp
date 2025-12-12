@@ -99,9 +99,9 @@ button:focus-visible {
     font-size: 14px;
   }
   
-  /* Prevent iOS zoom on input focus - all inputs must be at least 16px */
+  /* Prevent iOS zoom on input focus - using 18px like Facebook/Instagram */
   input, textarea, select {
-    font-size: 16px !important;
+    font-size: 18px !important;
   }
   
   /* Login form responsive */
