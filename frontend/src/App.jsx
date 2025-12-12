@@ -39,16 +39,21 @@ export default function App() {
       setResetToken(tokenParam);
       setMode("reset-password");
     }
-  }, []);
 
-  // Proveri autentifikaciju kada se activeTab promeni (npr. kada ide back)
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token && !isLoggedIn) {
-      // Ako postoji token ali nismo ulogovani, proveri autentifikaciju
-      loadUserData();
-    }
-  }, [activeTab]);
+    // Listener za browser back button
+    const handlePopState = () => {
+      const token = localStorage.getItem("token");
+      if (token && !isLoggedIn) {
+        // Ako postoji token ali nismo ulogovani, proveri autentifikaciju
+        loadUserData();
+      }
+      // Vrati na home (activeTab = null) kada ide back
+      setActiveTab(null);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   // Auto-hide notifikacija nakon 2 sekunde
   useEffect(() => {
