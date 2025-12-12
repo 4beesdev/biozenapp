@@ -40,15 +40,15 @@ export default function App() {
       setMode("reset-password");
     }
 
-    // Listener za browser back button
+    // Listener za browser back button - samo vrati na home
     const handlePopState = () => {
-      const token = localStorage.getItem("token");
-      if (token && !isLoggedIn) {
-        // Ako postoji token ali nismo ulogovani, proveri autentifikaciju
-        loadUserData();
-      }
       // Vrati na home (activeTab = null) kada ide back
       setActiveTab(null);
+      // Proveri autentifikaciju ako postoji token
+      const token = localStorage.getItem("token");
+      if (token && !isLoggedIn) {
+        loadUserData();
+      }
     };
 
     window.addEventListener('popstate', handlePopState);
@@ -1368,7 +1368,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
       {isMobile && activeTab !== null && (
         <div style={{ 
           display: "grid",
-          gridTemplateColumns: "1fr 1fr",
+          gridTemplateColumns: "1fr 1fr 1fr",
           gap: 16, 
           marginBottom: 24,
         }}>
@@ -1481,6 +1481,28 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
           >
             <span style={{ fontSize: 32, marginBottom: 8 }}>🛒</span>
             <span>BioZen Shop</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("chat")}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "20px 12px",
+              background: activeTab === "chat" ? "var(--brand-gradient)" : "var(--brand-bg-light)",
+              color: activeTab === "chat" ? "white" : "var(--brand-text)",
+              border: activeTab === "chat" ? "none" : "1px solid var(--brand-border)",
+              borderRadius: 12,
+              fontWeight: 600,
+              cursor: "pointer",
+              fontSize: 14,
+              transition: "all 0.2s",
+              boxShadow: activeTab === "chat" ? "0 3px 8px rgba(65, 101, 57, 0.25)" : "none",
+            }}
+          >
+            <span style={{ fontSize: 32, marginBottom: 8 }}>💬</span>
+            <span>Chat</span>
           </button>
         </div>
       )}
