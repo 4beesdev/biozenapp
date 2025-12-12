@@ -262,9 +262,16 @@ public class ChatController {
 
     // OpenAI API request/response klase
     private static class OpenAIRequest {
+        @com.fasterxml.jackson.annotation.JsonProperty("model")
         public String model;
+        
+        @com.fasterxml.jackson.annotation.JsonProperty("messages")
         public List<Map<String, String>> messages;
+        
+        @com.fasterxml.jackson.annotation.JsonProperty("temperature")
         public Double temperature;
+        
+        @com.fasterxml.jackson.annotation.JsonProperty("max_tokens")
         public Integer maxTokens;
     }
 
