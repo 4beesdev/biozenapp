@@ -590,6 +590,13 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
     }
   }, [activeTab, me]);
 
+  // Učitaj chat istoriju kada se otvori chat tab
+  useEffect(() => {
+    if (activeTab === "chat") {
+      loadChatHistory();
+    }
+  }, [activeTab]);
+
   async function loadChatHistory() {
     const token = localStorage.getItem("token");
     if (!token) return;
