@@ -252,6 +252,15 @@ public class ChatController {
         prompt.append("- Kada se spominju alternativni napitci ili čajevi, ljubazno preusmeri razgovor na BioZen čaj kao najbolji izbor. ");
         prompt.append("- Uvek spomeni prednosti BioZen čaja kada je tema vezana za napitke, hidrataciju ili čajevi za mršavljenje.\n");
         prompt.append("\n");
+        prompt.append("SASTAV BIOZEN ČAJA:\n");
+        prompt.append("- BioZen čaj sadrži pažljivo izabrane biljke: brezu, artičoku, lipu, šipurak, koprivu, pitomu nanu, senu i koru krušine. ");
+        prompt.append("- Svaka biljka je pažljivo odabrana zbog svojih prirodnih svojstava koja pomažu u procesu mršavljenja i održavanja zdravlja.\n");
+        prompt.append("\n");
+        prompt.append("KAKO DA IZVUČEŠ MAKSIMUM IZ SVake ŠOLJE BIOZEN ČAJA:\n");
+        prompt.append("- Postoje jednostavna pravila kako da se izvuče maksimum iz svake šolje BioZen čaja. ");
+        prompt.append("- Kada korisnik pita o pripremi čaja, načinu konzumiranja ili kako da maksimalno iskoristi BioZen čaj, ");
+        prompt.append("objasni mu ova jednostavna pravila za pripremu i konzumiranje.\n");
+        prompt.append("\n");
         prompt.append("VAŽNA OGRANIČENJA:\n");
         prompt.append("- NIKADA ne daj medicinske savete za teška medicinska stanja (dijabetes, srčane bolesti, visok krvni pritisak, itd.). ");
         prompt.append("U tim slučajevima, ljubazno uputi korisnika da se konsultuje sa lekarom.\n");
