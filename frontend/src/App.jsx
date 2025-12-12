@@ -12,7 +12,7 @@ export default function App() {
   const [message, setMessage] = useState("");
   const [me, setMe] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [activeTab, setActiveTab] = useState(null); // null = home, "merenja" | "podaci" | "saveti" | "blogovi" | "shop"
+  const [activeTab, setActiveTab] = useState(null); // null = home, "merenja" | "podaci" | "saveti" | "blogovi" | "shop" | "chat"
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
@@ -407,7 +407,7 @@ export default function App() {
                 color: "var(--brand-secondary)",
                 cursor: "pointer",
                 fontWeight: 500,
-                fontSize: 14,
+                fontSize: 13,
                 padding: 8,
                 marginBottom: 8,
               }}
@@ -423,7 +423,7 @@ export default function App() {
                 color: "var(--brand-secondary)",
                 cursor: "pointer",
                 fontWeight: 500,
-                fontSize: 14,
+                fontSize: 13,
                 padding: 8,
               }}
             >
@@ -529,6 +529,10 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
   const [blogs, setBlogs] = useState([]);
   const [selectedBlog, setSelectedBlog] = useState(null);
   const [loadingBlogs, setLoadingBlogs] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatInput, setChatInput] = useState("");
+  const [sendingMessage, setSendingMessage] = useState(false);
+  const chatMessagesEndRef = useRef(null);
   const chartRef = useRef(null);
   const isMobile = isMobileProp !== undefined ? isMobileProp : window.innerWidth <= 768;
 
@@ -585,6 +589,94 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
       loadPublishedBlogs();
     }
   }, [activeTab, me]);
+
+  async function loadChatHistory() {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const res = await fetch("/api/chat/history", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setChatMessages(data);
+        // Scroll to bottom after loading
+        setTimeout(() => {
+          if (chatMessagesEndRef.current) {
+            chatMessagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+          }
+        }, 100);
+      }
+    } catch (e) {
+      console.error("Greška pri učitavanju chat istorije:", e);
+    }
+  }
+
+  async function sendChatMessage(e) {
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+    if (!token || !chatInput.trim() || sendingMessage) return;
+
+    const userMessage = chatInput.trim();
+    setChatInput("");
+    setSendingMessage(true);
+
+    // Dodaj korisničku poruku odmah u UI
+    const tempUserMessage = {
+      id: Date.now(),
+      role: "user",
+      message: userMessage,
+      createdAt: new Date().toISOString(),
+    };
+    setChatMessages(prev => [...prev, tempUserMessage]);
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ message: userMessage }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        // Zameni temp poruku sa stvarnom i dodaj odgovor
+        setChatMessages(prev => {
+          const filtered = prev.filter(msg => msg.id !== tempUserMessage.id);
+          return [...filtered, {
+            id: tempUserMessage.id,
+            role: "user",
+            message: userMessage,
+            createdAt: new Date().toISOString(),
+          }, {
+            id: data.id || Date.now() + 1,
+            role: "assistant",
+            message: data.message,
+            createdAt: new Date().toISOString(),
+          }];
+        });
+        // Scroll to bottom
+        setTimeout(() => {
+          if (chatMessagesEndRef.current) {
+            chatMessagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+          }
+        }, 100);
+      } else {
+        // Ukloni temp poruku i prikaži grešku
+        setChatMessages(prev => prev.filter(msg => msg.id !== tempUserMessage.id));
+        alert(data.message || "Greška pri slanju poruke");
+      }
+    } catch (e) {
+      console.error("Greška pri slanju poruke:", e);
+      setChatMessages(prev => prev.filter(msg => msg.id !== tempUserMessage.id));
+      alert("Greška pri slanju poruke");
+    } finally {
+      setSendingMessage(false);
+    }
+  }
 
   async function loadPublishedBlogs() {
     console.log("=== loadPublishedBlogs() called ===");
@@ -985,10 +1077,10 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
           </h2>
           <div style={{ 
             display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 20,
+            gridTemplateColumns: "1fr 1fr 1fr",
+            gap: 15,
             width: "100%",
-            maxWidth: 400,
+            maxWidth: 500,
           }}>
             <button
               onClick={() => setActiveTab("merenja")}
@@ -997,14 +1089,14 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                padding: "30px 20px",
+                padding: "24px 16px",
                 background: "var(--brand-bg-light)",
                 color: "var(--brand-text)",
                 border: "1px solid var(--brand-border)",
                 borderRadius: 16,
                 fontWeight: 600,
                 cursor: "pointer",
-                fontSize: 14,
+                fontSize: 13,
                 transition: "all 0.3s ease",
                 boxShadow: "0 2px 8px rgba(65, 101, 57, 0.1)",
               }}
@@ -1017,7 +1109,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                 e.currentTarget.style.boxShadow = "0 2px 8px rgba(65, 101, 57, 0.1)";
               }}
             >
-              <span style={{ fontSize: 48, marginBottom: 12 }}>📊</span>
+              <span style={{ fontSize: 40, marginBottom: 8 }}>📊</span>
               <span>Moja merenja</span>
             </button>
             <button
@@ -1027,14 +1119,14 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                padding: "30px 20px",
+                padding: "24px 16px",
                 background: "var(--brand-bg-light)",
                 color: "var(--brand-text)",
                 border: "1px solid var(--brand-border)",
                 borderRadius: 16,
                 fontWeight: 600,
                 cursor: "pointer",
-                fontSize: 14,
+                fontSize: 13,
                 transition: "all 0.3s ease",
                 boxShadow: "0 2px 8px rgba(65, 101, 57, 0.1)",
               }}
@@ -1047,7 +1139,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                 e.currentTarget.style.boxShadow = "0 2px 8px rgba(65, 101, 57, 0.1)";
               }}
             >
-              <span style={{ fontSize: 48, marginBottom: 12 }}>👤</span>
+              <span style={{ fontSize: 40, marginBottom: 8 }}>👤</span>
               <span>Moji podaci</span>
             </button>
             <button
@@ -1057,14 +1149,14 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                padding: "30px 20px",
+                padding: "24px 16px",
                 background: "var(--brand-bg-light)",
                 color: "var(--brand-text)",
                 border: "1px solid var(--brand-border)",
                 borderRadius: 16,
                 fontWeight: 600,
                 cursor: "pointer",
-                fontSize: 14,
+                fontSize: 13,
                 transition: "all 0.3s ease",
                 boxShadow: "0 2px 8px rgba(65, 101, 57, 0.1)",
               }}
@@ -1077,7 +1169,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                 e.currentTarget.style.boxShadow = "0 2px 8px rgba(65, 101, 57, 0.1)";
               }}
             >
-              <span style={{ fontSize: 48, marginBottom: 12 }}>💡</span>
+              <span style={{ fontSize: 40, marginBottom: 8 }}>💡</span>
               <span>Saveti</span>
             </button>
             <button
@@ -1087,14 +1179,14 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                padding: "30px 20px",
+                padding: "24px 16px",
                 background: "var(--brand-bg-light)",
                 color: "var(--brand-text)",
                 border: "1px solid var(--brand-border)",
                 borderRadius: 16,
                 fontWeight: 600,
                 cursor: "pointer",
-                fontSize: 14,
+                fontSize: 13,
                 transition: "all 0.3s ease",
                 boxShadow: "0 2px 8px rgba(65, 101, 57, 0.1)",
               }}
@@ -1107,7 +1199,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                 e.currentTarget.style.boxShadow = "0 2px 8px rgba(65, 101, 57, 0.1)";
               }}
             >
-              <span style={{ fontSize: 48, marginBottom: 12 }}>📝</span>
+              <span style={{ fontSize: 40, marginBottom: 8 }}>📝</span>
               <span>Blogovi</span>
             </button>
             <button
@@ -1117,14 +1209,14 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                padding: "30px 20px",
+                padding: "24px 16px",
                 background: "var(--brand-bg-light)",
                 color: "var(--brand-text)",
                 border: "1px solid var(--brand-border)",
                 borderRadius: 16,
                 fontWeight: 600,
                 cursor: "pointer",
-                fontSize: 14,
+                fontSize: 13,
                 transition: "all 0.3s ease",
                 boxShadow: "0 2px 8px rgba(65, 101, 57, 0.1)",
               }}
@@ -1137,8 +1229,38 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                 e.currentTarget.style.boxShadow = "0 2px 8px rgba(65, 101, 57, 0.1)";
               }}
             >
-              <span style={{ fontSize: 48, marginBottom: 12 }}>🛒</span>
+              <span style={{ fontSize: 40, marginBottom: 8 }}>🛒</span>
               <span>BioZen Shop</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("chat")}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "24px 16px",
+                background: "var(--brand-bg-light)",
+                color: "var(--brand-text)",
+                border: "1px solid var(--brand-border)",
+                borderRadius: 16,
+                fontWeight: 600,
+                cursor: "pointer",
+                fontSize: 13,
+                transition: "all 0.3s ease",
+                boxShadow: "0 2px 8px rgba(65, 101, 57, 0.1)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-4px)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(65, 101, 57, 0.2)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 2px 8px rgba(65, 101, 57, 0.1)";
+              }}
+            >
+              <span style={{ fontSize: 40, marginBottom: 8 }}>💬</span>
+              <span>Chat</span>
             </button>
           </div>
 
@@ -1566,7 +1688,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                     marginBottom: 8, 
                     fontWeight: 600,
                     color: "var(--brand-text)",
-                    fontSize: 14,
+                    fontSize: 13,
                   }}>
                     Datum
                   </label>
@@ -1596,7 +1718,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                     marginBottom: 8, 
                     fontWeight: 600,
                     color: "var(--brand-text)",
-                    fontSize: 14,
+                    fontSize: 13,
                   }}>
                     Kilaža (kg)
                   </label>
@@ -1629,7 +1751,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                     marginBottom: 8, 
                     fontWeight: 600,
                     color: "var(--brand-text)",
-                    fontSize: 14,
+                    fontSize: 13,
                   }}>
                     Obim struka (cm)
                   </label>
@@ -1661,7 +1783,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                     marginBottom: 8, 
                     fontWeight: 600,
                     color: "var(--brand-text)",
-                    fontSize: 14,
+                    fontSize: 13,
                   }}>
                     Komentar
                   </label>
@@ -2039,14 +2161,14 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                     marginBottom: 12,
                   }}>
                     <span style={{
-                      fontSize: 14,
+                      fontSize: 13,
                       fontWeight: 600,
                       color: "var(--brand-text)",
                     }}>
                       Napredak ka cilju
                     </span>
                     <span style={{
-                      fontSize: 14,
+                      fontSize: 13,
                       fontWeight: 500,
                       color: "var(--brand-text-light)",
                     }}>
@@ -2184,7 +2306,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                 marginBottom: 8, 
                 fontWeight: 600,
                 color: "var(--brand-text)",
-                fontSize: 14,
+                fontSize: 13,
               }}>
                 Ime
               </label>
@@ -2214,7 +2336,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                 marginBottom: 8, 
                 fontWeight: 600,
                 color: "var(--brand-text)",
-                fontSize: 14,
+                fontSize: 13,
               }}>
                 Prezime
               </label>
@@ -2244,7 +2366,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                 marginBottom: 8, 
                 fontWeight: 600,
                 color: "var(--brand-text)",
-                fontSize: 14,
+                fontSize: 13,
               }}>
                 Pol
               </label>
@@ -2277,7 +2399,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                 marginBottom: 8, 
                 fontWeight: 600,
                 color: "var(--brand-text)",
-                fontSize: 14,
+                fontSize: 13,
               }}>
                 Starost
               </label>
@@ -2309,7 +2431,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                 marginBottom: 8, 
                 fontWeight: 600,
                 color: "var(--brand-text)",
-                fontSize: 14,
+                fontSize: 13,
               }}>
                 Kilaža (kg)
               </label>
@@ -2341,7 +2463,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                 marginBottom: 8, 
                 fontWeight: 600,
                 color: "var(--brand-text)",
-                fontSize: 14,
+                fontSize: 13,
               }}>
                 Željena kilaža (kg)
               </label>
@@ -2373,7 +2495,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                 marginBottom: 8, 
                 fontWeight: 600,
                 color: "var(--brand-text)",
-                fontSize: 14,
+                fontSize: 13,
               }}>
                 Obim struka (cm)
               </label>
@@ -2614,7 +2736,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                     marginTop: 32,
                     paddingTop: 20,
                     borderTop: "1px solid var(--brand-border)",
-                    fontSize: 14,
+                    fontSize: 13,
                     color: "var(--brand-text-light)",
                   }}>
                     Objavljeno: {new Date(selectedBlog.publishedAt).toLocaleDateString('sr-RS', {
@@ -2684,7 +2806,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
                     {blog.excerpt && (
                       <p style={{
                         margin: "0 0 16px 0",
-                        fontSize: 14,
+                        fontSize: 13,
                         color: "var(--brand-text-light)",
                         lineHeight: 1.6,
                       }}>
@@ -2708,6 +2830,162 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {activeTab === "chat" && (
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          height: isMobile ? "calc(100vh - 120px)" : "calc(100vh - 180px)",
+          border: "1px solid var(--brand-border)",
+          borderRadius: 10,
+          background: "var(--brand-bg-light)",
+          boxShadow: "0 2px 8px rgba(65, 101, 57, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04)",
+          overflow: "hidden",
+        }}>
+          {/* Chat Header */}
+          <div style={{
+            padding: isMobile ? "16px" : "20px",
+            borderBottom: "1px solid var(--brand-border)",
+            background: "var(--brand-gradient)",
+            color: "white",
+          }}>
+            <h2 style={{
+              margin: 0,
+              fontSize: isMobile ? 18 : 20,
+              fontWeight: 600,
+            }}>
+              💬 BioZen AI Asistent
+            </h2>
+            <p style={{
+              margin: "4px 0 0 0",
+              fontSize: 13,
+              opacity: 0.9,
+            }}>
+              Pitanja o zdravlju, ishrani i mršavljenju
+            </p>
+          </div>
+
+          {/* Chat Messages */}
+          <div style={{
+            flex: 1,
+            overflowY: "auto",
+            padding: isMobile ? "16px" : "20px",
+            display: "flex",
+            flexDirection: "column",
+            gap: 12,
+          }}>
+            {chatMessages.length === 0 ? (
+              <div style={{
+                flex: 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                textAlign: "center",
+                color: "var(--brand-text-light)",
+              }}>
+                <div>
+                  <p style={{ fontSize: 16, marginBottom: 8 }}>👋 Zdravo!</p>
+                  <p style={{ fontSize: 14 }}>Kako mogu da ti pomognem danas?</p>
+                </div>
+              </div>
+            ) : (
+              chatMessages.map((msg) => (
+                <div
+                  key={msg.id}
+                  style={{
+                    display: "flex",
+                    justifyContent: msg.role === "user" ? "flex-end" : "flex-start",
+                    marginBottom: 8,
+                  }}
+                >
+                  <div style={{
+                    maxWidth: "80%",
+                    padding: isMobile ? "12px 16px" : "14px 18px",
+                    borderRadius: 16,
+                    background: msg.role === "user" 
+                      ? "var(--brand-gradient)" 
+                      : "var(--brand-bg)",
+                    color: msg.role === "user" ? "white" : "var(--brand-text)",
+                    border: msg.role === "assistant" ? "1px solid var(--brand-border)" : "none",
+                    fontSize: isMobile ? 14 : 15,
+                    lineHeight: 1.5,
+                    wordWrap: "break-word",
+                  }}>
+                    {msg.message}
+                  </div>
+                </div>
+              ))
+            )}
+            {sendingMessage && (
+              <div style={{
+                display: "flex",
+                justifyContent: "flex-start",
+              }}>
+                <div style={{
+                  padding: isMobile ? "12px 16px" : "14px 18px",
+                  borderRadius: 16,
+                  background: "var(--brand-bg)",
+                  border: "1px solid var(--brand-border)",
+                  fontSize: 14,
+                  color: "var(--brand-text-light)",
+                }}>
+                  <span style={{ marginRight: 8 }}>⏳</span>
+                  AI razmišlja...
+                </div>
+              </div>
+            )}
+            <div ref={chatMessagesEndRef} />
+          </div>
+
+          {/* Chat Input */}
+          <form onSubmit={sendChatMessage} style={{
+            padding: isMobile ? "12px" : "16px",
+            borderTop: "1px solid var(--brand-border)",
+            background: "var(--brand-bg-light)",
+            display: "flex",
+            gap: 8,
+          }}>
+            <input
+              type="text"
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              placeholder="Unesite poruku..."
+              disabled={sendingMessage}
+              style={{
+                flex: 1,
+                padding: isMobile ? "12px 16px" : "14px 18px",
+                border: "1px solid var(--brand-border)",
+                borderRadius: 24,
+                fontSize: isMobile ? 14 : 15,
+                background: "var(--brand-bg)",
+                color: "var(--brand-text)",
+                outline: "none",
+              }}
+              onFocus={(e) => e.target.style.borderColor = "var(--brand-primary)"}
+              onBlur={(e) => e.target.style.borderColor = "var(--brand-border)"}
+            />
+            <button
+              type="submit"
+              disabled={!chatInput.trim() || sendingMessage}
+              style={{
+                padding: isMobile ? "12px 20px" : "14px 24px",
+                background: chatInput.trim() && !sendingMessage 
+                  ? "var(--brand-gradient)" 
+                  : "var(--brand-border)",
+                color: chatInput.trim() && !sendingMessage ? "white" : "var(--brand-text-light)",
+                border: 0,
+                borderRadius: 24,
+                fontWeight: 600,
+                cursor: chatInput.trim() && !sendingMessage ? "pointer" : "not-allowed",
+                fontSize: isMobile ? 14 : 15,
+                transition: "all 0.2s",
+              }}
+            >
+              {sendingMessage ? "⏳" : "➤"}
+            </button>
+          </form>
         </div>
       )}
 
@@ -2839,7 +3117,7 @@ function Dashboard({ me, onUpdate, onLogout, activeTab, setActiveTab, message, i
               <p style={{
                 margin: "0 0 16px 0",
                 color: "var(--brand-text)",
-                fontSize: 14,
+                fontSize: 13,
                 lineHeight: 1.5,
               }}>
                 Dodaj aplikaciju na home screen za brži pristup
@@ -3360,7 +3638,7 @@ function AdminPanel({ me, onLogout, isMobile }) {
                   padding: "10px 15px",
                   border: "1px solid var(--brand-border)",
                   borderRadius: 8,
-                  fontSize: 14,
+                  fontSize: 13,
                   minWidth: 200,
                 }}
               />
@@ -3373,7 +3651,7 @@ function AdminPanel({ me, onLogout, isMobile }) {
                 borderRadius: 8,
                 color: "var(--brand-error)",
                 marginBottom: 20,
-                fontSize: 14,
+                fontSize: 13,
               }}>
                 {error}
               </div>
@@ -3663,7 +3941,7 @@ function AdminPanel({ me, onLogout, isMobile }) {
                     padding: 12,
                     border: "1px solid var(--brand-border)",
                     borderRadius: 8,
-                    fontSize: 14,
+                    fontSize: 13,
                   }}
                 />
                 <textarea
@@ -3675,7 +3953,7 @@ function AdminPanel({ me, onLogout, isMobile }) {
                     padding: 12,
                     border: "1px solid var(--brand-border)",
                     borderRadius: 8,
-                    fontSize: 14,
+                    fontSize: 13,
                     resize: "vertical",
                   }}
                 />
@@ -3787,7 +4065,7 @@ function AdminPanel({ me, onLogout, isMobile }) {
                       border: "1px solid var(--brand-border)",
                       borderRadius: "0 0 8px 8px",
                       background: "#fff",
-                      fontSize: 14,
+                      fontSize: 13,
                       lineHeight: 1.6,
                       outline: "none",
                       overflow: "auto",
@@ -3814,7 +4092,7 @@ function AdminPanel({ me, onLogout, isMobile }) {
                         border: `1px solid ${imageInputMode === "upload" ? "var(--brand-primary)" : "var(--brand-border)"}`,
                         borderRadius: 6,
                         cursor: "pointer",
-                        fontSize: 14,
+                        fontSize: 13,
                         fontWeight: 500,
                       }}
                     >
@@ -3834,7 +4112,7 @@ function AdminPanel({ me, onLogout, isMobile }) {
                         border: `1px solid ${imageInputMode === "url" ? "var(--brand-primary)" : "var(--brand-border)"}`,
                         borderRadius: 6,
                         cursor: "pointer",
-                        fontSize: 14,
+                        fontSize: 13,
                         fontWeight: 500,
                       }}
                     >
@@ -3858,7 +4136,7 @@ function AdminPanel({ me, onLogout, isMobile }) {
                           padding: 12,
                           border: "1px solid var(--brand-border)",
                           borderRadius: 8,
-                          fontSize: 14,
+                          fontSize: 13,
                           width: "100%",
                         }}
                       />
@@ -3885,7 +4163,7 @@ function AdminPanel({ me, onLogout, isMobile }) {
                         padding: 12,
                         border: "1px solid var(--brand-border)",
                         borderRadius: 8,
-                        fontSize: 14,
+                        fontSize: 13,
                         width: "100%",
                       }}
                     />
@@ -3943,7 +4221,7 @@ function AdminPanel({ me, onLogout, isMobile }) {
                     padding: 12,
                     border: "1px solid var(--brand-border)",
                     borderRadius: 8,
-                    fontSize: 14,
+                    fontSize: 13,
                   }}
                 >
                   <option value="DRAFT">Nacrt</option>
