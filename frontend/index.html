@@ -8,17 +8,30 @@
     <link rel="manifest" href="/manifest.json" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <script>
-      // Prevent iOS zoom on input focus
-      document.addEventListener('DOMContentLoaded', function() {
+      // Prevent iOS zoom on input focus - must be in head before DOM loads
+      (function() {
         var viewport = document.querySelector('meta[name="viewport"]');
-        function preventZoom(e) {
-          if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
-            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
-          }
+        if (!viewport) {
+          viewport = document.createElement('meta');
+          viewport.name = 'viewport';
+          document.getElementsByTagName('head')[0].appendChild(viewport);
         }
-        document.addEventListener('touchstart', preventZoom, { passive: true });
-        document.addEventListener('touchend', preventZoom, { passive: true });
-      });
+        
+        function preventZoom() {
+          viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+        }
+        
+        // Prevent zoom on input focus
+        document.addEventListener('focusin', function(e) {
+          if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+            preventZoom();
+          }
+        }, true);
+        
+        // Keep viewport locked
+        preventZoom();
+        setInterval(preventZoom, 100);
+      })();
     </script>
     <meta name="theme-color" content="#416539" />
     <meta name="description" content="BioZen Tracker - Aplikacija za praćenje kilaže i zdravog načina života" />
